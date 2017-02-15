@@ -1,0 +1,209 @@
+% Dokumentenklasse Report mit Koma-Script für deutschen Sprachgebrauch
+\documentclass[a4paper,12pt]{scrreprt}
+
+
+% ============= Packages =============
+
+% deutsche Silbentrennung (neue Rechtschreibung)
+\usepackage[ngerman]{babel}
+% Ausgabefonts
+\usepackage[T1]{fontenc}
+% Eingabekodierung (Umlaute)
+\usepackage[utf8]{inputenc}
+% Latin Modern (Standardschrift mit Serifen)
+\usepackage{lmodern}
+% microtype unterstützt bessere Lesbarkeit
+\usepackage{microtype}
+% Zeilenabstand (kann im jederzeit Dokument geändert werden)
+\usepackage[]{setspace}
+\onehalfspacing
+% Bilder
+\usepackage{graphicx}
+% zur Positionierung der Bilder (anderenfalls platziert Latex sie beliebig)
+% Abbildungen in Rahmen setzen
+\usepackage[export]{adjustbox}
+\usepackage{float}
+% zur Erstellung von Abstract und Kurzfassung
+\usepackage{abstract}
+% zur Manipulation von Kopf- und Fußzeilen
+\usepackage{fancyhdr}
+% Tabellen
+\usepackage{array}
+% zusätzliche mathematische Schriftzeichen
+\usepackage{amssymb}
+\usepackage{amsmath}
+% Anpassung der Abbildungs- und Tabellenbeschriftungen (10 pt bei 12 pt scrreprt und fetter Bezeichnung)
+\usepackage[font=footnotesize,labelfont=bf, justification=centering, format = plain]{caption}
+% für mehrseitige Tabellen
+\usepackage{longtable}
+% Abkürzungsverzeichhnig mit im Dokument verwendeten Abkürzungen und Seitenzahl
+\usepackage[printonlyused, withpage]{acronym}
+% griechische Buchstaben nicht kursiv
+\usepackage{upgreek}
+% Sonder-/Formelzeichen fett mit Befehl \bm
+\usepackage{bm}
+% Zähler auf Null zurücksetzen, z.B. bei Formeln eines neuen Kapitels
+\usepackage{chngcntr}
+% Rücksetzpunkte werden aufgehoben für Abbildungen, Tabellen und Fußnoten
+%\counterwithout{figure}{chapter}
+%\counterwithout{table}{chapter}
+\counterwithout{footnote}{chapter}
+%\counterwithout{equation}{chapter}
+% Erhöhung der Vertiefungsebene auf 5
+\setcounter{secnumdepth}{5}
+% Darstellung aller 5 Vertiefungsebenen im Inhaltsverzeichnis
+\setcounter{tocdepth}{5}
+% Einrücktiefe der ersten Zeile eines Absatzes nach einem Absatz festlegen
+\setlength{\parindent}{0pt}
+% besondere Trennungen
+\hyphenation{Frig-yes}
+\usepackage{hyperref}
+% Zeilenumbruch in URLs nach einem Bindestrich erlauben
+% \usepackage[hyphens]{url}
+\usepackage{url}
+% URL wird wie normaler Text dargestellt
+\renewcommand\UrlFont{\textnormal}
+% Seitenränder (geometry immer zuletzt)
+\usepackage[left= 3 cm,right = 2.5 cm, bottom = 2.5 cm]{geometry}
+
+% ============= Literaturverzeichnis mit BibLaTeX =============
+
+\usepackage[backend=biber, style=authoryear, natbib=true, hyperref=true, isbn = false, url = false, doi = false, maxparens = 5, maxbibnames = 50, maxcitenames = 1, useprefix = true, block = space]{biblatex}
+\addbibresource{ma_literatur.bib} %% Einbinden der bib-Datei
+
+% ============= Kopf- und Fußzeile =============
+
+% globale Veränderung des Seitenlayouts
+% "`fancy"' erlaubt die Verwendung der im Paket fancyhdr definierten Befehle zur Erstellung eigener Kopf- und Fußzeilen
+\pagestyle{fancy}
+% Ausgabe des aktuellen Kapitels links in Kopfzeile
+\lhead{\slshape \MakeUppercase{\leftmark}}
+\chead{}
+\rhead{}
+% Ausgabe der aktuellen Seitenzahl zentral in Fußzeile
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+% Linie in Kopfzeile
+\renewcommand{\headrulewidth}{0.4pt}
+% keine Linie in Fußzeile
+\renewcommand{\footrulewidth}{0pt}
+
+% ============= Autor und Titel =============
+
+\title{Masterarbeit}
+\author{Stefanie Breuer}
+
+
+
+% ============= Start Document =============
+\begin{document}
+
+% ============= Deckblatt =============
+% ohne Kopfzeile und ohne Seitennummerierung
+\pagestyle{empty}
+\include{ma_deckblatt}
+
+\pagestyle{fancy}
+\pagenumbering{Roman}
+\lhead{}
+\renewcommand{\headrulewidth}{0pt}
+
+% ============= Abstract =============
+
+\newpage
+%\pagestyle{empty}
+\include{ma_abstract}
+
+% ============= Inhaltsverzeichnis =============
+
+\newpage
+%\pagestyle{empty}
+\tableofcontents
+
+% ============= Abkürzungsverzeichnis =============
+
+\newpage
+%\setcounter{page}{1}
+\include{ma_abkuerzung}
+
+% ============= Tabellenverzeichnis =============
+
+\newpage
+\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+%\setcounter{page}{2}
+\listoftables
+
+% ============= Abbildungsverzeichnis =============
+
+\newpage
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+%\setcounter{page}{3}
+\listoffigures
+
+% ============= Text =============
+
+\newpage
+% mit Kopf- und Fußzeilen gemäß Paket fancyhdr
+\pagestyle{fancy}
+\pagenumbering{arabic}
+% aktuelles Kapitel in Kopfzeile
+\lhead{\slshape \MakeUppercase{\leftmark}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newpage
+\include{ma_einleitung}
+
+\newpage
+\include{ma_grundlagen}
+
+\newpage
+\include{ma_methodik}
+
+\newpage
+\include{ma_analyse}
+
+\newpage
+\include{ma_implementierung}
+
+\newpage
+\include{ma_ergebnisse}
+
+\newpage
+\include{ma_abschluss}
+
+% ============= Literaturverzeichnis =============
+
+%\pagestyle{fancy}
+
+\newpage
+\pagenumbering{Roman}
+\lhead{}
+\renewcommand{\headrulewidth}{0pt}
+
+%\pagestyle{empty}
+\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+\setcounter{page}{7}
+\printbibliography
+
+% ============= Anhang =============
+
+%\appendix
+\newpage
+%\pagestyle{fancy}
+\pagenumbering{Roman}
+%\lhead{}
+%\renewcommand{\headrulewidth}{0pt}
+\addcontentsline{toc}{chapter}{Anhang}
+\setcounter{page}{11}
+\include{ma_anhang}
+
+% ============= Eidesstattliche Versicherung =============
+
+\newpage
+\addcontentsline{toc}{chapter}{Eidesstattliche Versicherung}
+\setcounter{page}{17}
+\include{ma_ev}
+
+% ============= End Document =============
+\end{document}

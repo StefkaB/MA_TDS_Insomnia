@@ -1,0 +1,96 @@
+\chapter{Methodik}
+
+\section{Time Delay Stability}\label{TDS}
+
+Das Verfahren der \acs{TDS} stellt eine bivariate, lineare Methode zum Vergleich von Signalen und zur Bestimmung von Korrelationen zweier Biosignale innerhalb eines Netzwerks dar. Die mittels \acs{PSG} aufgezeichneten Signale stellen hierbei die einzelnen Knoten des Netzwerks dar und repräsentieren jeweils eigenständige physiologische Systeme, die innerhalb des Netzwerks interagieren. Auf diese Weise können Aussagen über die Netztopologie sowie die Vernetzungsstärke jeweils zweier Systeme getroffen werden. Diese Merkmale werden in Abhängigkeit der jeweiligen Schlafphase untersucht. Als Schlafphasen gelten der Wachzustand, \acs{REM}-Schlaf und Tiefschlaf (N3 und N4 zusammengefasst) gemäß \acs{AASM} sowie der Leichtschlaf in Form der Schlafphase N2. Die Schlafphase N1 wird hierbei außer Acht gelassen, da diese als Übergang zwischen Wachzustand und Leichtschlaf (N2) gilt. \parencite{bashan_network_2012, iber_aasm_2007}\\
+
+Die Bestimmung einer Korrelation zwischen zwei Systemen erfolgt auf Basis der Kreuzkorrelation, jedoch werden zur Berechnung der Korrelationsstärke nicht die Kreuzkorrelationskoeffizienten verwendet, sondern die Zeit, über welche die Werte der maximalen Koeffizienten konstant sind. Im Folgenden wird beschrieben, in welcher Weise die zu untersuchenden Signale vorverarbeitet werden müssen und wie die \acs{TDS} anschließend angewendet wird.
+
+\subsection{Datenvorverarbeitung}
+
+In dieser Arbeit werden in Anlehnung an Krefting et al. das \acs{EKG}, die nasale Atmung, Atemanstrengung in Brust und Bauch, Kinn- und Bein-\acs{EMG}, beide \acs{EOG}s sowie die sechs Standard-\acs{EEG}s gemäß \acs{AASM} verwendet. Da die Biosignale zum einen sehr unterschiedliche Merkmale aufweisen (vgl. Abb. \ref{fig:beispiel-psg}), zum anderen mit uneinheitlichen Abtastraten aufgezeichnet werden können und darüber hinaus die Kreuzkorrelation maßgeblich von den Signalwerten (Amplituden) abhängt, muss zunächst eine Vergleichbarkeit der Daten herbeigeführt werden. Zu diesem Zweck werden Zeitreihen extrahiert, welche im Ergebnis homogene Merkmale aufweisen.\\
+
+\textbf{\acs{EEG}}
+
+Auf jedes zu untersuchende \acs{EEG}-Signal wird zunächst eine Spektralanalyse mit einer Fensterung von 2 s und einer Überlappung von 1 s ausgeführt, um das Signal vom Zeit- in den Frequenzbereich zu überführen. Anschließend werden die charakteristischen Frequenzbänder (vgl. Punkt \ref{psg}) extrahiert. Um die einzelnen Frequenzbänder möglichst eindeutig voneinander trennen zu können, werden gemäß Bashan et al. die Übergänge auf 0.5 Hz genau definiert (Tab. \ref{tab:frequenzen}). Es resultieren demnach für jedes \acs{EEG} insgesamt fünf Zeitreihen mit einer Abtastfrequenz von 1 Hz. \parencite{bashan_network_2012}
+
+\begin{table}[H]
+\begin{small}
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Frequenzband} & \textbf{Frequenz in Hz} \\
+\hline
+Delta-Wellen & 0.5 Hz - 3.5 Hz\\
+\hline
+Theta-Wellen & 4 Hz - 7.5 Hz\\
+\hline
+Alpha-Wellen & 8 Hz - 11.5 Hz\\
+\hline
+Sigma-Wellen & 12 Hz - 15.5 Hz\\
+\hline
+Beta-Wellen & 16 Hz - 19,5 Hz\\
+\hline
+\end{tabular}
+\caption[Frequenzbänder des \acs{EEG}]{Frequenzbänder des \acs{EEG} gemäß \parencite{bashan_network_2012}}
+\label{tab:frequenzen}
+\end{small}
+\end{table}
+
+\textbf{\acs{EOG} und \acs{EMG}}
+
+Aus \acs{EOG}- und \acs{EMG}-Signalen wird innerhalb von 2 s langen Fenstern mit einer Überlappung von 1 s die Varianz ermittelt und als Zeitreihe gespeichert.\parencite{bashan_network_2012}\\
+
+\textbf{\acs{EKG} und Atmung}
+
+Zur Extraktion homogener Zeitreihen aus \acs{EKG} und Atmung werden Herz- und Atemfrequenz berechnet und auf 1 Hz neu gesampelt. Zu den Atemsignalen zählen nasale Atmung sowie die Atemanstrengung in Brust und Bauch. \parencite{bashan_network_2012}\\
+
+Sämtliche extrahierte Zeitreihen weisen demnach eine identische Auflösung von 1 Hz mit gleicher Länge $N$ auf. Bei der Untersuchung der Korrelation zweier Zeitreihen $x$ und $y$ werden diese anschließend in $N_L$ sich überlappende Segmente $v$ eingeteilt. Jedes Segment $v$ weist eine Länge von 60 s bei einer Überlappung von 30 s auf (Formel \ref{eq:zeitreihen}). Sodann erfolgt eine Normalisierung der Zeitreihen, so dass der Mittelwert 0 und die Standardabweichung 1 betragen. Auf diese Weise sind sämtliche Merkmale der ursprünglichen Signale homogenisiert und zwecks Ermittlung von Korrelationen vorverarbeitet.\parencite{bashan_network_2012}
+
+\begin{equation}
+L = 60 s \nonumber
+\end{equation}
+\begin{equation}
+overlap = \frac{L}{2} \nonumber
+\end{equation}
+\begin{equation}
+N_L = (2\frac{N}{L})-1
+	\label{eq:zeitreihen}
+\end{equation}
+
+\subsection{Ermittlung von Korrelationen}
+
+Über zwei Zeitreihen $x$ und $y$ wird die Kreuzkorrelation durchgeführt, indem die eine Zeitreihe $x$ segmentweise und innerhalb jedes Segments $v$ sekundenweise über die zweite Zeitreihe $y$ geschoben wird. Für jeden Zeitpunkt der Verschiebung $T$ wird eine Zwischensumme der Kreuzkorrelation berechnet, wobei die entsprechenden Werte beider Zeitreihen miteinander multipliziert und anschließend alle Produkte addiert werden. Demnach entsteht für jeden Zeitpunkt der Verschiebung $T$ ein Eintrag in den Ergebnisvektor $xcorr$ (Formel \ref{eq:xcorr}). \parencite{bashan_network_2012}
+
+\begin{equation}
+xcorr(x_v, y_v)(T) = \sum \limits_{i=1}^L x_v(i)*y_v(T+i)
+	\label{eq:xcorr}
+\end{equation}
+
+Der maximale Absolutwert innerhalb des Vektors $xcorr$ stellt in seinem Wert die höchstmögliche Ähnlichkeit der Zeitreihen und in seiner Position die Verschiebung $T$ zum Zeitpunkt dieser maximalen Korrelation dar. Für jedes Segment $v$ wird sodann die Verschiebung $T_0$ (Time Delay) zum maximalen Absolutwert aus dem Kreuzkorrelationsvektor $xcorr$ bestimmt. Als stabile Verbindungen gelten mindestens vier zusammenhängende Segmente $v$ (5 $*$ 30 s), deren Verschiebung $T_0$ annähernd gleich ($\pm$ 1 s) bleibt (Abb. \ref{fig:TimeDelay}). Je länger diese zusammenhängenden Epochen andauern, desto stabiler ist die Verbindung zwischen den beiden untersuchten Systemen. Anschließend wird der Prozentsatz der TDS im Verhältnis zur gesamten Zeitreihe berechnet. Je höher dieser Prozentanteil ausfällt, desto größer ist die Verbindungsstärke. Hierbei gilt ein Schwellenwert (Significance Threshold) von 7 \%, ab dem zwei Systeme tatsächlich als verbunden gelten.\parencite{bashan_network_2012}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale = 0.5]{img/Time_Delay.png}
+	\caption[Zeitverschiebung (Time Delay) und stabile Verbindungen im \acs{TDS} Verfahren]{Zeitverschiebung (Time Delay) und stabile Verbindungen im \acs{TDS} Verfahren innerhalb eines physiologischen Netzwerks (unter Verwendung von \parencite{bashan_network_2012}):\\jeder Punkt steht für den Time Delay $T$ einer 30 s Epoche; fünf zusammenhängende 30 s Epochen mit stabilem Time Delay $T$ entsprechen vier zusammenhängenden Segmenten $v$;\\gelbe Punkte = stabile Verbindung zwischen Kinn-\acs{EMG} und Alpha-Wellen des \acs{EEG};\\rote Punkte = stabile Verbindung zwischen \acs{EKG} und \acs{EOG}; blaue Punkte = keine stabile Verbindung}
+	\label{fig:TimeDelay}
+\end{figure}
+
+Auf diese Weise werden sämtliche Zeitreihen miteinander verglichen. Im Ergebnis der \acs{TDS} Analyse entsteht für jede untersuchte Schlafphase eine quadratische Matrix, welche die prozentualen Vernetzungsstärken zwischen den Systemen farbig abbildet. Beispielhaft sind die Ergebnismatrizen für gesunde Probanden aus der Untersuchung von Krefting et al. \parencite{krefting_altersabhangigkeit_2016} (388 \acs{PSG}s aus der SIESTA-Studie) für jede untersuchte Schlafphase in der Abb. \ref{fig:TDS_Matrizen} dargestellt. Deutlich erkennbar ist hierbei die Ähnlichkeit zwischen Wachzustand und Leichtschlaf sowie zwischen Tief- und \acs{REM}-Schlaf. In den Zeilen und Spalten der Matrizen sind sämtliche untersuchten Systeme in gleicher Reihenfolge abgetragen (Herz, nasale Atmung, Atemanstrengung in Brust und Bauch, Kinn- und Beinbewegung, Augen sowie die jeweils fünf Frequenzbänder der sechs \acs{EEG}s). Dementsprechend stellt das obere rechte Dreieck die Spiegelung des unteren linken Dreiecks dar. Die Diagonale bildet die Autokorrelation der Systeme ab.\\
+
+Bei dem Verfahren der TDS stellt demnach ein Werkzeug zur Untersuchung der physiologischen Zusammenhänge im Schlaf dar. Hierbi ist jedoch nicht der Wert des Kreuzkorrelationskoeffizienten ausschlaggebend, sondern die Dauer der Korrelation. Auf diese Weise können nicht nur zeitgleiche Ähnlichkeiten zweier Signale, sondern auch zeitversetzte erkannt werden. \parencite{bashan_network_2012}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/TDS_W_LS_DS_REM.png}
+	\caption[Ergebnismatrizen der \acs{TDS}]{Gemittelte Ergebnismatrizen der \acs{TDS} für den Wachzustand, Leichtschlaf (oben), Tiefschlaf und \acs{REM}-Schlaf (unten) über die Kontrollgruppe der SIESTA-Studie (391 \acs{PSG}s):\\Vernetzungsstärken sämtlicher Signalkopplungen in Prozent entsprechend der Colorbar; die abfallende Diagonale stellt die Autokorrelation der Systeme dar;\\HR = Herz, BRair = nasaler Atemfluss, BRc = Atemanstrengung in der Brust, BRa = Atemanstrengung im Bauch, Chin = Kinnbewegung, Leg = Beinbewegung, Eye1 und Eye2 = Augen, $\delta$, $\theta$, $\alpha$, $\sigma$, $\beta$ = Frequenzbänder der frontopolaren (Fp1, Fp2), zentralen (C3, C4) und okzipitalen (O1, O2) Elektroden}
+	\label{fig:TDS_Matrizen}
+\end{figure}
+
+\section{Statistische Verfahren}
+
+\section{Matlab}
+
+\section{R}
+
+\section{Vorgehen}
