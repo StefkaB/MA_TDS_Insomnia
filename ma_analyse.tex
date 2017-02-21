@@ -2,14 +2,87 @@
 
 \section{Datenanalyse}
 
-Und die daraus resultierenden verwendeten Daten
+Dieser Arbeit liegt ein Untersuchungsdatensatz von insgesamt 64 Patienten der Charit\'{e} Berlin mit der Diagnose Insomnie zugrunde. Welche Art der Insomnie bei den Patienten diagnostiziert worden ist, ist jedoch nicht bekannt. Der Altersdurchschnitt liegt bei 51 Jahren. Etwa zwei Drittel der Patienten (41) sind weiblich mit einem Altersdurchschnitt von 52,3 Jahren (minimales Alter: 23 Jahre, maximales Alter: 65 Jahre). Der Altersdurchschnitt der 23 männlichen Patienten liegt bei 48,7 Jahren (minimales Alter: 26 Jahre, maximales Alter: 61 Jahre). Zu jedem Patienten liegt eine \acs{PSG} als \acs{EDF}-Datei vor. Darüber hinaus existiert zu jeder \acs{PSG} ein Hypnogramm im TXT-Format. Vorerkrankungen und Begleitmedikationen sind für jeden Patienten in einer Excel-Datei dokumentiert.\\
+% Krankheitsgruppen und Prozent ohne Begleiterkrankung
 
-Therapiemöglichkeiten ggf. relevant für Vorauswahl der Daten (Wechselwirkungen der Medikamente), siehe S3 Leitlinie
+Besonders häufige Vorerkrankungen sind Blinddarm- bzw. Mandelentzündungen, welche bei 17 bzw. 20 Patienten eine Entfernung des Organs zur Folge hatten. Ebenso auffällig sind diagnostizierte Kurz- bzw. Weitsichtigkeit oder Grüner Star bei insgesamt 19 Patienten. Bei acht weiblichen Patienten kommen Hormone zur Milderung von Wechseljahressymptomen zum Einsatz, teilweise in Verbindung mit Schlafmitteln oder Antidepressiva. Bei zwölf weiblichen Patienten liegen darüber hinaus gynäkologische Vorerkrankungen, wie Myome\footnote{Myom: gutartiger Tumor in der Gebärmutter}, Eierstockzysten oder eine Entfernung der Eierstöcke, vor. Fünf Patienten aus dem Untersuchungsdatensatz leiden an Atemwegserkrankungen, wie beispielsweise Asthma, und nehmen atemwegserweiternde Medikamente ein. Bei etwa einem Viertel (15) der Patienten wurden Bluthochdruck, Herzrhythmusstörungen oder verengte Blutgefäße diagnostiziert, so dass zwölf von ihnen blutgefäßerweiternde Medikamente einnehmen. Bei insgesamt acht Patienten sind Schlafmittel als Begleitmedikation dokumentiert, teilweise in Abhängigkeit von anderen Erkrankungen als die Insomnie, wie beispielsweise Wechseljahresbeschwerden.\\
 
-Verweis auf Anhang über Therapien (Wirkung der Medikamente) oder darauf noch in "Insomnie" verweisen, da es zu Arten der Insomnie zählt.
+Begleiterkrankungen und -medikationen können die Ergebnisse der \acs{TDS} Analyse jedoch beeinflussen. Beispielsweise kann eine Herzrhythmusstörung zu einer abweichenden Darstellung der Kopplung zwischen dem Herzen und anderen Systemen führen. Asthma oder Schlafapnoen\footnote{Schlafapnoe: Atemstillstände über mindestens zehn Sekunden im Schlaf} wirken sich auf die Kopplung zwischen Atmung und anderen Systemen aus. Darüber hinaus können verabreichte Medikamente, wie beispielsweise Schlafmittel, die Symptome der Insomnie verfälschen.\\
 
-da Artefakte kaum Einfluss auf die Ergebnisse der TDS haben, werden die Signale hier nicht bereinigt
+Da solche Begleiterkrankungen in keinem direkten Zusammenhang mit der Insomnie stehen bzw. Begleitmedikationen die Symptome der Insomnie unterdrücken können, sollen diese auch bei den hiesigen Untersuchungen keine Berücksichtigung finden. Um die Ergebnisse der \acs{TDS} Analyse möglichst wenig zu beeinflussen, werden daher folgende Ausschlusskriterien formuliert:\\
+
+\begin{itemize}
+\item Herzerkrankungen, insbesondere Herzrhythmusstörungen, oder Verengung der Blutgefäße, beispielsweise in Verbindung mit Bluthochdruck
+\item Asthma oder Atemwegserkrankungen
+\item Einnahme von schlaffördernden Medikamenten.\\
+\end{itemize}
+
+Nach Ausschluss der entsprechenden \acs{PSG}s aus dem Untersuchungsdatensatz verbleiben insgesamt 40 Patienten, hiervon 25 weiblich und 15 männlich, bei einem durchschnittlichen Alter von 49,2 Jahren. Das Alter der Frauen (Minimum: 23 Jahre, Maximum: 65 Jahre) liegt im Durchschnitt bei 50,2 Jahren. Der Altersdurchschnitt der Männer (Minimum: 26 Jahre, Maximum: 61 Jahre) liegt bei 47,5 Jahren. Geschlechterverteilung und Durchschnittsalter ähneln denen des ursprünglichen Datensatzes vor Anwendung der Ausschlusskriterien.\\
+
+Das Verfahren der \acs{TDS} ermöglicht die Darstellung der Zusammenhänge des Netzwerks in den vier Schlafphasen Wachzustand, Leicht- und Tiefschlaf sowie \acs{REM}-Schlaf. Um eine Vergleichbarkeit mit den Datensätzen gesunder Probanden oder anderer schlafbezogener Erkrankungen sicherzustellen, ist es notwendig, dass die hiesigen Insomnie-Patienten die einzelnen Schlafphasen in hinreichender Dauer durchlaufen. Eine hinreichende Dauer ist frühestens dann erreicht, wenn die Möglichkeit besteht, dass mindestens eine stabile Verbindung erkannt werden kann (vier zusammenhängende Segmente mit 5 $*$ 30 s). Darüber hinaus gilt die \acs{TDS} zwar als robust gegenüber Artefakten \parencite{breuer_netzwerktopologie_2016}, jedoch sollten keine dauerhaften Artefakte, wie beispielsweise gelöste Elektroden über einen langen Zeitraum, die Aufzeichnungen stören. Daher werden folgende weitere Ausschlusskriterien formuliert:\\
+
+\begin{itemize}
+\item ene Schlafphase wird nicht durchlaufen
+\item eine Schlafphase wird weniger als fünf Minuten durchlaufen
+\item ein Artefakt stört eine Signalaufzeichnung maßgeblich.\\
+\end{itemize}
+
+%eventuell Beispielbild mit starker Störung
+
+%Therapiemöglichkeiten ggf. relevant für Vorauswahl der Daten (Wechselwirkungen der Medikamente), siehe S3 Leitlinie
+%Verweis auf Anhang über Therapien (Wirkung der Medikamente) oder darauf noch in "Insomnie" verweisen, da es zu Arten der Insomnie zählt.
+
+%da Artefakte kaum Einfluss auf die Ergebnisse der TDS haben, werden die Signale hier nicht bereinigt
 
 \section{Anforderungsanalyse}
+
+Für die Analyse der physiologischen Netzwerke werden priorisierbare Anforderungen formuliert. Im Rahmen dieser Arbeit stellt sich das Problem, dass kein klassisches Software-Projekt umgesetzt werden soll, welches im Ergebnis ein benutzbares System darstellt. Stattdessen sollen durch Anwendung bestimmter Verfahren spezifische Ergebnisse berechnet werden. Aus diesem Grund stellt die Formulierung funktionaler und nicht-funktionaler Anforderungen oder die Erstellung von Use Cases nach klassischen Standards keine optimale Herangehensweise dar. Stattdessen werden allgemeine und gleichzeitig priorisierbare Anforderungen formuliert.\\
+
+Hierbei erfolgt die Einteilung in Muss-, Soll-, Kann- sowie Abgrenzungskriterien. Muss-Kriterien sind zwangsläufig zu erfüllen. Sie stellen die Anforderungen mit der höchsten Priorität dar. In dieser Arbeit sind dies solche Anforderungen, die maßgeblich die wesentlichen Aufgaben der gesamten Analyse beschreiben. Soll-Kriterien sind im bestmöglichen Fall ebenfalls vollständig umzusetzen, sind in ihrer Priorität jedoch den Muss-Kriterien nachgestellt. Zusammen mit den Muss-Kriterien stellen sie die Anforderungen dar, welche maßgeblich zur erfolgreichen Umsetzung des Projekts beitragen und an deren Erfüllung der Erfolg der Umsetzung gemessen wird. Kann-Kriterien stellen optionale Anforderungen dar. Deren Umsetzung wertet die Qualität des Projekts auf, ein Weglassen beeinflusst jedoch nicht die Hauptfunktionalitäten. Im Rahmen dieser Arbeit würden durch die Nicht-Erfüllung von Kann-Kriterien beispielsweise die Ergebnisse der Analyseverfahren nicht beeinflusst werden. Abgrenzungskriterien werden darüber hinaus formuliert, um zu definieren, welche Funktionalitäten oder Eigenschaften nicht erfüllt werden sollen. Für die hiesige Analyse wäre beispielsweise die Abgrenzung zu klassischen Software-Projekten zu formulieren.\\
+
+Als Ergebnis der Anforderungsanalyse werden folgende Kriterien definiert:\\
+
+%\begin{tabular}{cl} 
+%\toprule
+%Muss-Kriterien\\  
+%\midrule
+%Nr. & Anforderung\\ 
+%\midrule 
+%A1 &  Grundlage der Untersuchungen sollen \acs{PSG}s und Hypnogramme von Insomnie-Patienten sein.\\
+%A2 & Auf Grundlage der \acs{PSG}s und Hypnogramme sollen physiologische\newline Netzwerke mit Hilfe des \acs{TDS} Verfahrens untersucht werden.\\
+%A3 & Die physiologischen Netzwerke sollen auf Altersabhängigkeiten untersucht werden.\\ 
+%A4 & Die physiologischen Netzwerke sollen auf Geschlechterabhängigkeiten untersucht werden.\\
+%A5 & Die Analyseergebnisse sollen mit den Ergebnissen von Krefting et al. \parencite{krefting_age_2017} vergleichbar sein.\\
+%\bottomrule
+%\end{tabular}
+
+\paragraph{Muss-Kriterien}
+\begin{itemize} 
+\item Grundlage der Untersuchungen sollen \acs{PSG}s und Hypnogramme von Insomnie-Patienten sein.
+\item Auf Grundlage der \acs{PSG}s und Hypnogramme sollen physiologische Netzwerke mit Hilfe des \acs{TDS} Verfahrens untersucht werden. 
+\item Die physiologischen Netzwerke sollen auf Altersabhängigkeiten untersucht werden. 
+\item Die physiologischen Netzwerke sollen auf Geschlechterabhängigkeiten untersucht werden.
+\item Die Analyseergebnisse sollen mit den Ergebnissen von Krefting et al. \parencite{krefting_age_2017} vergleichbar sein. 
+\end{itemize}
+
+\paragraph{Soll-Kriterien}
+\begin{itemize}
+\item Für die Anwendung des \acs{TDS} Verfahrens soll Matlab verwendet werden.
+\item Für die Anwendung statistischer Verfahren soll R verwendet werden. 
+\item Die Ergebnisse der Analysen soll grafisch darstellbar sein.
+\item Auf Grundlage einer Datenanalyse sollen ungeeignete Daten von der Untersuchung ausgeschlossen werden.
+\end{itemize}
+
+\paragraph{Kann-Kriterien}
+\begin{itemize}
+\item Die Implementierung soll für ähnliche Fragestellungen auf andere Datensätze (beispielsweise Apnoe-Patienten) anwendbar und wiederverwendbar sein.
+\item Es soll eine Datenstruktur für die Speicherung prägnanter Patienteneigenschaften in Matlab erstellt werden.
+\item Für die \acs{TDS} Analyse soll ein Leitfaden für die Datenvorauswahl und die Anwendung des Verfahrens erstellt werden.
+\end{itemize}
+
+\paragraph{Abgrenzungskriterien}
+\begin{itemize}
+\item Die Implementierung soll nicht der Form eines API-Standards entsprechen, sondern die Anwendung der Analyseverfahren auf den Untersuchungsdatensatz ermöglichen. 
+\end{itemize}
 
 \section{Stakeholderanalyse}

@@ -8,10 +8,10 @@ Die Bestimmung einer Korrelation zwischen zwei Systemen erfolgt auf Basis der Kr
 
 \subsection{Datenvorverarbeitung}
 
-In dieser Arbeit werden in Anlehnung an Krefting et al. das \acs{EKG}, die nasale Atmung, Atemanstrengung in Brust und Bauch, Kinn- und Bein-\acs{EMG}, beide \acs{EOG}s sowie die sechs Standard-\acs{EEG}s gemäß \acs{AASM} verwendet. Da die Biosignale zum einen sehr unterschiedliche Merkmale aufweisen (vgl. Abb. \ref{fig:beispiel-psg}), zum anderen mit uneinheitlichen Abtastraten aufgezeichnet werden können und darüber hinaus die Kreuzkorrelation maßgeblich von den Signalwerten (Amplituden) abhängt, muss zunächst eine Vergleichbarkeit der Daten herbeigeführt werden. Zu diesem Zweck werden Zeitreihen extrahiert, welche im Ergebnis homogene Merkmale aufweisen.\\
+In dieser Arbeit werden in Anlehnung an Krefting et al. das \acs{EKG}, die nasale Atmung, Atemanstrengung in Brust und Bauch, Kinn- und Bein-\acs{EMG}, beide \acs{EOG}s sowie die sechs Standard-\acs{EEG}s gemäß \acs{AASM} verwendet. Da die Biosignale zum einen sehr unterschiedliche Merkmale aufweisen (vgl. Abb. \ref{fig:beispiel-psg}), zum anderen mit uneinheitlichen Abtastraten aufgezeichnet werden können und darüber hinaus die Kreuzkorrelation maßgeblich von den Signalwerten (Amplituden) abhängt, muss zunächst eine Vergleichbarkeit der Daten herbeigeführt werden. Zu diesem Zweck werden Zeitreihen extrahiert, welche im Ergebnis homogene Merkmale aufweisen.
 
-\textbf{\acs{EEG}}
-
+%\textbf{\acs{EEG}}
+\paragraph{\acs{EEG}}
 Auf jedes zu untersuchende \acs{EEG}-Signal wird zunächst eine Spektralanalyse mit einer Fensterung von 2 s und einer Überlappung von 1 s ausgeführt, um das Signal vom Zeit- in den Frequenzbereich zu überführen. Anschließend werden die charakteristischen Frequenzbänder (vgl. Punkt \ref{psg}) extrahiert. Um die einzelnen Frequenzbänder möglichst eindeutig voneinander trennen zu können, werden gemäß Bashan et al. die Übergänge auf 0.5 Hz genau definiert (Tab. \ref{tab:frequenzen}). Es resultieren demnach für jedes \acs{EEG} insgesamt fünf Zeitreihen mit einer Abtastfrequenz von 1 Hz. \parencite{bashan_network_2012}
 
 \begin{table}[H]
@@ -37,12 +37,12 @@ Beta-Wellen & 16 Hz - 19,5 Hz\\
 \end{small}
 \end{table}
 
-\textbf{\acs{EOG} und \acs{EMG}}
-
+%\textbf{\acs{EOG} und \acs{EMG}}
+\paragraph{\acs{EOG} und \acs{EMG}}
 Aus \acs{EOG}- und \acs{EMG}-Signalen wird innerhalb von 2 s langen Fenstern mit einer Überlappung von 1 s die Varianz ermittelt und als Zeitreihe gespeichert.\parencite{bashan_network_2012}\\
 
-\textbf{\acs{EKG} und Atmung}
-
+%\textbf{\acs{EKG} und Atmung}
+\paragraph{\acs{EKG} und Atmung}
 Zu den Atemsignalen zählen nasale Atmung sowie die Atemanstrengung in Brust und Bauch. Zur Extraktion homogener Zeitreihen aus \acs{EKG} und Atmung werden Herz- und Atemfrequenz berechnet und auf 1 Hz neu gesampelt. \parencite{bashan_network_2012}\\
 
 Sämtliche extrahierte Zeitreihen weisen demnach eine identische Auflösung von 1 Hz mit gleicher Länge $N$ auf. Bei der Untersuchung der Korrelation zweier Zeitreihen $x$ und $y$ werden diese anschließend in $N_L$ sich überlappende Segmente $v$ eingeteilt. Jedes Segment $v$ weist eine Länge von 60 s bei einer Überlappung von 30 s auf (Formel \ref{eq:zeitreihen}). Sodann erfolgt eine Normalisierung der Zeitreihen, so dass der Mittelwert 0 und die Standardabweichung 1 betragen. Auf diese Weise sind sämtliche Merkmale der ursprünglichen Signale homogenisiert und zwecks Ermittlung von Korrelationen vorverarbeitet.\parencite{bashan_network_2012}

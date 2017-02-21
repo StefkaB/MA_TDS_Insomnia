@@ -29,6 +29,8 @@
 \usepackage{fancyhdr}
 % Tabellen
 \usepackage{array}
+% für Begrenzungen in Tabellen
+\usepackage{tabularx}
 % zusätzliche mathematische Schriftzeichen
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -36,6 +38,8 @@
 \usepackage[font=footnotesize,labelfont=bf, justification=centering, format = plain]{caption}
 % für mehrseitige Tabellen
 \usepackage{longtable}
+% Booktabs für Tabellen ohne vertikale Linien
+\usepackage{booktabs}
 % Abkürzungsverzeichhnig mit im Dokument verwendeten Abkürzungen und Seitenzahl
 \usepackage[printonlyused, withpage]{acronym}
 % griechische Buchstaben nicht kursiv
@@ -50,9 +54,9 @@
 \counterwithout{footnote}{chapter}
 %\counterwithout{equation}{chapter}
 % Erhöhung der Vertiefungsebene auf 5
-\setcounter{secnumdepth}{5}
+\setcounter{secnumdepth}{3}
 % Darstellung aller 5 Vertiefungsebenen im Inhaltsverzeichnis
-\setcounter{tocdepth}{5}
+\setcounter{tocdepth}{3}
 % Einrücktiefe der ersten Zeile eines Absatzes nach einem Absatz festlegen
 \setlength{\parindent}{0pt}
 % besondere Trennungen
@@ -68,7 +72,7 @@
 
 % ============= Literaturverzeichnis mit BibLaTeX =============
 
-\usepackage[backend=biber, style=authoryear, natbib=true, hyperref=true, isbn = false, url = false, doi = false, maxparens = 5, maxbibnames = 50, maxcitenames = 1, useprefix = true, block = space]{biblatex}
+\usepackage[backend=biber, style=alphabetic, natbib=true, hyperref=true, isbn = false, url = false, doi = false, maxparens = 5, maxbibnames = 50, maxcitenames = 1, useprefix = true, block = space]{biblatex}
 \addbibresource{ma_literatur.bib} %% Einbinden der bib-Datei
 
 % ============= Kopf- und Fußzeile =============
