@@ -40,6 +40,8 @@
 \usepackage{longtable}
 % Booktabs für Tabellen ohne vertikale Linien
 \usepackage{booktabs}
+% toprule und bottomrule verstärken
+\setlength\heavyrulewidth{0.26ex}
 % Abkürzungsverzeichhnig mit im Dokument verwendeten Abkürzungen und Seitenzahl
 \usepackage[printonlyused, withpage]{acronym}
 % griechische Buchstaben nicht kursiv
@@ -61,12 +63,17 @@
 \setlength{\parindent}{0pt}
 % besondere Trennungen
 \hyphenation{Frig-yes}
-\usepackage{hyperref}
+% URLs (in schwarz)
+\usepackage[linkcolor=black]{hyperref}
+% Zeilenumbruch nach jedem Buchstaben erlauben
+\renewcommand{\UrlBreaks}{\do\/\do\.\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z}
 % Zeilenumbruch in URLs nach einem Bindestrich erlauben
-% \usepackage[hyphens]{url}
-\usepackage{url}
+%\usepackage[hyphens]{url}
+%\usepackage{url}
 % URL wird wie normaler Text dargestellt
-\renewcommand\UrlFont{\textnormal}
+%\renewcommand\UrlFont{\textnormal}
+% URL Font wie Text Font setzen
+\urlstyle{same}
 % Seitenränder (geometry immer zuletzt)
 \usepackage[left= 3 cm,right = 2.5 cm, bottom = 2.5 cm]{geometry}
 

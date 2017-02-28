@@ -2,9 +2,13 @@
 
 \section{Time Delay Stability}\label{TDS}
 
-Das Verfahren der \acs{TDS} stellt eine bivariate, lineare Methode zum Vergleich von Signalen und zur Bestimmung von Korrelationen zweier Biosignale innerhalb eines Netzwerks dar. Die mittels \acs{PSG} aufgezeichneten Signale stellen hierbei die einzelnen Knoten des Netzwerks dar und repräsentieren jeweils eigenständige physiologische Systeme, die innerhalb des Netzwerks interagieren. Auf diese Weise können Aussagen über die Netztopologie sowie die Vernetzungsstärke jeweils zweier Systeme getroffen werden. Diese Merkmale werden in Abhängigkeit der jeweiligen Schlafphase untersucht. Als Schlafphasen gelten der Wachzustand, \acs{REM}-Schlaf und Tiefschlaf (N3 und N4 zusammengefasst) gemäß \acs{AASM} sowie der Leichtschlaf in Form der Schlafphase N2. Die Schlafphase N1 wird hierbei außer Acht gelassen, da diese als Übergang zwischen Wachzustand und Leichtschlaf (N2) gilt. \parencite{bashan_network_2012, iber_aasm_2007}\\
+Das Verfahren der \acs{TDS} stellt eine bivariate, lineare Methode zum Vergleich von Signalen und zur Bestimmung von Korrelationen zweier Biosignale innerhalb eines Netzwerks dar. Die mittels \acs{PSG} aufgezeichneten Signale stellen hierbei die einzelnen Knoten des Netzwerks dar und repräsentieren jeweils eigenständige physiologische Systeme, die innerhalb des Netzwerks interagieren. Auf diese Weise können Aussagen über die Netztopologie sowie die Vernetzungsstärke jeweils zweier Systeme getroffen werden. Diese Merkmale werden in Abhängigkeit der jeweiligen Schlafstadien untersucht. Als Schlafstadien gelten der Wachzustand, \acs{REM}-Schlaf und Tiefschlaf (N3 und N4 zusammengefasst) gemäß \acs{AASM} sowie der Leichtschlaf in Form des Schlafstadiums N2. Das Schlafstadium N1 wird hierbei außer Acht gelassen, da diese als Übergang zwischen Wachzustand und Leichtschlaf (N2) gilt. \parencite{bashan_network_2012, iber_aasm_2007}\\
 
 Die Bestimmung einer Korrelation zwischen zwei Systemen erfolgt auf Basis der Kreuzkorrelation, jedoch werden zur Berechnung der Korrelationsstärke nicht die Kreuzkorrelationskoeffizienten verwendet, sondern die Zeit, über welche die Werte der maximalen Koeffizienten konstant sind. Im Folgenden wird beschrieben, in welcher Weise die zu untersuchenden Signale vorverarbeitet werden müssen und wie die \acs{TDS} anschließend angewendet wird.
+
+TODO:
+wie ist TDS implementiert
+Bartsch et al. verwendet anderes edge handling (anschauen)! aber hier TDS Methode von Dagmar verwenden, damit die Ergebnisse vergleichbar sind
 
 \subsection{Datenvorverarbeitung}
 
@@ -12,41 +16,38 @@ In dieser Arbeit werden in Anlehnung an Krefting et al. das \acs{EKG}, die nasal
 
 %\textbf{\acs{EEG}}
 \paragraph{\acs{EEG}}
-Auf jedes zu untersuchende \acs{EEG}-Signal wird zunächst eine Spektralanalyse mit einer Fensterung von 2 s und einer Überlappung von 1 s ausgeführt, um das Signal vom Zeit- in den Frequenzbereich zu überführen. Anschließend werden die charakteristischen Frequenzbänder (vgl. Punkt \ref{psg}) extrahiert. Um die einzelnen Frequenzbänder möglichst eindeutig voneinander trennen zu können, werden gemäß Bashan et al. die Übergänge auf 0.5 Hz genau definiert (Tab. \ref{tab:frequenzen}). Es resultieren demnach für jedes \acs{EEG} insgesamt fünf Zeitreihen mit einer Abtastfrequenz von 1 Hz. \parencite{bashan_network_2012}
+Auf jedes zu untersuchende \acs{EEG}-Signal wird zunächst eine Spektralanalyse mit einer Fensterung von 2 s und einer Überlappung von 1 s ausgeführt, um das Signal vom Zeit- in den Frequenzbereich zu überführen. Anschließend werden die charakteristischen Frequenzbänder (vgl. Punkt \ref{psg}) extrahiert. Um die einzelnen Frequenzbänder möglichst eindeutig voneinander trennen zu können, werden gemäß Bashan et al. die Übergänge auf 0.5 Hz genau definiert (Tab. \ref{tab:frequenzen}). Es resultieren demnach für jedes \acs{EEG} insgesamt fünf Zeitreihen mit einer Abtastfrequenz von 1 Hz. \parencite{bashan_network_2012}\\
 
-\begin{table}[H]
-\begin{small}
+
+\begin{table}[H] 
 \centering
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Frequenzband} & \textbf{Frequenz in Hz} \\
-\hline
+\begin{small}
+\begin{tabular}{lc}
+\toprule
+\multicolumn{1}{l}{\textbf{Frequenzband}} & \multicolumn{1}{c}{\textbf{Frequenz in Hz}}\\  
+\midrule
 Delta-Wellen & 0.5 Hz - 3.5 Hz\\
-\hline
 Theta-Wellen & 4 Hz - 7.5 Hz\\
-\hline
 Alpha-Wellen & 8 Hz - 11.5 Hz\\
-\hline
 Sigma-Wellen & 12 Hz - 15.5 Hz\\
-\hline
 Beta-Wellen & 16 Hz - 19,5 Hz\\
-\hline
+\bottomrule
 \end{tabular}
 \caption[Frequenzbänder des \acs{EEG}]{Frequenzbänder des \acs{EEG} gemäß \parencite{bashan_network_2012}}
 \label{tab:frequenzen}
 \end{small}
 \end{table}
 
-%\textbf{\acs{EOG} und \acs{EMG}}
+
 \paragraph{\acs{EOG} und \acs{EMG}}
 Aus \acs{EOG}- und \acs{EMG}-Signalen wird innerhalb von 2 s langen Fenstern mit einer Überlappung von 1 s die Varianz ermittelt und als Zeitreihe gespeichert.\parencite{bashan_network_2012}\\
 
-%\textbf{\acs{EKG} und Atmung}
 \paragraph{\acs{EKG} und Atmung}
 Zu den Atemsignalen zählen nasale Atmung sowie die Atemanstrengung in Brust und Bauch. Zur Extraktion homogener Zeitreihen aus \acs{EKG} und Atmung werden Herz- und Atemfrequenz berechnet und auf 1 Hz neu gesampelt. \parencite{bashan_network_2012}\\
 
 Sämtliche extrahierte Zeitreihen weisen demnach eine identische Auflösung von 1 Hz mit gleicher Länge $N$ auf. Bei der Untersuchung der Korrelation zweier Zeitreihen $x$ und $y$ werden diese anschließend in $N_L$ sich überlappende Segmente $v$ eingeteilt. Jedes Segment $v$ weist eine Länge von 60 s bei einer Überlappung von 30 s auf (Formel \ref{eq:zeitreihen}). Sodann erfolgt eine Normalisierung der Zeitreihen, so dass der Mittelwert 0 und die Standardabweichung 1 betragen. Auf diese Weise sind sämtliche Merkmale der ursprünglichen Signale homogenisiert und zwecks Ermittlung von Korrelationen vorverarbeitet.\parencite{bashan_network_2012}
 \newpage
+
 \begin{equation}
 L = 60 s \nonumber
 \end{equation}
@@ -76,7 +77,7 @@ Der maximale Absolutwert innerhalb des Vektors $xcorr$ stellt in seinem Wert die
 	\label{fig:TimeDelay}
 \end{figure}
 
-Auf diese Weise werden sämtliche Zeitreihen des Netzwerks miteinander verglichen. Im Ergebnis der \acs{TDS} Analyse entsteht für jede untersuchte Schlafphase eine quadratische Matrix, welche die prozentualen Vernetzungsstärken zwischen den Systemen farbig abbildet. Beispielhaft sind die Ergebnismatrizen für gesunde Probanden aus der Untersuchung von Krefting et al. \parencite{krefting_altersabhangigkeit_2016} (388 \acs{PSG}s aus der SIESTA-Studie) für jede untersuchte Schlafphase in der Abb. \ref{fig:TDS_Matrizen} dargestellt. Deutlich erkennbar ist hierbei die Ähnlichkeit zwischen Wachzustand und Leichtschlaf sowie zwischen Tief- und \acs{REM}-Schlaf. In den Zeilen und Spalten der Matrizen sind sämtliche untersuchten Systeme in gleicher Reihenfolge abgetragen (Herz, nasale Atmung, Atemanstrengung in Brust und Bauch, Kinn- und Beinbewegung, Augen sowie die jeweils fünf Frequenzbänder der sechs \acs{EEG}s). Dementsprechend stellt das obere rechte Dreieck die Spiegelung des unteren linken Dreiecks dar. Die Diagonale bildet die Autokorrelation der Systeme ab.\\
+Auf diese Weise werden sämtliche Zeitreihen des Netzwerks miteinander verglichen. Im Ergebnis der \acs{TDS} Analyse entsteht für jedes untersuchte Schlafstadium eine quadratische Matrix, welche die prozentualen Vernetzungsstärken zwischen den Systemen farbig abbildet. Beispielhaft sind die Ergebnismatrizen für gesunde Probanden aus der Untersuchung von Krefting et al. \parencite{krefting_altersabhangigkeit_2016} (388 \acs{PSG}s aus der SIESTA-Studie) für jedes untersuchte Schlafstadium in der Abb. \ref{fig:TDS_Matrizen} dargestellt. Deutlich erkennbar ist hierbei die Ähnlichkeit zwischen Wachzustand und Leichtschlaf sowie zwischen Tief- und \acs{REM}-Schlaf. In den Zeilen und Spalten der Matrizen sind sämtliche untersuchten Systeme in gleicher Reihenfolge abgetragen (Herz, nasale Atmung, Atemanstrengung in Brust und Bauch, Kinn- und Beinbewegung, Augen sowie die jeweils fünf Frequenzbänder der sechs \acs{EEG}s). Dementsprechend stellt das obere rechte Dreieck die Spiegelung des unteren linken Dreiecks dar. Die Diagonale bildet die Autokorrelation der Systeme ab.\\
 
 Bei dem Verfahren der TDS stellt demnach ein Werkzeug zur Untersuchung der physiologischen Zusammenhänge im Schlaf dar. Hierbei ist jedoch nicht der Wert des Kreuzkorrelationskoeffizienten ausschlaggebend, sondern die Dauer der Korrelation. Auf diese Weise können nicht nur zeitgleiche, sondern auch zeitversetzte Ähnlichkeiten zweier Signale erkannt werden. \parencite{bashan_network_2012}
 
@@ -87,10 +88,31 @@ Bei dem Verfahren der TDS stellt demnach ein Werkzeug zur Untersuchung der physi
 	\label{fig:TDS_Matrizen}
 \end{figure}
 
+\newpage
+
 \section{Statistische Verfahren}
 
 \section{Matlab}
 
+Matlab ist eine in den 1970er Jahren in Fortran entwickelte und von The Mathworks vertriebene kommerzielle Software. Sie dient der Analyse und Berechnung numerischer Daten und Problemstellungen sowie der Visualisierung der Ergebnisse. Berechnungen basieren in Matlab (von MATrix LABoratory) auf Matrizen. Aus diesem Grund ist die Nutzung von Matlab im mathematischen, technischen und wissenschaftlichen Kontext stark verbreitet. Insbesondere die Signalverarbeitung kann mit Matlab geeignet umgesetzt werden.\footnote{\url{https://de.mathworks.com/products/matlab.html} und \url{https://de.mathworks.com/solutions.html?s_tid=gn_sol} (Stand: 23.02.2017)}\\
+
+Matlab ähnelt in seiner Syntax zwar der Programmiersprache C, stellt jedoch eine proprietäre Programmier- bzw. Skriptsprache dar. Anwendungen können entweder in Skripten geschrieben oder als atomare Funktionen entwickelt werden, was eine Erstellung der in Matlab charakteristischen Toolboxes unterstützt. Matlab ist darüber hinaus eine Sprache mit dynamischer Typisierung. Dies erhöht die Lesbarkeit des Codes und die Produktivität des Entwicklers. Funktionen sind hierdurch einerseits flexibler, da sie oft weniger Code enthalten als in einer stark typisierten Sprache. Andererseits müssen Funktionen nicht überladen werden, um für unterschiedliche Datentypen zu gelten. Variablen müssen darüber hinaus nicht mit expliziten Datentypen initialisiert werden. Als interpretierte Programmiersprache (oder Skriptsprache) bietet Matlab ferner den Vorteil, dass Code schnell getestet und angewendet werden kann - ohne den zeitaufwendigen Zwischenschritt der Kompilierung. Dies ermöglicht das Testen von Skripten oder Skriptausschnitten mit beliebigen Startpunkten der Ausführung sowie das Testen atomarer Funktionen, ohne eine Main-Klasse ausführen zu müssen, wie z. B. in Java. Eine Erstellung eigenständig lauffähiger Programme ist jedoch durch Erweiterung der Grundfunktionen von Matlab ebenfalls möglich. \parencite{stein_programmieren_2012}\\
+
+Nachteil von Matlab ist zum einen die Speicherverwaltung, da der Standarddatentyp für numerische Variablen double mit einem Speicherplatz von 64 bit ist. Eine starke Typisierung könnte hingegen das Speichermanagement optimieren. Zum anderen stellt Matlab keine kompilierte Sprache dar, so dass in der Grundfunktionalität die Erzeugung lauffähiger Anwendungsprogramme nicht möglich ist. Darüber hinaus dient die statische Codeanalyse lediglich der Überprüfung des Datenflusses, es entfällt jedoch die Überprüfung des Programmcodes zur Übersetzungszeit, so dass Fehler erst bei Ausführung der Funktion erkannt werden.\\
+
+In dieser Arbeit soll für die Anwendung der \acs{TDS} Analyse Matlab verwendet werden, da die verwendeten Analyseverfahren mathematisch basiert sind und Matlab einerseits als funktionale Sprache für numerische Berechnungen besonders geeignet ist und andererseits Berechnungen einfacher als in kompilierten Sprachen zu implementieren sind. Da im Rahmen dieser Arbeit kein eigenständiges System entwickelt wird, sondern Analyseverfahren angewendet werden sollen, ist Matlab als interpretierte Sprache mit dynamischer Typisierung optimal geeignet, um schnell Zwischenergebnisse zur erzeugen und diese zu verifizieren, auszuwerten und grafisch darzustellen. Aufgrund der Aufgabenstellung kann auch der Nachteil einer weniger effizienten Speicherverwaltung vernachlässigt werden.   Da Matlab unter anderem für die Signalverarbeitung ausgelegt ist, soll die Anwendung des \acs{TDS} Verfahrens in Matlab umgesetzt werden. Hierfür wird  Matlab in der Version 2015b verwendet.
+
+%benutzt, weil: Flexibilität, Erweiterbarkeit (Toolboxes von Mathworks), und Workspace möglich, numerische Stabilität (kein Datenverlust oder Rundungsfehler), Effizienz und Optimierung der Berechnungen (Beispiel rekursive Fakultät)
+%
+%überschreiben: bei Vererbung, Änderung des Methodenkörpers
+%überladen: Änderung des Methodenheaders (Parameteranzahl oder -datentyp) = Methodensignatur
+
+
 \section{R}
 
+\parencite{adler_r_2012}
+
 \section{Vorgehen}
+
+%da lediglich die Anwendung verschiedener Verfahren programmiert werden soll, jedoch kein Programm zur häufigen Anwendung, ist keine Kompilierung notwendig und Matlab vor allem aufgrund des schnellen Testens geeignet, um die hiesige Problemstellung zu lösen. 
+hauptsächlich werden Skripte (in dieser Arbeit zur einmaligen Ausführung) erstellt
