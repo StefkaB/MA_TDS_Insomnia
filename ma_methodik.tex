@@ -9,6 +9,7 @@ Die Bestimmung einer Korrelation zwischen zwei Systemen erfolgt auf Basis der Kr
 TODO:
 wie ist TDS implementiert
 Bartsch et al. verwendet anderes edge handling (anschauen)! aber hier TDS Methode von Dagmar verwenden, damit die Ergebnisse vergleichbar sind
+darauf verweisen, dass Implementierung des Verfahrens unter Punkt Implementierung beschrieben wird
 
 \subsection{Datenvorverarbeitung}
 
@@ -46,7 +47,6 @@ Aus \acs{EOG}- und \acs{EMG}-Signalen wird innerhalb von 2 s langen Fenstern mit
 Zu den Atemsignalen zählen nasale Atmung sowie die Atemanstrengung in Brust und Bauch. Zur Extraktion homogener Zeitreihen aus \acs{EKG} und Atmung werden Herz- und Atemfrequenz berechnet und auf 1 Hz neu gesampelt. \parencite{bashan_network_2012}\\
 
 Sämtliche extrahierte Zeitreihen weisen demnach eine identische Auflösung von 1 Hz mit gleicher Länge $N$ auf. Bei der Untersuchung der Korrelation zweier Zeitreihen $x$ und $y$ werden diese anschließend in $N_L$ sich überlappende Segmente $v$ eingeteilt. Jedes Segment $v$ weist eine Länge von 60 s bei einer Überlappung von 30 s auf (Formel \ref{eq:zeitreihen}). Sodann erfolgt eine Normalisierung der Zeitreihen, so dass der Mittelwert 0 und die Standardabweichung 1 betragen. Auf diese Weise sind sämtliche Merkmale der ursprünglichen Signale homogenisiert und zwecks Ermittlung von Korrelationen vorverarbeitet.\parencite{bashan_network_2012}
-\newpage
 
 \begin{equation}
 L = 60 s \nonumber

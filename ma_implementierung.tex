@@ -1,2 +1,170 @@
-\chapter{Implementierung}
+\chapter{Implementierung}\label{Implementierung}
+
+\section{Datenvorauswahl}\label{Datenvorauswahl}
+
+Die unter Punkt \ref{datenanalyse} beschriebenen Kriterien zur Auswahl und Klassifizierung der Daten werden mithilfe von Skripten und Funktionen in Matlab umgesetzt. Im Folgenden wird auf die Umsetzung der einzelnen Kriterien eingegangen. Das Kriterium D6 bleibt dabei unberücksichtigt, da es sich lediglich auf das Weglassen einer Artefaktbereinigung bezieht.
+
+\paragraph{Kriterium D1} Für die Erstellung der Hypnogramme (Skript restructure\_hypnogram.m) müssen zunächst die Startzeitpunkte aus der \acs{EDF}- sowie Ereignis-Datei jedes Patienten extrahiert werden. Nach dem Einlesen der EDF-Datei lässt sich der Startzeitpunkt der Aufnahme als String aus dem Header auslesen. Um den Startzeitpunkt der Ereignis-Datei zu ermitteln, wird die Ereignis-Datei eingelesen. Da in dieser Datei verschiedene Informationen gespeichert sind und die Spaltenanzahl daher erst ab der tabellarischen Auflistung der Schlafstadien, Zeitpunkte und Ereignisse gleich bleibt, wird mit einem String-Vergleich die Startzeile dieser Tabelle gesucht. Hierbei können die Ereignis-Dateien abweichende Spaltenzahlen aufweisen, da manche Dateien zusätzlich die Körperlage dokumentiert. Die Körperlage kann darüber hinaus als ein Wort ("`POSITION-LEFT"' oder als mehrere Wörter ("`Körperlage unbekannt"') angegeben sein, so dass ein ausschließlicher Abgleich der Tabellenüberschriften nicht zweckdienlich ist. Aus diesem Grund erfolgt die Ermittlung des Spaltenindexes durch \texttt{ismember}-Vergleich mit einem Doppelpunkt, welcher ausschließlich in den Strings der Zeitpunkte enthalten ist (Listing \ref{lst:D1}). Anschließend kann der Startzeitpunkt extrahiert und mit dem Startzeitpunkt aus dem \acs{EDF}-Header verglichen werden. Zu diesem Zweck wird in der Funktion subtract\_timestrings.m die Differenz zwischen den beiden Zeitpunkten berechnet und als Anzahl von Sekunden zurückgegeben. Die Zeitdifferenz entspricht jedoch keiner ganzzahligen Anzahl an Epochen. Da Hypnogramme die Schlafstadien lediglich epochenweise, also in 30-Sekunden-Schritten, abbilden, würde ein Auffüllen der Hypnogramme um die fehlende Anzahl an Epochen nicht dazu führen, dass sich beide exakt übereinanderlegen lassen, so dass die Zuordnung der Schlafstadien nicht korrekt wäre. Aus diesem Grund müssen die zu untersuchenden Signale innerhalb der \acs{PSG} auf den Zeitraum der Hypnogramme begrenzt werden. Zu diesem Zweck wird eine Hypnogramm-Datei im TXT-Format angelegt (Hypnogram\_filename.txt) und in die erste Zeile die Zeitdifferenz in Sekunden geschrieben, um daraus bei der späteren \acs{TDS} Analyse die Begrenzung der Signale zu berechnen. Anschließend werden aus der Ereignis-Datei die Schlafstadien ausgelesen. Hierbei muss ein Abgleich zwischen den Spalten "`Schlafstadium"' und "`Ereignis"' erfolgen (Abb. \ref{fig:zeitpunkte}), um lediglich die klassifizierten Schlafstadien zu erhalten, nicht jedoch dazwischen auftretende Ereignisse. Die ursprünglichen Bezeichnungen der Schlafstadien werden in numerische Werte geändert und ebenfalls in die Hypnogramm-Datei geschrieben (Tab \ref{tab:schlafstadien}). Dieser Vorgang erfolgt in einer Schleife für sämtliche Patienten des Untersuchungsdatensatzes. Mit dem Skript (extract\_num\_epochs.m) kann darüber hinaus für jeden Patienten die Anzahl der Epochen aus dem \acs{EDF}-Header sowie aus der Ereignis-Datei berechnet und in eine Ergebnis-Datei (Epoch\_length.txt) geschrieben werden. Auf diese Weise kann ermittelt werden, ob Unterschiede existieren und wie groß die Abweichungen sind.
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\lstset{ 
+  language=Matlab, 
+  breaklines=true, 
+%  numbers=left, 
+%  numberstyle=\tiny, 
+%  numbersep=5pt, 
+  frame=single,
+  backgroundcolor=\color{lightgray},
+  basicstyle=\footnotesize,  
+  breaklines=true,
+  commentstyle=\color{mygreen},
+  keywordstyle=\color{blue},
+  numberstyle=\tiny\color{gray},
+  rulecolor=\color{black},
+  stringstyle=\color{violet},
+  captionpos=b
+}
+
+\begin{lstlisting}[caption={Implementierung Kriterium D1 in Skript restructure\_hypnogram.m}, label={lst:D1}]
+T = readtable(hypno_file);
+% ...
+for j = 1:row
+    % extract content of one row and convert each element into one string
+    C = table2cell(T(j, col));
+    M = cell2mat(C);
+    newrow = strsplit(M);
+    % find row of appearing 'Schlafstadium'
+    ss = strcmpi('Schlafstadium', newrow);
+    nr_ss = find(ss, 1);
+    if ~isempty(nr_ss)
+        hypnostart = j+1;
+        ind_ss = nr_ss;
+    end
+end
+% extract starttime of hypnogram
+for k = hypnostart:row
+    % extract content of row k and convert each element into one string
+    C = table2cell(T(k, col));
+    M = cell2mat(C);
+    newrow = strsplit(M);
+    % find row containing ':' from time specification (like 20:25:10]
+    tm = strfind(newrow, ':');
+    ind_ev = find(not(cellfun('isempty', tm)))+1;
+    if (any(ismember(newrow(ind_ss),sleep_stage_W)) && any(ismember(newrow(ind_ev),sleep_stage_W)))
+        hypno_starttime = newrow(ind_ev-1);
+        break;
+    end
+end
+% ...
+\end{lstlisting}
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{0.785\textwidth}{Xc}
+\toprule
+\multicolumn{1}{l}{\textbf{Schlafstadien in Ereignis-Datei}} & \multicolumn{1}{c}{\textbf{Geänderte Bezeichnung}}\\
+\midrule 
+Wach, SLEEP-S0 & 0\\
+S1, SLEEP-S1 & 1\\
+S2, SLEEP-S2 & 2\\
+S3, SLEEP-S3 & 3\\
+S4, SLEEP-S4 & 4\\
+REM, SLEEP-REM & 5\\
+\bottomrule
+\end{tabularx}
+\caption[Bezeichnung der Schlafstadien]{Bezeichnung der Schlafstadien in den Ereignis-Dateien und zugeordneter numerischer Wert zur Erstellung des Hypnogramms}
+\label{tab:schlafstadien}
+\end{table}
+ 
+\paragraph{Kriterium D2} Um zu überprüfen, ob alle Patienten sämtliche für die \acs{TDS} Analyse relevanten Schlafstadien durchlaufen haben, werden mit Hilfe des Skripts check\_sleep\_ stages.m die zuvor erzeugten Hypnogramm-Dateien untersucht. Hierzu werden die Daten aus den Hypnogramm-Dateien ausgelesen und mit einem \texttt{ismember}-Abgleich nach den entsprechenden Schlafstadien gesucht. Sofern nach dieser Überprüfung ein Schlafstadium bei einem Patienten nicht gefunden werden kann, wird der Dateiname (PatientenID) sowie eine Fehlermeldung (z. B. "`missing sleep stage: S4"') in eine Ergebnis-Datei (sleep\_stages.txt) geschrieben. Diese Ergebnis-Datei bildet die Grundlage für den Ausschluss von Daten aus dem Untersuchungsdatensatz.
+
+\paragraph{Kriterium D3} Für die Suche nach zusammenhängenden Epochen innerhalb eines Schlafstadiums wird ebenfalls das Skript check\_sleep\_stages.m verwendet. Innerhalb einer for-Schleife wird ein Zähler hochgesetzt, solange ein Schlafstadium gleich bleibt. Existiert nach Ausführung der for-Schleife ein Schlafstadium, dessen Zähler nicht mindestens einmal den Wert 5 erreicht hat, so wird die untersuchte Datei (Patienten-ID) sowie das fehlende Schlafstadium in eine Ergebnis-Datei geschrieben (consecutive\_stages.txt). Auf Grundlage dieser Ergebnis-Datei können wiederum Daten von den weiteren Untersuchungen ausgeschlossen werden.
+
+\paragraph{Kriterium D4} Zur Erkennung von Apnoe-Ereignissen wird das Skript count\_apnea.m verwendet. Dieses liest die Ereignis-Dateien aller Patienten ein und ermittelt durch einen \texttt{ismember}-Vergleich, ob eine Ereignis-Datei ein Apnoe-Ereignis aufweist. In diesem Fall wird ein Zähler hochgesetzt. Der Vergleich erfolgt auf Basis definierter Cell Strings, welche die Bezeichnungen der Schlafstadien sowie der Apnoe-Ereignisse enthalten (Listing \ref{lst:D4}). Anschließend wird eine Ergebnis-Datei (Apneas.txt) erstellt und der Dateiname (Patienten-ID) sowie die Anzahl der gefundenen Apnoe-Ereignisse darin gespeichert. Diese Ergebnis-Datei dokumentiert demnach die Anzahl aller gefundenen Apoe-Ereignisse für jeden Patienten.\\
+
+\begin{lstlisting}[caption={Implementierung Kriterium D4 in Skript count\_apneas.m}, label={lst:D4}]
+apnea = {'APNEA', 'HYPOPNEA', 'APNEA-CENTRAL', 'APNEA-MIXED', 'APNEA-OBSTRUCTIVE'};
+sleep_stages = {'Wach', 'SLEEP-S0', 'S1', 'SLEEP-S1', 'S2', 'SLEEP-S2', 'S3', 'SLEEP-S3', 'S4', 'SLEEP-S4', 'REM', 'SLEEP-REM'};
+% ...
+if (any(ismember(newrow(ind_ss),sleep_stages)) && any(ismember(newrow(ind_ev),apnea)))
+    count_apnea = count_apnea+1;
+end
+% ...
+\end{lstlisting}
+
+Um zu bestimmen, wie viele Apnoe-Ereignisse pro Stunde auftreten, müssen wiederum die Ereignis-Dateien untersucht werden. Zu diesem Zweck liest das Skript check\_apneas5.m die Ereignis-Dateien ein und ermittelt den Beginn der Tabelle sowie die Spaltenindizes der Schlafstadien und Ereignisse. In einer for-Schleife wird mit Hilfe von \texttt{ismember}-Vergleichen zeilenweise ein Apnoe-Ereignis gesucht, dessen Zeitpunkt als Cell String aus der Tabelle ausgelesen und der Schleifenindex zwischengespeichert (\texttt{apnearow}). In einer weiteren for-Schleife wird in identischer Weise nach einem weiteren Apnoe-Ereignis gesucht und der Zeitpunkt ebenfalls als Cell String gespeichert. Da Matlab Cell Strings jedoch nicht als Zeitpunkte erkennt, ermöglicht die Funktion subtract\_timestrings.m eine Umwandlung dieser Cell Strings in numerische Werte und berechnet die zeitliche Differenz in Sekunden (Listing \ref{lst:D4time}). Hierbei werden die Zeitpunkte mit Hilfe der Matlab-eigenen Funktion \texttt{duration} in vergangene Sekunden seit dem Zeitpunkt "`00:00:00"' umgerechnet. Darüber hinaus wird abgefragt, welcher Wert größer ist, so dass auch bei Tagänderung (nach 24:00 Uhr) die zeitliche Differenz korrekt errechnet wird. Anschließend wird geprüft, ob diese zeitliche Differenz größer als eine Stunde ist, und ein Flag zurückgegeben.\\
+
+\begin{lstlisting}[caption={Implementierung Kriterium D4 in Funktion subtract\_timestrings.m}, label={lst:D4time}]
+time = cell2mat(time);
+hh_time = str2double(time(1:2));
+mm_time = str2double(time(4:5));
+ss_time = str2double(time(7:8));
+% ...
+% convert time and time2 into duration class variables with format seconds, so that D_time and D_time2 represent the amount of elapsed seconds from 00:00:00 until time and time2
+D_time = duration(hh_time, mm_time, ss_time, 'Format', 's');
+D_time2 = duration(hh_time2, mm_time2, ss_time2, 'Format', 's');
+% amount of seconds of one day
+daysecs = 86400;
+% time2 ist bigger than time (= time2 is the same day)
+if D_time <= D_time2
+% convert D_time and D_time2 into double and calculate elapsed seconds
+	durationsecs = seconds(D_time2-D_time);
+    % check if elapsed time is not longer than one hour
+    if durationsecs <= 3600
+    	t = 1;
+    else
+        t = 0;
+    end
+% time is bigger than time2 (= time2 is the next day)
+else
+    % calculate the rest of the first day from time and add the elapsed time of time2
+    durationsecs = seconds(daysecs - seconds(D_time));
+    durationsecs = seconds(durationsecs + D_time2);
+    % check if elapsed time is not longer than one hour
+    if durationsecs <= 3600
+        t = 1;
+    else
+        t = 0;
+    end
+end
+\end{lstlisting}
+
+Ist die zeitliche Differenz nicht größer als eine Stunde, wird ein Apnoe-Zähler hochgesetzt. Dies bedeutet demnach, dass das erste sowie das zweite erkannte Apnoe-Ereignis innerhalb einer Stunde liegen. Sobald dieser Zähler größer als der Wert 5 ist, erhöht sich ein Signifikanz-Zähler und der Index der äußeren Schleife (\texttt{apnearow}) wird um den Wert 1 erhöht. Anschließend wird die innere Schleife abgebrochen und erneut in die äußere gesprungen, so dass die Überprüfung, ob Apnoe-Ereignisse innerhalb einer Stunde liegen, erneut eine Zeile nach dem ersten erkannten Apnoe-Ereignis startet (Listing \ref{lst:D4apnea5}). Auf diese Weise wird sichergestellt, dass von jedem Zeitpunkt eines Apnoe-Ereignisses aus der relevante Zeitraum von einer Stunde auf weitere Apnoe-Ereignisse untersucht wird. Ist der Signifikanz-Zähler nach Ausführung der Schleifen größer als Null, wurden demnach Apnoe-Ereignisse mit einer Häufigkeit von mehr als fünf pro Stunde erkannt. Anschließend werden solche Dateinamen (Patienten-ID), bei denen Apnoe-Ereignisse mit einer Häufigkeit von mehr als fünf pro Stunde erkannt worden sind, gemeinsam mit dem Wert des Signifikanz-Zählers in eine Ergebnis-Datei (Apnea5perhour.txt) geschrieben.\\
+
+\begin{lstlisting}[caption={Implementierung Kriterium D4 in Skript check\_apneas5.m}, label={lst:D4apnea5}]
+% ...
+if (any(ismember(Mrow(ind_ss),sleep_stages)) && any(ismember(Mrow(ind_ev),apnea)))
+    time2 = Mrow(ind_ev-1);
+    % calculate elapsed time between both time stamps
+    [t, durationsecs] = subtract_timestrings(time, time2);
+    % count apnea if elapsed time is <= one hour
+    if t == 1
+        countapnea = countapnea+1;
+    else
+    % count significance if more than five apneas per hour
+        if countapnea > 5
+            significance = significance + 1;
+            countapnea = 0;
+        end
+        % reset k to next row after first apnea of the investigated hour
+        k = apnearow+1;
+        % end this loop
+        l = row;
+    end
+end
+% ...
+\end{lstlisting}
+
+\paragraph{Kriterium D5} Zum Zwecke der Klassifizierung der Daten in die Gruppen "`alle"', "`Herz"', "`Atmung"', "`Schlafmittel"' sowie "`Insomnie"' erfolgt eine visuelle Auswertung der Excel-Datei, welche die Patienteninformationen beinhaltet, sowie der Ergebnis-Dateien sleep\_stages.txt, consecutive\_stages.txt und Apnea5perhour.txt. Den ersten beiden Ergebnis-Dateien können die Patienten-IDs entnommen werden, welche die einzelnen Schlafstadien nicht alle oder nicht in ausreichender Länge durchlaufen. Aus der Ergebnis-Datei über die Apnoen ergeben sich die Patienten-IDs, deren Hypnogramme mehr als fünf Apnoe-Ereignisse pro Stunde aufweisen. Nach Recherche der medizinischen Fachbegriffe, welche in den Begleiterkrankungen und -medikationen in der Excel-Datei dokumentiert sind, lassen sich in einer zusätzlichen Spalte die klassifizierten Gruppen nach dem Kriterium D5 eintragen. Anschließend erstellt das Skript create\_insomnia\_struct.m ein Struct mit insgesamt 13 Key-Value-Paaren. Die Keys stellen Fields dar, welche sich auf die Inhalte der Excel-Datei beziehen. Die dazugehörigen Values werden anschließend für jeden Patienten aus der Excel-Datei ausgelesen und in dem Struct geschrieben (Abb. \ref{fig:struct}). Dieses Struct wird zur weiteren Verwendung in Matlab als .mat-Datei (insomdata.mat) gespeichert.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = 0.7\textwidth]{img/struct.png}
+	\caption[Struct mit Beispieldaten]{Struct mit Beispieldaten des Patienten ACA\_69003}
+	\label{fig:struct}
+\end{figure}
+
+\section{\acs{TDS} Verfahren}\label{tdsVerfahren}
+
+\section{Anwendung des \acs{TDS} Verfahrens}
 

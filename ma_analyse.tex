@@ -1,72 +1,72 @@
 \chapter{Analyse}
 
-\section{Datenanalyse}
+\section{Datenanalyse}\label{datenanalyse}
 
-Dieser Arbeit liegt ein Untersuchungsdatensatz von insgesamt 64 Patienten der Charit\'{e} Berlin mit der Diagnose Insomnie zugrunde. Welche Art der Insomnie bei den Patienten diagnostiziert worden ist, ist jedoch nicht bekannt. Sämtliche Aufzeichnungen stammen aus den Jahren 2008 und 2009. Der Altersdurchschnitt liegt bei 51 Jahren. Etwa zwei Drittel der Patienten (41) sind weiblich mit einem Altersdurchschnitt von 52,3 Jahren (minimales Alter: 23 Jahre, maximales Alter: 65 Jahre). Der Altersdurchschnitt der 23 männlichen Patienten liegt bei 48,7 Jahren (minimales Alter: 26 Jahre, maximales Alter: 61 Jahre). Zu jedem Patienten liegt eine \acs{PSG} als \acs{EDF}-Datei vor. Darüber hinaus existiert zu jeder \acs{PSG} ein Hypnogramm im TXT-Format. Vorerkrankungen und Begleitmedikationen sind für jeden Patienten in einer Excel-Datei dokumentiert.\\
-% Krankheitsgruppen und Prozent ohne Begleiterkrankung
+Die Datenanalyse erfolgt auf Grundlage der zur Verfügung stehenden Dateien den Untersuchungsdatensatzes. Auf die Implementierung der entsprechenden Analysealgorithmen wird in Punkt \ref{Datenvorauswahl} eingegangen.
 
-Besonders häufige Vorerkrankungen sind Blinddarm- bzw. Mandelentzündungen, welche bei 17 bzw. 20 Patienten eine Entfernung des Organs zur Folge hatten. Ebenso auffällig sind diagnostizierte Kurz- bzw. Weitsichtigkeit oder Grüner Star bei insgesamt 19 Patienten. Bei acht weiblichen Patienten kommen Hormone zur Milderung von Wechseljahressymptomen zum Einsatz, teilweise in Verbindung mit Schlafmitteln oder Antidepressiva. Bei zwölf weiblichen Patienten liegen darüber hinaus gynäkologische Vorerkrankungen, wie Myome\footnote{Myom: gutartiger Tumor in der Gebärmutter}, Eierstockzysten oder eine Entfernung der Eierstöcke, vor. Fünf Patienten aus dem Untersuchungsdatensatz leiden an Atemwegserkrankungen, wie beispielsweise Asthma, und nehmen atemwegserweiternde Medikamente ein. Bei etwa einem Viertel (15) der Patienten wurden Bluthochdruck, Herzrhythmusstörungen oder verengte Blutgefäße diagnostiziert, so dass zwölf von ihnen blutgefäßerweiternde Medikamente einnehmen. Bei insgesamt acht Patienten sind Schlafmittel als Begleitmedikation dokumentiert, teilweise in Abhängigkeit von anderen Erkrankungen als die Insomnie, wie beispielsweise Wechseljahresbeschwerden.\\
+\paragraph{Untersuchungsdatensatz} Für diese Arbeit steht ein Untersuchungsdatensatz von insgesamt 64 Patienten der Charit\'{e} Berlin mit der Diagnose Insomnie zur Verfügung. Welche Art der Insomnie bei den Patienten diagnostiziert worden ist, ist jedoch nicht bekannt. Sämtliche Aufzeichnungen stammen aus den Jahren 2008 und 2009. Zu jedem Patienten liegt eine \acs{PSG} als \acs{EDF}-Datei vor. 
 
-Begleiterkrankungen und -medikationen können die Ergebnisse der \acs{TDS} Analyse jedoch beeinflussen. Beispielsweise kann eine Herzrhythmusstörung zu einer abweichenden Darstellung der Kopplung zwischen dem Herzen und anderen Systemen führen. Asthma oder Schlafapnoen\footnote{Schlafapnoe: Atemstillstände über mindestens zehn Sekunden im Schlaf} wirken sich auf die Kopplung zwischen Atmung und anderen Systemen aus. Darüber hinaus können verabreichte Medikamente, wie beispielsweise Schlafmittel, die Symptome der Insomnie verfälschen.\\
+\paragraph{Patienteninformationen} Vorerkrankungen und Begleitmedikationen sind für jeden Patienten in einer Excel-Datei dokumentiert. In dieser Datei sind für jeden Patienten ebenso Geburtstag, Alter, Geschlecht, Größe, Gewicht, BMI sowie Datum der Aufzeichnung aufgeführt. Der Altersdurchschnitt liegt bei 51 Jahren. Etwa zwei Drittel der Patienten (41) sind weiblich mit einem Altersdurchschnitt von 52,3 Jahren (minimales Alter: 23 Jahre, maximales Alter: 65 Jahre). Der Altersdurchschnitt der 23 männlichen Patienten liegt bei 48,7 Jahren (minimales Alter: 26 Jahre, maximales Alter: 61 Jahre).\\
 
-Da solche Begleiterkrankungen in keinem direkten Zusammenhang mit der Insomnie stehen bzw. Begleitmedikationen die Symptome der Insomnie unterdrücken können, sollen diese auch bei den hiesigen Untersuchungen keine Berücksichtigung finden. Um die Ergebnisse der \acs{TDS} Analyse möglichst wenig zu beeinflussen, werden daher folgende Ausschlusskriterien formuliert:\\
+Besonders häufige Vorerkrankungen sind Blinddarm- bzw. Mandelentzündungen, welche bei 17 bzw. 20 Patienten eine Entfernung des Organs zur Folge hatten. Ebenso auffällig sind diagnostizierte Kurz- bzw. Weitsichtigkeit oder Grüner Star bei insgesamt 19 Patienten. Bei acht weiblichen Patienten kommen Hormone zur Milderung von Wechseljahressymptomen zum Einsatz, teilweise in Verbindung mit Schlafmitteln oder Antidepressiva. Bei zwölf weiblichen Patienten liegen darüber hinaus gynäkologische Vorerkrankungen, wie Myome\footnote{Myom: gutartiger Tumor in der Gebärmutter}, Eierstockzysten oder eine Entfernung der Eierstöcke, vor. Fünf Patienten aus dem Untersuchungsdatensatz leiden an Atemwegserkrankungen, wie beispielsweise Asthma, und nehmen atemwegserweiternde Medikamente ein. Bei etwa einem Viertel (15) der Patienten wurden Bluthochdruck, Herzrhythmusstörungen oder verengte Blutgefäße diagnostiziert, so dass zwölf von ihnen blutgefäßerweiternde Medikamente einnehmen. Bei insgesamt acht Patienten sind Schlafmittel als Begleitmedikation dokumentiert, teilweise in Abhängigkeit von anderen Erkrankungen als die Insomnie, wie beispielsweise Wechseljahresbeschwerden.
 
+\paragraph{Ereignisse} Zu jeder \acs{PSG} existiert eine Ereignis-Datei im TXT-Format. Hierin werden Patienten-ID, Datum der Aufzeichnung, mögliche Ereignisse, wie beispielsweise das Abfallen einer Elektrode oder Augenbewegungen, Name des Auswerters und Datum der Auswertung dokumentiert. Darauffolgend werden tabellarisch das jeweils klassifizierte Schlafstadium, Zeitpunkt der Epoche, Ereignis und dessen Dauer sowie in einigen Fällen auch die Körperlage zu jedem Zeitpunkt aufgelistet. Als Ereignis wurden bei fast allen Patienten Schlafapnoen\footnote{Schlafapnoen: Atemstillstände über mindestens zehn Sekunden im Schlaf und häufiger als fünfmal pro Stunde} vermerkt. Diese sind in de Excel-Datei über die Begleiterkrankungen jedoch nicht aufgeführt. Die Ereignis-Dateien müssen aus diesem Grund nach Apnoen durchsucht werden. Treten mehr als fünf Apnoe-Ereignisse pro Stunde bei einem Patienten auf, so ist diesem Patienten das Krankheitsbild von Schlafapnoen zuzuordnen. 
+Da die \acs{TDS} Analyse als robust gegenüber Artefakten gilt \parencite{breuer_netzwerktopologie_2016}, kann auf eine Bereinigung der Daten verzichtet werden.
+
+\paragraph{Erstellung von Hypnogrammen} Die Ereignis-Dateien weisen bei allen Patienten einen anderen Startzeitpunkt der Aufzeichnung auf als in dem Header der \acs{EDF}-Datei (Abb. \ref{fig:zeitpunkte}). Dies führt dazu, dass die Anzahl der Epochen in den \acs{EDF}-Dateien größer ist als in den Ereignis-Dateien. Ein aus der Ereignis-Datei extrahiertes Hypnogramm würde demnach nicht den Verlauf der \acs{PSG} abbilden. Die Differenz in Sekunden zwischen den beiden Zeitpunkten entspricht jedoch stets der auf die nächste ganze Zahl abgerundeten Anzahl an Epochen, um welche die Signale in der \acs{EDF}-Datei länger sind. Dies lässt darauf schließen, dass die \acs{PSG} jeweils früher gestartet worden ist als die Aufzeichnung der Ereignisse. Es müssen daher Hypnogramme erstellt werden, welche auf die \acs{EDF}-Dateien anwendbar sind.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/Startzeitpunkte.png}
+	\caption[Startzeitpunkte von Ereignis- und \acs{EDF}-Datei]{Unterschiedliche Startzeitpunkte in Ereignis-Datei (links) und \acs{EDF}-Header (rechts) lassen darauf schließen, dass die Ereignis-Datei zu einem späteren Zeitpunkt als die \acs{PSG}-Aufzeichnung gestartet wurde}
+	\label{fig:zeitpunkte}
+\end{figure}
+
+\paragraph{Untersuchung der Schlafstadien} 
+Da sich die Ergebnisse der \acs{TDS} Analyse auf die einzelnen Schlafstadien beziehen, ist es notwendig, dass sämtliche relevanten Schlafstadien durchlaufen werden. Darüber hinaus müssen die jeweiligen Schlafstadien über einen hinreichenden Zeitraum andauern, um stabile Verbindungen zu erkennen. Da als stabile Verbindung mindestens fünf zusammenhängende Epochen \`{a} 30 Sekunden gelten (Punkt \ref{TDS}), sollte jedes Schlafstadium über mindestens 2,5 Minuten andauern. Um diese Voraussetzungen zu überprüfen, müssen die Ereignis-Dateien sämtlicher \acs{PSG}s untersucht werden.
+
+\paragraph{Klassifizierung in Gruppen}
+Die Dokumentation der Patienteninformationen in der Excel-Datei zeigt, dass ein Großteil der Patienten Begleiterkrankungen aufweist und/oder Medikamente einnimmt. Diese können die Ergebnisse der \acs{TDS} Analyse jedoch beeinflussen. Beispielsweise kann eine Herzrhythmusstörung zu einer abweichenden Darstellung der Kopplung zwischen dem Herzen und anderen Systemen führen. Asthma oder Schlafapnoen wirken sich auf die Kopplung zwischen Atmung und anderen Systemen aus. Darüber hinaus können verabreichte Medikamente, wie beispielsweise Schlafmittel, die Symptome der Insomnie verfälschen. Aus diesem Grund werden die Daten in verschiedene Gruppen klassifiziert. Dies ermöglicht einen späteren Vergleich der Gruppenergebnisse und Rückschlüsse auf den Einfluss der Begleiterkrankungen und -medikationen auf die Ergebnisse der \acs{TDS} Analyse.\\
+
+Es wird basierend auf den Patienteninformationen des zugrunde liegenden Datensatzes sowie den Ereignissen in den Ereignis-Dateien folgende Gruppeneinteilung vorgenommen:
+
+\begin{itemize}
+\item \textbf{Gruppe alle:} gesamter Untersuchungsdatensatz
+\item \textbf{Gruppe Herz:} Herzrhythmusstörungen, zu schnelle oder zu langsame Herzfrequenz, zu hoher oder zu niedriger Blutdruck, Carotisstenose\footnote{Carotisstenose: Verengung der hirnversorgenden Halsschlagader}
+\item \textbf{Gruppe Atmung:} Asthma, COPD\footnote{COPD: chronische Erkrankung der Lunge}, Schlafapnoen
+\item \textbf{Gruppe Schlafmittel:} Einnahme von schlaffördernden Mittel, Zolpidem, Rohiypnol, Zopiclon, Doxepin, Schlafsterne, Stilnox, Noctamid, Remifemin
+\item \textbf{Gruppe Insomnie:} Patienten sind nicht den obigen Gruppen zuzuordnen, können jedoch andere Begleiterkrankungen und -medikationen aufweisen, welche sich vermutlich nicht maßgeblich auf die Ergebnisse der \acs{TDS} Analyse auswirken, Beispiele: Antibiotika nach Blutvergiftung, Hormone und Medikamente zur Linderung von Wechseljahresbeschwerden, Hormone bei Schilddrüsenerkrankungen
+\end{itemize}
+
+\paragraph{Kriterien Datenvorverarbeitung} Folgende Kriterien (Tab. \ref{tab:Datenvorauswahl}) muss ein Datensatz zur Einbeziehung in die hiesigen Untersuchungen demnach erfüllen:
 
 \begin{table}[H] 
 \begin{tabularx}{\textwidth}{cX}
 \toprule
-\multicolumn{1}{c}{\textbf{~~~~~~Nr.~~~~~~}} & \multicolumn{1}{l}{\textbf{Ausschlusskriterien}}\\
+\multicolumn{1}{c}{\textbf{~~~~~~Nr.~~~~~~}} & \multicolumn{1}{l}{\textbf{Kriterien}}\\
 \midrule 
-D1 & Herzerkrankungen, insbesondere Herzrhythmusstörungen, oder Verengung der Blutgefäße, beispielsweise in Verbindung mit Bluthochdruck\\
-D2 & Asthma oder Atemwegserkrankungen\\
-D3 & Einnahme von schlaffördernden Medikamenten\\
+D1 & Für jeden Patienten muss aus der Ereignis-Datei ein Hypnogramm erstellt werden, welches auf die \acs{EDF}-Datei anwendbar ist.\\
+D2 & Alle relevanten Schlafstadien (\acs{NREM}2, \acs{NREM}3 oder \acs{NREM}4, \acs{REM}-Schlaf und Wachzustand) müssen durchlaufen werden.\\
+D3 & Jedes relevante Schlafstadium muss mindestens fünf zusammenhängende Epochen beinhalten.\\
+D4 & Patienten, deren Ereignis-Datei mehr als fünf Schlafapnoen pro Stunde aufweist, soll die schlafbedingte Erkrankung Schlafapnoe zugeordnet werden.\\
+D5 & Die Patienten sollen anhand ihrer Begleiterkrankungen bzw. -medikationen in fünf Gruppen (alle, Herz, Atmung, Schlafmittel, Insomnie) eingeteilt werden.\\
+D6 & Artefakte sollen nicht entfernt werden.\\
 \bottomrule
 \end{tabularx}
-\caption[Datenvorauswahl - krankheitsbedingte Ausschlusskriterien]{Datenvorauswahl - krankheitsbedingte Ausschlusskriterien}
-\label{tab:Datenanalyse-krank}
+\caption[Datenvorauswahl - Kriterien]{Datenvorauswahl - Kriterien für die Auswahl und Klassifizierung der Daten vor Anwendung der \acs{TDS} Analyse}
+\label{tab:Datenvorauswahl}
 \end{table}
 
-
-Nach Ausschluss der entsprechenden \acs{PSG}s aus dem Untersuchungsdatensatz verbleiben insgesamt 40 Patienten, hiervon 25 weiblich und 15 männlich, bei einem durchschnittlichen Alter von 49,2 Jahren. Das Alter der Frauen (Minimum: 23 Jahre, Maximum: 65 Jahre) liegt im Durchschnitt bei 50,2 Jahren. Der Altersdurchschnitt der Männer (Minimum: 26 Jahre, Maximum: 61 Jahre) liegt bei 47,5 Jahren. Geschlechterverteilung und Durchschnittsalter ähneln denen des ursprünglichen Datensatzes vor Anwendung der Ausschlusskriterien.\\
-
-Das Verfahren der \acs{TDS} ermöglicht die Darstellung der Zusammenhänge des Netzwerks in den vier Schlafstadien Wachzustand, Leicht- und Tiefschlaf sowie \acs{REM}-Schlaf. Um eine Vergleichbarkeit mit den Datensätzen gesunder Probanden oder anderer schlafbezogener Erkrankungen sicherzustellen, ist es notwendig, dass die hiesigen Insomnie-Patienten die einzelnen Schlafstadien in hinreichender Dauer durchlaufen. Eine hinreichende Dauer ist frühestens dann erreicht, wenn die Möglichkeit besteht, dass mindestens eine stabile Verbindung erkannt werden kann (vier zusammenhängende Segmente mit 5 $*$ 30 s). Darüber hinaus gilt die \acs{TDS} als robust gegenüber Artefakten \parencite{breuer_netzwerktopologie_2016}, so dass auf eine Bereinigung der Daten verzichtet wird. Sofern in den Ereignisaufzeichnungen Schlafapnoen enthalten sind, obwohl diese nicht als Begleiterkrankung aufgeführt worden sind, sollen die entsprechenden Epochen als artefaktbehaftet markiert werden und nicht in die \acs{TDS} Analyse einfließen. Es werden demnach folgende weitere Ausschluss- bzw. Anpassungskriterien formuliert:\\
-
-
-\begin{table}[H] 
-\begin{tabularx}{\textwidth}{cllX}
-\toprule
-\multicolumn{3}{c}{\textbf{Ausschlusskriterien}} & \\  
-\cmidrule{1-3}
-\multicolumn{3}{c}{\textbf{~~~~~~Nr.~~~~~~}} & \textbf{Kriterien}\\  
-\midrule 
-\multicolumn{3}{c}{D4} & ein Schlafstadium wird nicht durchlaufen\\
-\multicolumn{3}{c}{D5} & ein Schlafstadium wird weniger als 4,5 Minuten durchlaufen\\
-\midrule
-\multicolumn{3}{c}{\textbf{Anpassungskriterien}} & \\  
-\cmidrule{1-3}
-\multicolumn{3}{c}{\textbf{~~~~~~Nr.~~~~~~}} & \textbf{Kriterien}\\  
-\midrule 
-\multicolumn{3}{c}{D6} & Epochen mit Schlafapnoen sollen nicht in die \acs{TDS} Analyse einfließen\\
-\bottomrule
-\end{tabularx}
-\caption[Datenvorauswahl - aufzeichnungsbedingte Ausschlusskriterien]{Datenvorauswahl - aufzeichnungsbedingte Ausschlusskriterien und Anpassungskriterien für Schlafapnoen}
-\label{tab:Datenanalyse-aufz}
-\end{table}
-
-TODO:
-Ergebnisse der Datenvorauswahl/Datenanalyse
-Hypnogramme und Probleme dabei
+\paragraph{Ergebnisse Datenvorauswahl} Auf die Implementierung der Datenvorauswahl und Klassifizierung der Daten wird unter Punkt \ref{Datenvorauswahl} näher eingegangen. Ergebnisse der Datenvorauswahl/Datenanalyse\\
 
 %eventuell Beispielbild mit starker Störung
 
 %Therapiemöglichkeiten ggf. relevant für Vorauswahl der Daten (Wechselwirkungen der Medikamente), siehe S3 Leitlinie
 %Verweis auf Anhang über Therapien (Wirkung der Medikamente) oder darauf noch in "Insomnie" verweisen, da es zu Arten der Insomnie zählt.
 
-%da Artefakte kaum Einfluss auf die Ergebnisse der TDS haben, werden die Signale hier nicht bereinigt
-
 \section{Anforderungsanalyse}
 
-Für die Analyse der physiologischen Netzwerke werden priorisierbare Anforderungen formuliert. Im Rahmen dieser Arbeit stellt sich das Problem, dass kein klassisches Software-Projekt umgesetzt werden soll, welches im Ergebnis ein benutzbares System darstellt. Stattdessen sollen durch Anwendung bestimmter Verfahren spezifische Ergebnisse berechnet werden. Aus diesem Grund stellt die Formulierung funktionaler und nicht-funktionaler Anforderungen oder die Erstellung von Use Cases nach klassischen Standards keine optimale Herangehensweise dar. Stattdessen werden allgemeine und gleichzeitig priorisierbare Anforderungen formuliert.\\
+Für die Analyse der physiologischen Netzwerke werden priorisierbare Anforderungen formuliert. Im Rahmen dieser Arbeit stellt sich das Problem, dass kein klassisches Software-Projekt umgesetzt werden soll, welches im Ergebnis ein benutzbares System darstellt. Stattdessen sollen durch Anwendung bestimmter Verfahren spezifische Ergebnisse berechnet werden. Aus diesem Grund stellt die Formulierung funktionaler und nicht-funktionaler Anforderungen oder die Erstellung von Use Cases nach klassischen Standards keine optimale Herangehensweise dar. Stattdessen werden allgemeine und gleichzeitig priorisierbare Anforderungen an... formuliert.\\
 
 Hierbei erfolgt die Einteilung in Muss-, Soll-, Kann- sowie Abgrenzungskriterien. Muss-Kriterien sind zwangsläufig zu erfüllen. Sie stellen die Anforderungen mit der höchsten Priorität dar. In dieser Arbeit sind dies solche Anforderungen, die maßgeblich die wesentlichen Aufgaben der gesamten Analyse beschreiben. Soll-Kriterien sind im bestmöglichen Fall ebenfalls vollständig umzusetzen, sind in ihrer Priorität jedoch den Muss-Kriterien nachgestellt. Zusammen mit den Muss-Kriterien stellen sie die Anforderungen dar, welche maßgeblich zur erfolgreichen Umsetzung des Projekts beitragen und an deren Erfüllung der Erfolg der Umsetzung gemessen wird. Kann-Kriterien stellen optionale Anforderungen dar. Deren Umsetzung wertet die Qualität des Projekts auf, ein Weglassen beeinflusst jedoch nicht die Hauptfunktionalitäten. Im Rahmen dieser Arbeit würden durch die Nicht-Erfüllung von Kann-Kriterien beispielsweise die Ergebnisse der Analyseverfahren nicht beeinflusst werden. Abgrenzungskriterien werden darüber hinaus formuliert, um zu definieren, welche Funktionalitäten oder Eigenschaften nicht erfüllt werden sollen. Für die hiesige Analyse wäre beispielsweise die Abgrenzung zu klassischen Software-Projekten zu formulieren. Aus diesem Grund wird darüber hinaus auf eine Stakeholderanalyse gänzlich verzichtet.\\
 
@@ -79,11 +79,11 @@ Als Ergebnis der Anforderungsanalyse werden die in Tab. \ref{tab:Muss-Kriterien}
 \cmidrule{1-3}
 \multicolumn{3}{c}{Nr.} & Anforderung\\ 
 \midrule 
-\multicolumn{3}{c}{A1} &  Grundlage der Untersuchungen sollen \acs{PSG}s und Hypnogramme von Insomnie-Patienten sein.\\
-\multicolumn{3}{c}{A2} & Auf Grundlage der \acs{PSG}s und Hypnogramme sollen physiologische\newline Netzwerke mit Hilfe des \acs{TDS} Verfahrens untersucht werden.\\
-\multicolumn{3}{c}{A3} & Die physiologischen Netzwerke sollen auf Altersabhängigkeiten untersucht werden.\\ 
-\multicolumn{3}{c}{A4} & Die physiologischen Netzwerke sollen auf Geschlechterabhängigkeiten untersucht werden.\\
-\multicolumn{3}{c}{A5} & Die Analyseergebnisse sollen mit den Ergebnissen von Krefting et al. \parencite{krefting_age_2017} vergleichbar sein.\\
+\multicolumn{3}{c}{A1} &  Grundlage der Untersuchungen müssen \acs{PSG}s und Hypnogramme von Insomnie-Patienten sein.\\
+\multicolumn{3}{c}{A2} & Auf Grundlage der \acs{PSG}s und Hypnogramme müssen physiologische\newline Netzwerke mit Hilfe des \acs{TDS} Verfahrens untersucht werden.\\
+\multicolumn{3}{c}{A3} & Die physiologischen Netzwerke müssen auf Altersabhängigkeiten untersucht werden.\\ 
+\multicolumn{3}{c}{A4} & Die physiologischen Netzwerke müssen auf Geschlechterabhängigkeiten untersucht werden.\\
+\multicolumn{3}{c}{A5} & Die Analyseergebnisse müssen mit den Ergebnissen von Krefting et al. \parencite{krefting_age_2017} vergleichbar sein.\\
 \bottomrule
 \end{tabularx}
 \caption{Anforderungen - Muss-Kriterien}
@@ -101,7 +101,8 @@ Als Ergebnis der Anforderungsanalyse werden die in Tab. \ref{tab:Muss-Kriterien}
 \multicolumn{3}{c}{A6} &  Für die Anwendung des \acs{TDS} Verfahrens soll Matlab verwendet werden.\\
 \multicolumn{3}{c}{A7} & Für die Anwendung statistischer Verfahren soll R verwendet werden.\\
 \multicolumn{3}{c}{A8} & Die Ergebnisse der Analysen sollen grafisch darstellbar sein.\\ 
-\multicolumn{3}{c}{A9} & Auf Grundlage einer Datenanalyse sollen ungeeignete Daten von der Untersuchung ausgeschlossen werden.\\
+\multicolumn{3}{c}{A9} & Die Untersuchungsdatensätze sollen in geeigneter Weise gemäß den Kriterien aus der Datenanalyse aufbereitet werden (Kriterien D1 - D5 unter Punkt \ref{datenanalyse}).\\
+\multicolumn{3}{c}{A10} & Die Ergebnisse sollen sich auf die fünf in der Datenanalyse klassifizierten Gruppen beziehen.\\
 \bottomrule
 \end{tabularx}
 \caption{Anforderungen - Soll-Kriterien}
@@ -116,9 +117,10 @@ Als Ergebnis der Anforderungsanalyse werden die in Tab. \ref{tab:Muss-Kriterien}
 \cmidrule{1-3}
 \multicolumn{3}{c}{Nr.} & Anforderung\\ 
 \midrule 
-\multicolumn{3}{c}{A10} &  Die Implementierung soll für ähnliche Fragestellungen auf andere Datensätze (beispielsweise Apnoe-Patienten) anwendbar und wiederverwendbar sein.\\
-\multicolumn{3}{c}{A11} & Es soll eine Datenstruktur für die Speicherung prägnanter Patienteneigenschaften in Matlab erstellt werden.\\
-\multicolumn{3}{c}{A12} & Für die \acs{TDS} Analyse soll ein Leitfaden für die Datenvorauswahl und die Anwendung des Verfahrens erstellt werden.\\ 
+\multicolumn{3}{c}{A11} &  Die Implementierung kann für ähnliche Fragestellungen auf andere Datensätze (beispielsweise Apnoe-Patienten) anwendbar und wiederverwendbar sein.\\
+\multicolumn{3}{c}{A12} & Es kann eine Datenstruktur für die Speicherung prägnanter Patienteneigenschaften in Matlab erstellt werden.\\
+\multicolumn{3}{c}{A13} & Für die \acs{TDS} Analyse kann ein Leitfaden für die Datenvorauswahl und die Anwendung des Verfahrens erstellt werden.\\ 
+\multicolumn{3}{c}{A14} & Die bereits bestehenden Funktionen der \acs{TDS} Analyse können für die Anwendung auf Datensätze der Charit\'{e} erweitert werden.\\ 
 \bottomrule
 \end{tabularx}
 \caption{Anforderungen - Kann-Kriterien}
@@ -133,7 +135,7 @@ Als Ergebnis der Anforderungsanalyse werden die in Tab. \ref{tab:Muss-Kriterien}
 \cmidrule{1-3}
 \multicolumn{3}{c}{Nr.} & Anforderung\\ 
 \midrule 
-\multicolumn{3}{c}{A13} &  Die Implementierung soll nicht der Form eines API-Standards entsprechen, sondern die Anwendung der Analyseverfahren auf den Untersuchungsdatensatz ermöglichen.\\
+\multicolumn{3}{c}{A15} &  Die Implementierung entspricht nicht der Form eines Paket-Standards, sondern stellt die Anwendung der Analyseverfahren auf den Untersuchungsdatensatz durch atomare Skripte und/oder Funktionen dar.\\
 \bottomrule
 \end{tabularx}
 \caption{Anforderungen - Abgrenzungskriterien}
