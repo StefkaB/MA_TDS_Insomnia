@@ -4,26 +4,14 @@
 
 Die unter Punkt \ref{datenanalyse} beschriebenen Kriterien zur Auswahl und Klassifizierung der Daten werden mithilfe von Skripten und Funktionen in Matlab umgesetzt. Im Folgenden wird auf die Umsetzung der einzelnen Kriterien eingegangen. Das Kriterium D6 bleibt dabei unberücksichtigt, da es sich lediglich auf das Weglassen einer Artefaktbereinigung bezieht.
 
-\paragraph{Kriterium D1} Für die Erstellung der Hypnogramme (Skript restructure\_hypnogram.m) müssen zunächst die Startzeitpunkte aus der \acs{EDF}- sowie Ereignis-Datei jedes Patienten extrahiert werden. Nach dem Einlesen der EDF-Datei lässt sich der Startzeitpunkt der Aufnahme als String aus dem Header auslesen. Um den Startzeitpunkt der Ereignis-Datei zu ermitteln, wird die Ereignis-Datei eingelesen. Da in dieser Datei verschiedene Informationen gespeichert sind und die Spaltenanzahl daher erst ab der tabellarischen Auflistung der Schlafstadien, Zeitpunkte und Ereignisse gleich bleibt, wird mit einem String-Vergleich die Startzeile dieser Tabelle gesucht. Hierbei können die Ereignis-Dateien abweichende Spaltenzahlen aufweisen, da manche Dateien zusätzlich die Körperlage dokumentiert. Die Körperlage kann darüber hinaus als ein Wort ("`POSITION-LEFT"' oder als mehrere Wörter ("`Körperlage unbekannt"') angegeben sein, so dass ein ausschließlicher Abgleich der Tabellenüberschriften nicht zweckdienlich ist. Aus diesem Grund erfolgt die Ermittlung des Spaltenindexes durch \texttt{ismember}-Vergleich mit einem Doppelpunkt, welcher ausschließlich in den Strings der Zeitpunkte enthalten ist (Listing \ref{lst:D1}). Anschließend kann der Startzeitpunkt extrahiert und mit dem Startzeitpunkt aus dem \acs{EDF}-Header verglichen werden. Zu diesem Zweck wird in der Funktion subtract\_timestrings.m die Differenz zwischen den beiden Zeitpunkten berechnet und als Anzahl von Sekunden zurückgegeben. Die Zeitdifferenz entspricht jedoch keiner ganzzahligen Anzahl an Epochen. Da Hypnogramme die Schlafstadien lediglich epochenweise, also in 30-Sekunden-Schritten, abbilden, würde ein Auffüllen der Hypnogramme um die fehlende Anzahl an Epochen nicht dazu führen, dass sich beide exakt übereinanderlegen lassen, so dass die Zuordnung der Schlafstadien nicht korrekt wäre. Aus diesem Grund müssen die zu untersuchenden Signale innerhalb der \acs{PSG} auf den Zeitraum der Hypnogramme begrenzt werden. Zu diesem Zweck wird eine Hypnogramm-Datei im TXT-Format angelegt (Hypnogram\_filename.txt) und in die erste Zeile die Zeitdifferenz in Sekunden geschrieben, um daraus bei der späteren \acs{TDS} Analyse die Begrenzung der Signale zu berechnen. Anschließend werden aus der Ereignis-Datei die Schlafstadien ausgelesen. Hierbei muss ein Abgleich zwischen den Spalten "`Schlafstadium"' und "`Ereignis"' erfolgen (Abb. \ref{fig:zeitpunkte}), um lediglich die klassifizierten Schlafstadien zu erhalten, nicht jedoch dazwischen auftretende Ereignisse. Die ursprünglichen Bezeichnungen der Schlafstadien werden in numerische Werte geändert und ebenfalls in die Hypnogramm-Datei geschrieben (Tab \ref{tab:schlafstadien}). Dieser Vorgang erfolgt in einer Schleife für sämtliche Patienten des Untersuchungsdatensatzes. Mit dem Skript (extract\_num\_epochs.m) kann darüber hinaus für jeden Patienten die Anzahl der Epochen aus dem \acs{EDF}-Header sowie aus der Ereignis-Datei berechnet und in eine Ergebnis-Datei (Epoch\_length.txt) geschrieben werden. Auf diese Weise kann ermittelt werden, ob Unterschiede existieren und wie groß die Abweichungen sind.
+\paragraph{Kriterium D1} Für die Erstellung der Hypnogramme (Skript restructure\_hypnogram.m) müssen zunächst die Startzeitpunkte aus der \acs{EDF}- sowie Ereignis-Datei jedes Patienten extrahiert werden. Nach dem Einlesen der EDF-Datei lässt sich der Startzeitpunkt der Aufnahme als String aus dem Header auslesen. Um den Startzeitpunkt der Ereignis-Datei zu ermitteln, wird die Ereignis-Datei eingelesen. Da in dieser Datei verschiedene Informationen gespeichert sind und die Spaltenanzahl daher erst ab der tabellarischen Auflistung der Schlafstadien, Zeitpunkte und Ereignisse gleich bleibt, wird mit einem String-Vergleich die Startzeile dieser Tabelle gesucht. Hierbei können die Ereignis-Dateien abweichende Spaltenzahlen aufweisen, da manche Dateien zusätzlich die Körperlage dokumentiert. Die Körperlage kann darüber hinaus als ein Wort ("`POSITION-LEFT"' oder als mehrere Wörter ("`Körperlage unbekannt"') angegeben sein, so dass ein ausschließlicher Abgleich der Tabellenüberschriften nicht zweckdienlich ist (Abb. \ref{fig:spalten}). Aus diesem Grund erfolgt die Ermittlung des Spaltenindexes durch \texttt{ismember}-Vergleich zwischen der Spaltenüberschrift "`Schlafstadium"' und einem Doppelpunkt, welcher ausschließlich in den Strings der Zeitpunkte enthalten ist (Listing \ref{lst:D1}).\\
 
-\definecolor{mygreen}{rgb}{0,0.6,0}
-\lstset{ 
-  language=Matlab, 
-  breaklines=true, 
-%  numbers=left, 
-%  numberstyle=\tiny, 
-%  numbersep=5pt, 
-  frame=single,
-  backgroundcolor=\color{lightgray},
-  basicstyle=\footnotesize,  
-  breaklines=true,
-  commentstyle=\color{mygreen},
-  keywordstyle=\color{blue},
-  numberstyle=\tiny\color{gray},
-  rulecolor=\color{black},
-  stringstyle=\color{violet},
-  captionpos=b
-}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/Ereignis_Spalten.png}
+	\caption[Tabellenüberschriften in den Ereignis-Dateien]{Unterschiedliche Tabellenüberschriften in den Ereignis-Dateien;\\links (ACA\_69003) sechs Überschriften und fünf Spalten im Tabellenkörper;\\rechts (NKI\_000580) sieben Überschriften und sechs bzw. sieben Spalten im Tabellenkörper}
+	\label{fig:spalten}
+\end{figure}
 
 \begin{lstlisting}[caption={Implementierung Kriterium D1 in Skript restructure\_hypnogram.m}, label={lst:D1}]
 T = readtable(hypno_file);
@@ -57,6 +45,8 @@ for k = hypnostart:row
 end
 % ...
 \end{lstlisting}
+
+Anschließend kann der Startzeitpunkt extrahiert und mit dem Startzeitpunkt aus dem \acs{EDF}-Header verglichen werden. Zu diesem Zweck wird in der Funktion subtract\_timestrings.m die Differenz zwischen den beiden Zeitpunkten berechnet und als Anzahl von Sekunden zurückgegeben. Die Zeitdifferenz entspricht jedoch keiner ganzzahligen Anzahl an Epochen. Da Hypnogramme die Schlafstadien lediglich epochenweise, also in 30-Sekunden-Schritten, abbilden, würde ein Auffüllen der Hypnogramme um die fehlende Anzahl an Epochen nicht dazu führen, dass sich beide exakt übereinanderlegen lassen, so dass die Zuordnung der Schlafstadien nicht korrekt wäre. Aus diesem Grund müssen die zu untersuchenden Signale innerhalb der \acs{PSG} auf den Zeitraum der Hypnogramme begrenzt werden. Zu diesem Zweck wird eine Hypnogramm-Datei im TXT-Format angelegt (Hypnogram\_filename.txt) und in die erste Zeile die Zeitdifferenz in Sekunden geschrieben, um daraus bei der späteren \acs{TDS} Analyse die Begrenzung der Signale zu berechnen. Anschließend werden aus der Ereignis-Datei die Schlafstadien ausgelesen. Hierbei muss ein Abgleich zwischen den Spalten "`Schlafstadium"' und "`Ereignis"' erfolgen (Abb. \ref{fig:zeitpunkte}), um lediglich die klassifizierten Schlafstadien zu erhalten, nicht jedoch dazwischen auftretende Ereignisse. Die ursprünglichen Bezeichnungen der Schlafstadien werden in numerische Werte geändert und ebenfalls in die Hypnogramm-Datei geschrieben (Tab \ref{tab:schlafstadien}). Dieser Vorgang erfolgt in einer Schleife für sämtliche Patienten des Untersuchungsdatensatzes. Mit dem Skript (extract\_num\_epochs.m) kann darüber hinaus für jeden Patienten die Anzahl der Epochen aus dem \acs{EDF}-Header sowie aus der Ereignis-Datei berechnet und in eine Ergebnis-Datei (Epoch\_length.txt) geschrieben werden. Auf diese Weise kann ermittelt werden, ob Unterschiede existieren und wie groß die Abweichungen sind.
 
 \begin{table}[H] 
 \centering
@@ -155,14 +145,29 @@ end
 % ...
 \end{lstlisting}
 
-\paragraph{Kriterium D5} Zum Zwecke der Klassifizierung der Daten in die Gruppen "`alle"', "`Herz"', "`Atmung"', "`Schlafmittel"' sowie "`Insomnie"' erfolgt eine visuelle Auswertung der Excel-Datei, welche die Patienteninformationen beinhaltet, sowie der Ergebnis-Dateien sleep\_stages.txt, consecutive\_stages.txt und Apnea5perhour.txt. Den ersten beiden Ergebnis-Dateien können die Patienten-IDs entnommen werden, welche die einzelnen Schlafstadien nicht alle oder nicht in ausreichender Länge durchlaufen. Aus der Ergebnis-Datei über die Apnoen ergeben sich die Patienten-IDs, deren Hypnogramme mehr als fünf Apnoe-Ereignisse pro Stunde aufweisen. Nach Recherche der medizinischen Fachbegriffe, welche in den Begleiterkrankungen und -medikationen in der Excel-Datei dokumentiert sind, lassen sich in einer zusätzlichen Spalte die klassifizierten Gruppen nach dem Kriterium D5 eintragen. Anschließend erstellt das Skript create\_insomnia\_struct.m ein Struct mit insgesamt 13 Key-Value-Paaren. Die Keys stellen Fields dar, welche sich auf die Inhalte der Excel-Datei beziehen. Die dazugehörigen Values werden anschließend für jeden Patienten aus der Excel-Datei ausgelesen und in dem Struct geschrieben (Abb. \ref{fig:struct}). Dieses Struct wird zur weiteren Verwendung in Matlab als .mat-Datei (insomdata.mat) gespeichert.
+\paragraph{Kriterium D5} Zum Zwecke der Klassifizierung der Daten in die Gruppen "`alle"', "`Herz"', "`Atmung"', "`Schlafmittel"' sowie "`Insomnie"' erfolgt eine visuelle Auswertung der Excel-Datei, welche die Patienteninformationen beinhaltet, sowie der Ergebnis-Dateien sleep\_stages.txt, consecutive\_stages.txt und Apnea5perhour.txt. Den ersten beiden Ergebnis-Dateien können die Patienten-IDs entnommen werden, welche die einzelnen Schlafstadien nicht alle oder nicht in ausreichender Länge durchlaufen haben. Aus der Ergebnis-Datei über die Apnoen ergeben sich die Patienten-IDs, deren Hypnogramme mehr als fünf Apnoe-Ereignisse pro Stunde aufweisen. Nach Recherche der medizinischen Fachbegriffe, welche in den Begleiterkrankungen und -medikationen in der Excel-Datei dokumentiert worden sind, lassen sich in einer zusätzlichen Spalte die klassifizierten Gruppen nach dem Kriterium D5 eintragen. Anschließend erstellt das Skript create\_insomnia\_struct.m ein Struct mit insgesamt 13 Key-Value-Paaren. Die Keys stellen Fields dar, welche sich auf die Inhalte der Excel-Datei sowie einige Zusatzinformationen beziehen. Die dazugehörigen Values werden anschließend für jeden Patienten aus der Excel-Datei ausgelesen und in das Struct geschrieben. Dieses Struct wird zur weiteren Verwendung in Matlab als .mat-Datei (insomdata.mat) gespeichert. Daraus können sodann zu jedem Patienten die Namen der \acs{EDF}-, Ereignis- und Hypnogramm-Dateien, das Geschlecht, Alter und Geburtstdatum, die Größe, das Gewicht, der \acs{BMI}, das Datum der \acs{PSG}-Aufzeichnung, Begleiterkrankungen- und medikationen sowie die klassifizierte Gruppe entnommen werden (Abb. \ref{fig:struct}). 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width = 0.7\textwidth]{img/struct.png}
+	\includegraphics[width = 0.6\textwidth]{img/struct.png}
 	\caption[Struct mit Beispieldaten]{Struct mit Beispieldaten des Patienten ACA\_69003}
 	\label{fig:struct}
 \end{figure}
+
+Ein weiteres Skript (extract\_goup\_information.m) ermöglicht das Laden des Structs und das Extrahieren gruppenspezifischer Informationen. Durch Verwendung der Funktion \texttt{arrayfun} in Matlab kann eine darin aufgerufene Funktion auf das gesamte Struct angewendet werden, ohne zeitaufwendige Schleifen zu durchlaufen. Dies ermöglicht beispielsweise den Vergleich aller Elemente (Values) eines Fields mit einem String (z. B. 'heart', um die Indizes der Gruppe Herz zu erhalten) und die Rückgabe der entsprechenden Indizes. Anhand dieser Indizes können sodann weitere Gruppeninformationen, wie Alter oder Geschlecht, aus dem Struct extrahiert und Minima, Maxima und Mittelwerte berechnet werden (Listing \ref{lst:D5}).\\
+
+\begin{lstlisting}[caption={Implementierung Kriterium D5 in Skript extract\_goup\_information.m}, label={lst:D5}]
+% ...
+load(fullfile(insomstructpath,'insomdata.mat'));
+% find indices of group heart
+heart = arrayfun(@(x) strfind(x.group, 'heart'), insomdata, 'UniformOutput', 0);
+heart_ind = find(~cellfun('isempty', heart)); % faster than find(~cellfun(@isempty, insomgroupheart))
+% ...
+heart_w = arrayfun(@(x) strcmp(x.sex, 'w'), insomdata(heart_ind));
+heart_w_age = arrayfun(@(x) x.age, insomdata(heart_w)); % all ages of w heart
+heart_w_meanage = mean(heart_w_age); % mean age of w heart
+% ...
+\end{lstlisting}
 
 \section{\acs{TDS} Verfahren}\label{tdsVerfahren}
 

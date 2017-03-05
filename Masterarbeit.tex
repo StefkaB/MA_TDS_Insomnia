@@ -79,6 +79,27 @@
 % Seitenränder (geometry immer zuletzt)
 \usepackage[left= 3 cm,right = 2.5 cm, bottom = 2.5 cm]{geometry}
 \usepackage{xcolor}
+% dunkles Grün
+\definecolor{mygreen}{rgb}{0,0.6,0}
+% Einstellungen für Listings setzen
+\lstset{ 
+  language=Matlab, 
+  breaklines=true, 
+%  numbers=left, 
+%  numberstyle=\tiny, 
+%  numbersep=5pt, 
+  frame=single,
+  backgroundcolor=\color{lightgray},
+  basicstyle=\footnotesize,  
+  breaklines=true,
+  commentstyle=\color{mygreen},
+  keywordstyle=\color{blue},
+  numberstyle=\tiny\color{gray},
+  rulecolor=\color{black},
+  stringstyle=\color{violet},
+  captionpos=b,
+  lineskip={0.5pt}
+}
 
 % ============= Literaturverzeichnis mit BibLaTeX =============
 
