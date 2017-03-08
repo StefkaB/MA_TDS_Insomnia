@@ -4,7 +4,7 @@
 
 Die unter Punkt \ref{datenanalyse} beschriebenen Kriterien zur Auswahl und Klassifizierung der Daten werden mithilfe von Skripten und Funktionen in Matlab umgesetzt. Im Folgenden wird auf die Umsetzung der einzelnen Kriterien eingegangen. Das Kriterium D6 bleibt dabei unberücksichtigt, da es sich lediglich auf das Weglassen einer Artefaktbereinigung bezieht.
 
-\paragraph{Kriterium D1} Für die Erstellung der Hypnogramme (Skript restructure\_hypnogram.m) müssen zunächst die Startzeitpunkte aus der \acs{EDF}- sowie Ereignis-Datei jedes Patienten extrahiert werden. Nach dem Einlesen der EDF-Datei lässt sich der Startzeitpunkt der Aufnahme als String aus dem Header auslesen. Um den Startzeitpunkt der Ereignis-Datei zu ermitteln, wird die Ereignis-Datei eingelesen. Da in dieser Datei verschiedene Informationen gespeichert sind und die Spaltenanzahl daher erst ab der tabellarischen Auflistung der Schlafstadien, Zeitpunkte und Ereignisse gleich bleibt, wird mit einem String-Vergleich die Startzeile dieser Tabelle gesucht. Hierbei können die Ereignis-Dateien abweichende Spaltenzahlen aufweisen, da manche Dateien zusätzlich die Körperlage dokumentiert. Die Körperlage kann darüber hinaus als ein Wort ("`POSITION-LEFT"' oder als mehrere Wörter ("`Körperlage unbekannt"') angegeben sein, so dass ein ausschließlicher Abgleich der Tabellenüberschriften nicht zweckdienlich ist (Abb. \ref{fig:spalten}). Aus diesem Grund erfolgt die Ermittlung des Spaltenindexes durch \texttt{ismember}-Vergleich zwischen der Spaltenüberschrift "`Schlafstadium"' und einem Doppelpunkt, welcher ausschließlich in den Strings der Zeitpunkte enthalten ist (Listing \ref{lst:D1}).\\
+\paragraph{Kriterium D1} Für die Erstellung der Hypnogramme (Skript restructure\_hypnogram.m) müssen zunächst die Startzeitpunkte aus der \acs{EDF}- sowie Ereignis-Datei jedes Patienten extrahiert werden. Nach dem Einlesen der EDF-Datei lässt sich der Startzeitpunkt der Aufnahme als String aus dem Header auslesen. Um den Startzeitpunkt der Ereignis-Datei zu ermitteln, wird die Ereignis-Datei eingelesen. Da in dieser Datei verschiedene Informationen gespeichert sind und die Spaltenanzahl daher erst ab der tabellarischen Auflistung der Schlafstadien, Zeitpunkte und Ereignisse gleich bleibt, wird mit einem String-Vergleich die Startzeile dieser Tabelle gesucht. Hierbei können die Ereignis-Dateien abweichende Spaltenzahlen aufweisen, da manche Dateien zusätzlich die Körperlage dokumentieren. Die Körperlage kann darüber hinaus als ein Wort ("`POSITION-LEFT"' oder als mehrere Wörter ("`Körperlage unbekannt"') angegeben sein, so dass die Spaltenanzahl der Tabellenüberschriften sowie des Tabellenkörpers differieren können und ein ausschließlicher Abgleich der Tabellenüberschriften demnach nicht zweckdienlich ist (Abb. \ref{fig:spalten}). Aus diesem Grund erfolgt die Ermittlung des Spaltenindexes durch \texttt{ismember}-Vergleich zwischen der Spaltenüberschrift "`Schlafstadium"' und einem Doppelpunkt, welcher ausschließlich in den Strings der Zeitpunkte enthalten ist (Listing \ref{lst:D1}). Der Spaltenindex der Ereignisse (\texttt{ind\_ev)} entspricht sodann dem auf den Spaltenindex des Zeitpunkts folgenden Index.\\
 
 \begin{figure}[H]
 	\centering
@@ -46,7 +46,7 @@ end
 % ...
 \end{lstlisting}
 
-Anschließend kann der Startzeitpunkt extrahiert und mit dem Startzeitpunkt aus dem \acs{EDF}-Header verglichen werden. Zu diesem Zweck wird in der Funktion subtract\_timestrings.m die Differenz zwischen den beiden Zeitpunkten berechnet und als Anzahl von Sekunden zurückgegeben. Die Zeitdifferenz entspricht jedoch keiner ganzzahligen Anzahl an Epochen. Da Hypnogramme die Schlafstadien lediglich epochenweise, also in 30-Sekunden-Schritten, abbilden, würde ein Auffüllen der Hypnogramme um die fehlende Anzahl an Epochen nicht dazu führen, dass sich beide exakt übereinanderlegen lassen, so dass die Zuordnung der Schlafstadien nicht korrekt wäre. Aus diesem Grund müssen die zu untersuchenden Signale innerhalb der \acs{PSG} auf den Zeitraum der Hypnogramme begrenzt werden. Zu diesem Zweck wird eine Hypnogramm-Datei im TXT-Format angelegt (Hypnogram\_filename.txt) und in die erste Zeile die Zeitdifferenz in Sekunden geschrieben, um daraus bei der späteren \acs{TDS} Analyse die Begrenzung der Signale zu berechnen. Anschließend werden aus der Ereignis-Datei die Schlafstadien ausgelesen. Hierbei muss ein Abgleich zwischen den Spalten "`Schlafstadium"' und "`Ereignis"' erfolgen (Abb. \ref{fig:zeitpunkte}), um lediglich die klassifizierten Schlafstadien zu erhalten, nicht jedoch dazwischen auftretende Ereignisse. Die ursprünglichen Bezeichnungen der Schlafstadien werden in numerische Werte geändert und ebenfalls in die Hypnogramm-Datei geschrieben (Tab \ref{tab:schlafstadien}). Dieser Vorgang erfolgt in einer Schleife für sämtliche Patienten des Untersuchungsdatensatzes. Mit dem Skript (extract\_num\_epochs.m) kann darüber hinaus für jeden Patienten die Anzahl der Epochen aus dem \acs{EDF}-Header sowie aus der Ereignis-Datei berechnet und in eine Ergebnis-Datei (Epoch\_length.txt) geschrieben werden. Auf diese Weise kann ermittelt werden, ob Unterschiede existieren und wie groß die Abweichungen sind.
+Anschließend kann der Startzeitpunkt extrahiert und mit dem Startzeitpunkt aus dem \acs{EDF}-Header verglichen werden. Zu diesem Zweck wird in der Funktion subtract\_timestrings.m die Differenz zwischen den beiden Zeitpunkten berechnet und als Anzahl von Sekunden zurückgegeben. Die Zeitdifferenz entspricht jedoch keiner ganzzahligen Anzahl an Epochen. Da Hypnogramme die Schlafstadien lediglich epochenweise, also in 30-Sekunden-Schritten, abbilden, würde ein Auffüllen der Hypnogramme um die fehlende Anzahl an Epochen nicht dazu führen, dass sich beide exakt übereinanderlegen ließen, so dass die Zuordnung der Schlafstadien nicht korrekt wäre. Aus diesem Grund müssen die zu untersuchenden Signale innerhalb der \acs{PSG} auf den Zeitraum der Hypnogramme begrenzt werden. Zu diesem Zweck wird eine Hypnogramm-Datei im TXT-Format angelegt (Hypnogram\_filename.txt) und in die erste Zeile die Zeitdifferenz in Sekunden geschrieben, um daraus bei der späteren \acs{TDS} Analyse die Begrenzung der Signale zu berechnen. Anschließend werden aus der Ereignis-Datei die Schlafstadien ausgelesen. Hierbei muss ein Abgleich zwischen den Spalten "`Schlafstadium"' und "`Ereignis"' erfolgen (Abb. \ref{fig:zeitpunkte}), um lediglich die klassifizierten Schlafstadien zu erhalten, nicht jedoch dazwischen auftretende Ereignisse. Die ursprünglichen Bezeichnungen der Schlafstadien werden in numerische Werte geändert und ebenfalls in die Hypnogramm-Datei geschrieben (Tab \ref{tab:schlafstadien}). Dieser Vorgang erfolgt in einer Schleife für sämtliche Patienten des Untersuchungsdatensatzes. Mit dem Skript (extract\_num\_epochs.m) kann darüber hinaus für jeden Patienten die Anzahl der Epochen aus dem \acs{EDF}-Header sowie aus der Ereignis-Datei berechnet und in eine Ergebnis-Datei (Epoch\_length.txt) geschrieben werden. Auf diese Weise kann ermittelt werden, ob Unterschiede existieren und wie groß die Abweichungen sind.
 
 \begin{table}[H] 
 \centering
@@ -169,7 +169,60 @@ heart_w_meanage = mean(heart_w_age); % mean age of w heart
 % ...
 \end{lstlisting}
 
-\section{\acs{TDS} Verfahren}\label{tdsVerfahren}
+\section{TDS Paket}\label{tdsPaket}
 
-\section{Anwendung des \acs{TDS} Verfahrens}
+Für das Verfahren der TDS (Kapitel \ref{TDS}) liegt bereits ein von Prof. Dr. Dagmar Krefting in Matlab implementiertes Funktionspaket vor. Auf dieses wird im Folgenden zum Zwecke einer Übersicht grob eingegangen, um darauf aufbauend die für diese Arbeit notwendigen Anpassungen und Erweiterungen (Kapitel \ref{anwendungTDS}) der in dem Paket enthaltenen Funktionen zu erläutern.\\
 
+Im Wesentlichen müssen für die Ausführung der \acs{TDS} Analyse drei Funktionen des Paketes ausgeführt werden, welche der Berechnung der \acs{TDS} sowie zur Erzeugung der Ergebnismatrizen für jedes Schlafstadium dienen (im Folgenden Hauptfunktionen genannt). Darüber hinaus besteht das Paket aus diversen weiteren Funktionen, welche intern innerhalb der Hauptfunktionen zur Ausführung von Zwischenschritten aufgerufen werden.\\
+
+\paragraph{Ermittlung von Stabilitäten} Die erste der drei Hauptfunktionen (sn\_TDS.m) dient der Berechnung der Kreuzkorrelationskoeffizienten und Verschiebungen (Time Delays) sowie der Ermittlung von Stabilitäten. Zu diesem Zweck werden zu einer übergebenen \acs{PSG} im \acs{EDF} Format gemäß Kapitel \ref{datenvorverarbeitung} die Zeitreihen der relevanten Signale extrahiert. Dies ist bislang zum einen möglich für \acs{PSG}s, welche die gleiche Standardsortierung der Signale aufweisen, wie die Daten aus der SIESTA-Studie. Hierbei werden die 14 in Kapitel \ref{TDS} beschriebenen und von Krefting et. al verwendeten Signale genutzt. Zum anderen ist die Funktion gültig für \acs{PSG}s, welche den Standardbezeichnungen von Signalen im Alice6-Format folgen, wobei insgesamt 17 Signale (zusätzlich Atem- und \acs{EMG}-Signale) verwendet werden. Anschließend werden sämtliche extrahierte Zeitreihen in der Matrix \texttt{biosignals\_tds} zusammengefasst. Die Zeilen dieser Matrix entsprechen dem zeitlichen Verlauf der Signale in Sekundenschritten. Die Spalten bilden die einzelnen Zeitreihen ab. Anhand dieser Matrix wird sodann die Kreuzkorrelation mit einer Fensterlänge von 60 Sekunden sowie einer Verschiebung von 30 Sekunden durchgeführt, wobei die Zeitreihen auf einen Mittelwert von 0 und eine Standardabweichung von 1 normalisiert werden. Die zurückgegebene Matrizen der Kreuzkorrelationskoeffizienten sowie der Verschiebungen entsprechen jeweils in der Zeilenanzahl dem zeitlichen Verlauf der Signale in Sekunden und in der Spaltenanzahl dem Produkt aus dem Vergleich sämtlicher Zeitreihen miteinander, so dass 
+
+\begin{equation}
+columns = (Anzahl~der~Signale)^2
+	\label{eq:columns}
+\end{equation}
+
+gilt. Die Kreuzkorrelationsmatrix \texttt{xcc} enthält sämtliche Kreuzkorrelationskoeffizienten. Die Matrix \texttt{xcl} enthält sämtliche Werte der Verschiebungen (Time Delays). Zur Berechnung der Stabilitäten werden anschließend in Fenstern mit einer Länge von fünf Sekunden bei einer Verschiebung von einer Sekunde Minimum und Maximum der Verschiebungen aus der Matrix \texttt{xcl} innerhalb des Fensters berechnet. Überschreitet die Differenz dieser beiden Werte nicht den Wert 2, so gelten diese Verschiebungen als stabil. Sämtliche stabilen Verbindungen werden in einer Matrix \texttt{tds} mit dem Wert 1 gespeichert, sämtliche nicht stabilen Verbindungen mit dem Wert 0. Im Ergebnis weist die Matrix \texttt{tds} die gleichen Dimensionen wie die beiden vorherigen Matrizen auf und enthält demnach binäre Werte als Merkmal der Stabilität.
+
+\paragraph{Aufteilung in Schlafstadien} Die zweite Hauptfunktion (sn\_getStagesTDS.m) ermittelt auf Grundlage des Hypnogramms die Verteilung auf die einzelnen Schlafstadien. Hierzu werden zunächst die Schlafstadien \acs{NREM}3 und \acs{NREM}4 gemäß Bashan et. al zusammengefasst, indem sämtliche Schlafstadien mit dem Wert 4 im Hypnogramm auf den Wert 3 gesetzt werden. Das Schlafstadium \acs{NREM}1 wird nicht berücksichtigt. Anhand dessen wird anschließend eine dreidimensionale Ergebnis-Matrix \texttt{result} erzeugt, welche die prozentualen Anteile der stabilen Verbindungen pro Schlafstadium enthalten. Diese Matrix entspricht in erster und zweiter Dimension den untersuchten Signalen. Die dritte Dimension steht für die vier Schlafstadien Tiefschlaf, Leichtschlaf, \acs{REM}-Schlaf und Wachzustand. 
+
+\paragraph{Anzeigen der Ergebnisse} Mit Hilfe der dritten Hauptfunktion des \acs{TDS} Paketes (sn\_plotTDSMatrixSiestaAll.m) lassen sich die Ergebnisse der \acs{TDS} Analyse plotten. Hierzu wird für jedes der vier Schalfstadien durch die Matlab-Funktion \texttt{imagesc} ein Plot erzeugt. Die prozentualen Anteile werden farbig abgebildet. Dabei wird eine standardisierte Colormap verwendet, so dass die Ergebnis-Grafiken miteinander vergleichbar sind. Dunkelblaue Bereiche stellen eine sehr schwache und sehr helle Bereiche eine besonders starke Vernetzungsstärke der Systeme dar. Diese Funktion bezieht sich auf den von Krefting et. al untersuchten SIESTA-Datensatz und muss für den hiesigen Untersuchungsdatensatz angepasst werden.
+
+
+\section{Anwendung des TDS Paketes}\label{anwendungTDS}
+
+Um das \acs{TDS} Verfahren auf den hiesigen Untersuchungsdatensatz anwenden zu können, müssen einige Erweiterungen des \acs{TDS} Paketes implementiert werden. Auf diese sowie auf die Algorithmen zur Anwendung wird im Folgenden näher eingegangen.\\
+
+\paragraph{Gültigkeit für den Charit\'{e}-Datensatz} Wie bereits in Kapitel \ref{datenanalyse} beschrieben unterscheiden sich die Hypnogramme und \acs{PSG}-Aufzeichnungen des hiesigen Untersuchungsdatensatzes in ihrer Länge. Um die Funktion zur Ermittlung von Stabilitäten (sn\_TDS.m) in dieser Arbeit anwenden zu können, wird die Funktion um die Option "`Charit\'{e}"' erweitert. Wird diese Option bei Aufruf der Funktion gesetzt, so erfolgt an den entsprechenden Stellen eine von der ursprünglichen Funktion abweichende Funktionsausführung. Diese Stellen beziehen sich zum einen auf die initialen Zuweisungen der Signalkanäle und zum anderen auf sämtliche Aufrufe der einzelnen Signale innerhalb der \acs{PSG} zur Extraktion der entsprechenden Zeitreihen.\\
+
+Zunächst muss die zeitliche Differenz der Startzeitpunkte aus der zuvor neu erzeugten Hypnogramm-Datei extrahiert und anschließend durch Multiplikation mit der Abtastfrequenz der einzelnen Signale in Samples umgerechnet werden. Diese Ergebnisse werden in der Variablen \texttt{durationsamples} für alle Signale gespeichert. Als nächstes wird die Länge des Hypnogramms aus der Hypnogramm-Datei ausgelesen, in Sekunden umgerechnet und für jedes einzelne Signal mit dessen Abtastfrequenz multipliziert, um die Sampleanzahl des Hypnogramms für jedes Signal in Abhängigkeit von dessen Abtastfrequenz zu erhalten. Das Ergebnis wird ebenfalls für alle Signale in einer Variablen \texttt{hypnogramduration} gespeichert. Zuletzt wird die Länge jedes Signals ausgelesen und in gleicher Weise in der Variablen \texttt{signallengths} gespeichert. Durch Abgleich dieser drei Variablen wird anschließend für jedes Signal die Bedingung geprüft, ob das Hypnogramm addiert mit der Zeitdifferenz zwischen den Startzeitpunkten kleiner ist als die Signallänge. Das Ergebnis wird für jedes überprüfte Signal in die Variable \texttt{lengthflag} geschrieben. Ist die Bedingung erfüllt, so enthält \texttt{lengthflag} für das überprüfte Signal den Wert 1, anderenfalls den Wert 0 (Listing \ref{lst:snTDS}).
+
+\begin{lstlisting}[caption={Anpassung für den Charit\'{e}-Datensatz in der Funktion sn\_TDS.m}, label={lst:snTDS}]
+% ...
+elseif(strcmp(ch_all,'charite'))
+    disp('all channels following Charite standard are processed')
+    % hypnogram file exists
+    if hypno_flag
+        % read hypnogram
+        T = dlmread(hypno_filename);
+        %starttime difference in seconds
+        durationseconds = T(1); 
+        %starttime difference in samples for each signal
+        durationsamples = [signalheader(:).samples_in_record]/...
+            header.data_record_duration * durationseconds;
+        %hypnogram duration in samples for each signal
+        hypnogramduration = length(T(2:end))*30*sfch; 
+        %lengths of all signals
+        signallengths = cellfun('length',signalcells);
+        %boolean array - 1 if hypnogram+starttime difference is smaller
+        %than signal length 
+        lengthflag = (durationsamples(:)+1+hypnogramduration(:) <= signallengths(:));
+    else
+        disp('Hypnogram file is missing, please select hypnogram text file.')
+% ...
+\end{lstlisting}
+
+Zuweisungen
+Abfrage bei jedem Signalaufruf
+
+%in sn\_getStagesTDS.m würde Artefaktbla erfolgen, vgl. Kriterium D6

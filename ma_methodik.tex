@@ -2,16 +2,16 @@
 
 \section{Time Delay Stability}\label{TDS}
 
-Das Verfahren der \acs{TDS} stellt eine bivariate, lineare Methode zum Vergleich von Signalen und zur Bestimmung von Korrelationen zweier Biosignale innerhalb eines Netzwerks dar. Die mittels \acs{PSG} aufgezeichneten Signale stellen hierbei die einzelnen Knoten des Netzwerks dar und repräsentieren jeweils eigenständige physiologische Systeme, die innerhalb des Netzwerks interagieren. Auf diese Weise können Aussagen über die Netztopologie sowie die Vernetzungsstärke jeweils zweier Systeme getroffen werden. Diese Merkmale werden in Abhängigkeit der jeweiligen Schlafstadien untersucht. Als Schlafstadien gelten der Wachzustand, \acs{REM}-Schlaf und Tiefschlaf (N3 und N4 zusammengefasst) gemäß \acs{AASM} sowie der Leichtschlaf in Form des Schlafstadiums N2. Das Schlafstadium N1 wird hierbei außer Acht gelassen, da diese als Übergang zwischen Wachzustand und Leichtschlaf (N2) gilt. \parencite{bashan_network_2012, iber_aasm_2007}\\
+Das Verfahren der \acs{TDS} stellt eine bivariate, lineare Methode zum Vergleich von Signalen und zur Bestimmung von Korrelationen zweier Biosignale innerhalb eines Netzwerks dar. Die mittels \acs{PSG} aufgezeichneten Signale stellen hierbei die einzelnen Knoten des Netzwerks dar und repräsentieren jeweils eigenständige physiologische Systeme, die innerhalb des Netzwerks interagieren. Auf diese Weise können Aussagen über die Netztopologie sowie die Vernetzungsstärke jeweils zweier Systeme getroffen werden. Diese Merkmale werden in Abhängigkeit der jeweiligen Schlafstadien untersucht. Als Schlafstadien gelten der Wachzustand, \acs{REM}-Schlaf und Tiefschlaf (N3 und N4 zusammengefasst) gemäß \acs{AASM} sowie der Leichtschlaf in Form des Schlafstadiums N2. Das Schlafstadium N1 wird hierbei außer Acht gelassen, da dieses als Übergang zwischen Wachzustand und Leichtschlaf (N2) gilt. \parencite{bashan_network_2012, iber_aasm_2007}\\
 
-Die Bestimmung einer Korrelation zwischen zwei Systemen erfolgt auf Basis der Kreuzkorrelation, jedoch werden zur Berechnung der Korrelationsstärke nicht die Kreuzkorrelationskoeffizienten verwendet, sondern die Zeit, über welche die Werte der maximalen Koeffizienten konstant sind. Im Folgenden wird beschrieben, in welcher Weise die zu untersuchenden Signale vorverarbeitet werden müssen und wie die \acs{TDS} anschließend angewendet wird.
+Die Bestimmung einer Korrelation zwischen zwei Systemen erfolgt auf Basis der Kreuzkorrelation, jedoch werden zur Berechnung der Korrelationsstärke nicht die Kreuzkorrelationskoeffizienten verwendet, sondern die Zeit, über welche die Werte der maximalen Koeffizienten konstant sind. Im Folgenden wird beschrieben, in welcher Weise die zu untersuchenden Signale vorverarbeitet werden müssen und wie die \acs{TDS} anschließend angewendet wird. Auf die Implementierung dieses Verfahrens wird in Kapitel \ref{Implementierung} eingegangen.
 
 TODO:
 wie ist TDS implementiert
 Bartsch et al. verwendet anderes edge handling (anschauen)! aber hier TDS Methode von Dagmar verwenden, damit die Ergebnisse vergleichbar sind
 darauf verweisen, dass Implementierung des Verfahrens unter Punkt Implementierung beschrieben wird
 
-\subsection{Datenvorverarbeitung}
+\subsection{Datenvorverarbeitung}\label{datenvorverarbeitung}
 
 In dieser Arbeit werden in Anlehnung an Krefting et al. das \acs{EKG}, die nasale Atmung, Atemanstrengung in Brust und Bauch, Kinn- und Bein-\acs{EMG}, beide \acs{EOG}s sowie die sechs Standard-\acs{EEG}s gemäß \acs{AASM} verwendet. Da die Biosignale zum einen sehr unterschiedliche Merkmale aufweisen (vgl. Abb. \ref{fig:beispiel-psg}), zum anderen mit uneinheitlichen Abtastraten aufgezeichnet werden können und darüber hinaus die Kreuzkorrelation maßgeblich von den Signalwerten (Amplituden) abhängt, muss zunächst eine Vergleichbarkeit der Daten herbeigeführt werden. Zu diesem Zweck werden Zeitreihen extrahiert, welche im Ergebnis homogene Merkmale aufweisen.
 
@@ -59,7 +59,7 @@ N_L = (2\frac{N}{L})-1
 	\label{eq:zeitreihen}
 \end{equation}
 
-\subsection{Ermittlung von Korrelationen}
+\subsection{Ermittlung von Korrelationen}\label{korrelationen}
 
 Über zwei Zeitreihen $x$ und $y$ wird die Kreuzkorrelation durchgeführt, indem die eine Zeitreihe $x$ segmentweise und innerhalb jedes Segments $v$ sekundenweise über die zweite Zeitreihe $y$ geschoben wird. Für jeden Zeitpunkt der Verschiebung $T$ wird eine Zwischensumme der Kreuzkorrelation berechnet, wobei die entsprechenden Werte beider Zeitreihen miteinander multipliziert und anschließend alle Produkte addiert werden. Demnach entsteht für jeden Zeitpunkt der Verschiebung $T$ ein Eintrag in den Ergebnisvektor $xcorr$ (Formel \ref{eq:xcorr}). \parencite{bashan_network_2012}
 
@@ -109,6 +109,23 @@ In dieser Arbeit soll für die Anwendung der \acs{TDS} Analyse Matlab verwendet 
 
 
 \section{R}
+
+Open Source, Teil des GNU Projekts
+1992 in C und Fortran und später in R selbst entwickelt
+seit 1995 unter der GNU General Public License
+Pakete
+Compiler
+interpretierte Sprache
+Multiparadigmensprache, objektorientiert und funktional
+(dynamisch)
+basiert auf Vektoren
+Index beginnt bei 1 (wie Matlab)
+R requires you to load data sets into memory before processing.
+CRAN
+All R programs are composed of a series of expressions. These expressions often take
+the form of function calls. The R interpreter begins by parsing each expression,
+translating syntactic sugar into functional form. Next, R substitutes objects for symbols
+(where appropriate). Finally, R evaluates each expression, returning an object.
 
 \parencite{adler_r_2012}
 
