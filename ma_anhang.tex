@@ -2,20 +2,25 @@
 
 % in Inhaltsverzeichnis aufnehmen
 %\addcontentsline{toc}{chapter}{Anhang}
-\sectionmark{Anhang}
+%\sectionmark{Anhang}
 \lhead{}
 
-\section*{\Huge{Anhang}}
 
-\begin{longtable}{|m{0.7cm}|p{14cm}|}
-\caption[Allgemeine Insomniekriterien]{Allgemeine Insomniekriterien nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009}}
-\label{tab:allgemeine_insomnie}
-\endhead
-\hline
+%\chapter{}%alles gut, aber im Anhang steht nur A.
+%\chapter{Anhang}%überall steht A....
+%\section*{\Huge{Anhang}}
+%\Huge{Anhang}%Verzeichnis okay, aber bei Abb fehlt A.
+\addchap{Anhang}%macht alles richtig, aber leere Seite vorher
+\refstepcounter{chapter}
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+\multicolumn{2}{c}{\textbf{Allgemeine Insomniekriterien}}\\
+\midrule 
 a) & Eine Beschwerde über Einschlafschwierigkeiten, Durchschlafprobleme, frühmorgendliches Erwachen oder Schlaf von chronisch nicht erholsamer oder schlechter Qualität. Bei Kindern wird die Schlafschwierigkeit zumeist durch die Erziehungsperson bemerkt und kann darin bestehen, dass die Kinder nicht zu Bett gehen wollen oder nicht unabhängig (d. h. im eigenen Bett) von ihren Eltern schlafen können.\\
-\hline
 b) & Die genannte Schlafschwierigkeit tritt auf, obwohl adäquate Möglichkeiten und Umstände dafür vorhanden sind, genügend Schlaf zu bekommen.\\
-\hline
 c) & Zumindest eine der folgenden Formen von Beeinträchtigungen der Tagesbefindlichkeit/Leistung, die auf die nächtliche Schlafschwierigkeit zurückgeführt werden kann,wird vom Patienten berichtet:
 \begin{itemize}
 \singlespacing
@@ -30,8 +35,13 @@ c) & Zumindest eine der folgenden Formen von Beeinträchtigungen der Tagesbefind
 \item Spannungsgefühle, Kopfschmerzen oder gastrointestinale Symptome als Reaktion auf das Schlafdefizit
 \item Sorgen um den Schlaf
 \end{itemize}\\
-\hline
-\end{longtable}
+\bottomrule
+\end{tabularx}
+\caption[Allgemeine Insomniekriterien]{Allgemeine Insomniekriterien nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009}}
+\label{tab:allgemeine_insomnie}
+\end{table}
+
+
 
 \newpage
 \restoregeometry
@@ -40,33 +50,34 @@ c) & Zumindest eine der folgenden Formen von Beeinträchtigungen der Tagesbefind
 
 
 
-\begin{longtable}{|m{0.7cm}|p{14cm}|}
+\begin{table}[H] 
+\centering
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+\multicolumn{2}{c}{\textbf{Kriterien der anpassungsbedingten Insomnie}}\\
+\midrule 
+a) & Die Symptome des Patienten entsprechen den allgemeinen Insomniekriterien.\\
+b) & Die Schlafstörung ist zeitlich assoziiert mit dem identifizierbaren Stressor auf psychologischer, psychosozialer, interpersoneller, umweltbedingter, physikalischer oder medizinischer Ebene.\\
+c) & Die Schlafstörung löst sich auf,wenn der akute Stressor nicht mehr vorhanden ist, oder wenn das Individuum sich an den Stressor anpasst.\\
+d) & Die Schlafstörung dauert weniger als drei Monate.\\
+e) & Die Schlafstörung kann nicht besser erklärt werden durch eine andere gegenwärtige Schlafstörung, eine medizinische, neurologische oder psychiatrische Erkrankung oder die Einnahme von Medikamenten oder Substanzen, die den Schlaf stören können.\\
+\midrule
+\multicolumn{2}{p{0.97\textwidth}}{Die Einjahresprävalenz bei Erwachsenen liegt bei 15 \% bis 20 \%. Die anpassungsbedingte Insomnie tritt bei Frauen und Männern in jedem Alter auf, wobei Frauen häufiger betroffen sind. Im Alter steigt die Prävalenz.}\\
+\bottomrule
+\end{tabularx}
 \caption[Kriterien der anpassungsbedingten Insomnie]{Diagnostische Kriterien der anpassungsbedingten (akuten) Insomnie nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
 \label{tab:akute_insomnie}
-\endhead
-\hline
-a) & Die Symptome des Patienten entsprechen den allgemeinen Insomniekriterien.\\
-\hline
-b) & Die Schlafstörung ist zeitlich assoziiert mit dem identifizierbaren Stressor auf psychologischer, psychosozialer, interpersoneller, umweltbedingter, physikalischer oder medizinischer Ebene.\\
-\hline
-c) & Die Schlafstörung löst sich auf,wenn der akute Stressor nicht mehr vorhanden ist, oder wenn das Individuum sich an den Stressor anpasst.\\
-\hline
-d) & Die Schlafstörung dauert weniger als drei Monate.\\
-\hline
-e) & Die Schlafstörung kann nicht besser erklärt werden durch eine andere gegenwärtige Schlafstörung, eine medizinische, neurologische oder psychiatrische Erkrankung oder die Einnahme von Medikamenten oder Substanzen, die den Schlaf stören können.\\
-\hline
-& Die Einjahresprävalenz bei Erwachsenen liegt bei 15 \% bis 20 \%. Die anpassungsbedingte Insomnie tritt bei Frauen und Männern in jedem Alter auf, wobei Frauen häufiger betroffen sind. Im Alter steigt die Prävalenz.\\
-\hline
-\end{longtable}
+\end{table}
 
 
-\begin{longtable}{|m{0.7cm}|p{14cm}|}
-\caption[Kriterien der idiopathischen Insomnie]{Diagnostische Kriterien der idiopathischen Insomnie nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
-\label{tab:idiopathische_insomnie}
-\endhead
-\hline
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+\multicolumn{2}{c}{\textbf{Kriterien der idiopathischen Insomnie}}\\
+\midrule 
 a) & Die Beschwerden des Patienten entsprechen den allgemeinen Insomniekriterien.\\
-\hline
 b) & Der Verlauf der Erkrankung ist chronisch, belegt durch die folgenden Symptome:
 \begin{itemize}
 \singlespacing
@@ -75,24 +86,28 @@ b) & Der Verlauf der Erkrankung ist chronisch, belegt durch die folgenden Sympto
 \item Kein identifizierbarer vorhergehender Stressor bzw. keine Ursache
 \item Persistiert im Verlauf ohne Perioden längerer Remission
 \end{itemize}\\
-\hline
 c) & Die Schlafstörung kann nicht besser erklärt werden durch eine andere Schlafstörung, medizinische, neurologische, psychische Erkrankung oder Medikamenten- oder Substanzeinnahme.\\
-\hline
-& Die Prävalenz liegt bei 0,7 \% bis 1 \% bei jungen Erwachsenen. Frauen und Männer sind gleichermaßen betroffen. Eine familiäre Vulnerabilität sowie eine Häufung bei gleichzeitiger ADHS-Erkrankung werden vermutet.\\
-\hline
-\end{longtable}
+\midrule
+\multicolumn{2}{p{0.97\textwidth}}{Die Prävalenz liegt bei 0,7 \% bis 1 \% bei jungen Erwachsenen. Frauen und Männer sind gleichermaßen betroffen. Eine familiäre Vulnerabilität sowie eine Häufung bei gleichzeitiger ADHS-Erkrankung werden vermutet.}\\
+\bottomrule
+\end{tabularx}
+\caption[Kriterien der idiopathischen Insomnie]{Diagnostische Kriterien der idiopathischen Insomnie nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
+\label{tab:idiopathische_insomnie}
+\end{table}
+
+
 
 \newpage
 
-\begin{longtable}{|m{0.7cm}|p{14cm}|}
-\caption[Kriterien der psychophysiologischen Insomnie]{Diagnostische Kriterien der psychophysiologischen Insomnie nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
-\label{tab:psycho_insomnie}
-\endhead
-\hline
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+\multicolumn{2}{c}{\textbf{Kriterien der psychophysiologischen Insomnie}}\\
+\midrule 
 a) & Die Symptome des Patienten entsprechen den allgemeinen Insomniekriterien.\\
-\hline
 b) & Die insomnischen Symptome bestehen mindestens einen Monat.\\
-\hline
 c) & Der Betroffene zeigt Anzeichen eines konditionierten Schlafproblems und/oder erhöhten Arousals im Bett durch eines oder mehrere der folgenden Symptome:
 \begin{itemize}
 \singlespacing
@@ -103,24 +118,28 @@ c) & Der Betroffene zeigt Anzeichen eines konditionierten Schlafproblems und/ode
 \item Das kognitive Arousal im Bett wird charakterisiert durch intrusive Gedanken oder die wahrgenommene Unfähigkeit, willentlich schlafverhindernde kognitive Aktivität abzustellen
 \item Erhöhte körperliche Anspannung im Bett manifestiert sich in wahrgenommener Unfähigkeit, körperlich zu entspannen, um den Schlafbeginn einzuleiten
 \end{itemize}\\
-\hline
 d) & Die Schlafbeschwerde kann nicht besser durch eine andere Schlafstörung, eine medizinische, neurologische oder psychische Erkrankung, Medikamenten- oder Substanzeinnahme erklärt werden.\\
-\hline
-& Von der psychophysiologischen Insomnie sind hauptsächlich Frauen im mittleren Alter betroffen. Die Prävalenz steigt im Alter.\\
-\hline
-\end{longtable}
+\midrule
+\multicolumn{2}{p{0.97\textwidth}}{Von der psychophysiologischen Insomnie sind hauptsächlich Frauen im mittleren Alter betroffen. Die Prävalenz steigt im Alter.}\\
+\bottomrule
+\end{tabularx}
+\caption[Kriterien der psychophysiologischen Insomnie]{Diagnostische Kriterien der psychophysiologischen Insomnie nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
+\label{tab:psycho_insomnie}
+\end{table}
+
+
 
 \newpage
 
-\begin{longtable}{|m{0.7cm}|p{14cm}|}
-\caption[Kriterien der paradoxen Insomnie]{Diagnostische Kriterien der paradoxen Insomnie nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
-\label{tab:paradoxe_insomnie}
-\endhead
-\hline
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+\multicolumn{2}{c}{\textbf{Kriterien der paradoxen Insomnie}}\\
+\midrule 
 a) & Die Beschwerden des Patienten entsprechen den allgemeinen Insomniekriterien.\\
-\hline
 b) & Die Insomniebeschwerden bestehen mindestens einen Monat.\\
-\hline
 c) & Eines oder mehrere der folgenden Kriterien treffen zu:
 \begin{itemize}
 \singlespacing
@@ -129,7 +148,6 @@ c) & Eines oder mehrere der folgenden Kriterien treffen zu:
 \item Daten aus dem Schlaftagebuch, über eine oder mehrere Wochen erfasst, zeigen, dass die Betroffenen eine durchschnittliche Schlafzeit haben, die deutlich unter der der altersentsprechenden Normgruppen liegt. Oft wird für mehrere Nächte hintereinander gar kein Schlaf erlebt. Keine Tagschlafepisoden nach solchen Nächten
 \item Patienten zeigen konsistent das Missverhältnis zwischen objektiven Befunden aus der Polysomnographie oder Aktigraphie und ihren subjektiven Schlafeinschätzungen
 \end{itemize}\\
-\hline
 d) & Mindestens eines der folgenden Symptome tritt auf:
 \begin{itemize}
 \singlespacing
@@ -137,70 +155,76 @@ d) & Mindestens eines der folgenden Symptome tritt auf:
 \item Die Patienten berichten über ständige Wahrnehmungen von nächtlichen Stimuli (z. B. Schlagen der Kirchturmuhr)
 \item Die Patienten berichten über anhaltendes Vorhandensein von Gedanken oder Grübeleien während der ganzen Nacht
 \end{itemize}\\
-\hline
 e) & Die Tagesbeeinträchtigung, die die Patienten berichten, ist konsistent mit dem, was von anderen Schlafgestörten berichtet wird, aber sie ist weniger ausgeprägt im Verhältnis zum berichteten Schlafverlust. Kein Hinweis auf abrupten Tagschlaf. Sekundenschlaf, Desorientierung oder massive Fehler oder Irrtümer als Folge eines Schlafentzugs treten auf.\\
-\hline
 f) & Die berichtete Schlafstörung wird nicht besser durch eine andere Schlafstörung, medizinische, neurologische oder psychische Erkrankung, Medikamenteneinnahme oder Substanzeinnahme erklärt.\\
-\hline
-& Die paradoxe Insomnie tritt zumeist im Alter zwischen 20 und 40 Jahren bei Frauen und Männern gleichverteilt auf.\\
-\hline
-\end{longtable}
+\midrule
+\multicolumn{2}{p{0.97\textwidth}}{Die paradoxe Insomnie tritt zumeist im Alter zwischen 20 und 40 Jahren bei Frauen und Männern gleichverteilt auf.}\\
+\bottomrule
+\end{tabularx}
+\caption[Kriterien der paradoxen Insomnie]{Diagnostische Kriterien der paradoxen Insomnie nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
+\label{tab:paradoxe_insomnie}
+\end{table}
+
+
 
 \newpage
 
-\begin{longtable}{|m{0.7cm}|p{14cm}|}
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+\multicolumn{2}{c}{\textbf{Kriterien der Insomnie durch psychische Erkrankung}}\\
+\midrule 
+a) & Die Symptome des Patienten entsprechen den allgemeinen Insomniekriterien.\\
+b) & Die Insomnie besteht mindestens einen Monat.\\
+c) & Eine psychische Erkrankung wurde nach Standardkriterien diagnostiziert.\\
+d) & Die Insomnie ist zeitlich eng verknüpft mit der psychischen Erkrankung, sie kann jedoch in einigen Fällen einige Tage oder Wochen vor dem Beginn der psychischen Erkrankung auftreten.\\
+e) & Die Insomnie ist hervorstechender als typischerweise assoziiert mit der psychischen Erkrankung und führt eigenständig zu erhöhtem Stress oder stellt einen unabhängigen Behandlungsfokus dar.\\
+f) & Die Schlafstörung wird nicht besser erklärt durch eine andere Schlafstörung, medizinische, neurologische Erkrankung, Medikamenten- oder Substanzeinnahme.\\
+\midrule
+\multicolumn{2}{p{0.97\textwidth}}{Psychische Erkrankungen stellen die häufigste Ursache von Schlafstörungen dar. Etwa 80 \% bis 90 \% der Menschen, die an einer Depression leiden, erkranken zusätzlich an einer Insomnie.}\\
+\bottomrule
+\end{tabularx}
 \caption[Kriterien der Insomnie durch psychische Erkrankung]{Diagnostische Kriterien der Insomnie durch psychische Erkrankung nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
 \label{tab:insomnie_psychisch}
-\endhead
-\hline
+\end{table}
+
+
+
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+\multicolumn{2}{c}{\textbf{Kriterien der Insomnie durch körperliche Erkrankung}}\\
+\midrule 
 a) & Die Symptome des Patienten entsprechen den allgemeinen Insomniekriterien.\\
-\hline
-b) & Die Insomnie besteht mindestens einen Monat.\\
-\hline
-c) & Eine psychische Erkrankung wurde nach Standardkriterien diagnostiziert.\\
-\hline
-d) & Die Insomnie ist zeitlich eng verknüpft mit der psychischen Erkrankung, sie kann jedoch in einigen Fällen einige Tage oder Wochen vor dem Beginn der psychischen Erkrankung auftreten.\\
-\hline
-e) & Die Insomnie ist hervorstechender als typischerweise assoziiert mit der psychischen Erkrankung und führt eigenständig zu erhöhtem Stress oder stellt einen unabhängigen Behandlungsfokus dar.\\
-\hline
-f) & Die Schlafstörung wird nicht besser erklärt durch eine andere Schlafstörung, medizinische, neurologische Erkrankung, Medikamenten- oder Substanzeinnahme.\\
-\hline
-& Psychische Erkrankungen stellen die häufigste Ursache von Schlafstörungen dar. Etwa 80 \% bis 90 \% der Menschen, die an einer Depression leiden, erkranken zusätzlich an einer Insomnie.\\
-\hline
-\end{longtable}
-
-
-
-\begin{longtable}{|m{0.7cm}|p{14cm}|}
+b) & Die Insomnie besteht ca. einen Monat lang.\\
+c) & Der Patient hat eine koexistierende organische oder körperliche Bedingung, die den Schlaf stören kann.\\
+d) & Die Insomnie ist zeitlich eng assoziiert mit der körperlichen Erkrankung. Sie begann um den Zeitpunkt des Beginns der körperlichen Erkrankung, und die Progression entspricht der Progression der zugrunde liegenden körperlichen Erkrankung.\\
+e) & Die Schlafstörung kann nicht besser erklärt werden durch eine andere gegenwärtige Schlafstörung, eine medizinische, neurologische oder psychische Erkrankung oder die Einnahme von Medikamenten oder Substanzen, die den Schlaf stören können.\\
+\midrule
+\multicolumn{2}{p{0.97\textwidth}}{Die Prävalenz der Insomnie durch körperliche Erkrankung liegt bei 0,5 \%. Zumeist sind ältere Menschen betroffen.}\\
+\bottomrule
+\end{tabularx}
 \caption[Kriterien der Insomnie durch körperliche Erkrankung]{Diagnostische Kriterien der Insomnie durch körperliche Erkrankung nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009, happe_schlafmedizin_2009}}
 \label{tab:korperliche_insomnie}
-\endhead
-\hline
-a) & Die Symptome des Patienten entsprechen den allgemeinen Insomniekriterien.\\
-\hline
-b) & Die Insomnie besteht ca. einen Monat lang.\\
-\hline
-c) & Der Patient hat eine koexistierende organische oder körperliche Bedingung, die den Schlaf stören kann.\\
-\hline
-d) & Die Insomnie ist zeitlich eng assoziiert mit der körperlichen Erkrankung. Sie begann um den Zeitpunkt des Beginns der körperlichen Erkrankung, und die Progression entspricht der Progression der zugrunde liegenden körperlichen Erkrankung.\\
-\hline
-e) & Die Schlafstörung kann nicht besser erklärt werden durch eine andere gegenwärtige Schlafstörung, eine medizinische, neurologische oder psychische Erkrankung oder die Einnahme von Medikamenten oder Substanzen, die den Schlaf stören können.\\
-\hline
-& Die Prävalenz der Insomnie durch körperliche Erkrankung liegt bei 0,5 \%. Zumeist sind ältere Menschen betroffen.\\
-\hline
-\end{longtable}
+\end{table}
+
+
 
 \newpage
 
-\begin{longtable}{|m{0.7cm}|p{14cm}|}
-\caption[Kriterien der Insomnie durch inadäquate Schlafhygiene]{Diagnostische Kriterien der Insomnie durch inadäquate Schlafhygiene nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009}}
-\label{tab:schlafhygiene_insomnie}
-\endhead
-\hline
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+\multicolumn{2}{c}{\textbf{Kriterien der Insomnie durch inadäquate Schlafhygiene}}\\
+\midrule 
 a) & Die Symptome des Patienten entsprechen den Allgemeinen Insomniekriterien.\\
-\hline
 b) & Die Insomniebeschwerden bestehen ca. einen Monat lang.\\
-\hline
 c) & Inadäquate Schlafhygiene ist belegt durch mindestens eines der folgenden Symptome:
 \begin{itemize}
 \singlespacing
@@ -211,10 +235,14 @@ c) & Inadäquate Schlafhygiene ist belegt durch mindestens eines der folgenden S
 \item Das Bett wird für andere Aktivitäten als für Schlaf benutzt (Fernsehen, Lesen, Studieren, Essen etc.)
 \item Den Betroffenen gelingt es nicht, eine behagliche Schlafumgebung zu schaffen
 \end{itemize}\\
-\hline
 d) & Die Schlafstörung wird nicht besser erklärt durch eine andere Schlafstörung, medizinische, neurologische, psychische Erkrankung, Medikamenten- oder Substanzeinnahme.\\
-\hline
-\end{longtable}
+\bottomrule
+\end{tabularx}
+\caption[Kriterien der Insomnie durch inadäquate Schlafhygiene]{Diagnostische Kriterien der Insomnie durch inadäquate Schlafhygiene nach \acs{ICSD-2} \parencite{mayer_s3-leitlinie_2009}}
+\label{tab:schlafhygiene_insomnie}
+\end{table}
+
+
 
 
 \begin{figure}[H]
@@ -303,5 +331,52 @@ w  & m  & A    &    & wA   & wminA & wmaxA &    & mA   & mminA & mmaxA\\
 \caption[Gruppe Insomnie]{Klassifizierung der Patientengruppe Insomnie; w = Anzahl weiblicher Patienten;\\m = Anzahl männlicher Patienten; A = durchschnittliches Gruppenalter;\\wA = Durchschnittsalter weiblicher Patienten; wminA = minimales Alter weiblicher Patienten;\\wmaxA = maximales Alter weiblicher Patienten; mA = Durchschnittsalter männlicher Patienten;\\mminA = minimales Alter männlicher Patienten; mmaxA = maximales Alter männlicher Patienten}
 \label{tab:Insomnie}
 \end{table}
+
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/meanTDSheart.png}
+	\caption[\acs{TDS}-Gruppenergebnis für die Gruppe Herz]{Gemittelte \acs{TDS}-Matrizen für die Gruppe Herz;\\links: unteres linkes Dreieck = \acs{REM}-Schlaf, oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand, oberes rechts Dreieck = Leichtschlaf}
+	\label{fig:meanTDSheart}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/meanTDSbreath.png}
+	\caption[\acs{TDS}-Gruppenergebnis für die Gruppe Atmung]{Gemittelte \acs{TDS}-Matrizen für die Gruppe Atmung;\\links: unteres linkes Dreieck = \acs{REM}-Schlaf, oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand, oberes rechts Dreieck = Leichtschlaf}
+	\label{fig:meanTDSbreath}
+\end{figure}
+
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/meanTDSsleep.png}
+	\caption[\acs{TDS}-Gruppenergebnis für die Gruppe Schlafmittel]{Gemittelte \acs{TDS}-Matrizen für die Gruppe Schlafmittel;\\links: unteres linkes Dreieck = \acs{REM}-Schlaf, oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand, oberes rechts Dreieck = Leichtschlaf}
+	\label{fig:meanTDSsleep}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/meanTDSinsom.png}
+	\caption[\acs{TDS}-Gruppenergebnis für die Gruppe Insomnie]{Gemittelte \acs{TDS}-Matrizen für die Gruppe Insomnie;\\links: unteres linkes Dreieck = \acs{REM}-Schlaf, oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand, oberes rechts Dreieck = Leichtschlaf}
+	\label{fig:meanTDSinsom}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/diffTDSsiesta_all.png}
+	\caption[Differenz-Matrix der \acs{TDS}-Ergebnisse der SIESTA-Daten und der Gruppe Alle]{Differenz-Matrix der \acs{TDS}-Ergebnisse der SIESTA-Daten und der Gruppe Alle; positive Werte = Verbindungen in SIESTA-Daten stärker; negative Werte = Verbindungen in Gruppe Alle stärker\\links: unteres linkes Dreieck = \acs{REM}-Schlaf, oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand, oberes rechts Dreieck = Leichtschlaf}
+	\label{fig:diffTDSsiesta_all}
+\end{figure}
 
 \restoregeometry
