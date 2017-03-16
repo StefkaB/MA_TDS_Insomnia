@@ -62,7 +62,7 @@ N_L = (2\frac{N}{L})-1
 Über zwei Zeitreihen $x$ und $y$ wird die Kreuzkorrelation durchgeführt, indem die eine Zeitreihe $x$ segmentweise und innerhalb jedes Segments $v$ sekundenweise über die zweite Zeitreihe $y$ geschoben wird. Für jeden Zeitpunkt der Verschiebung $T$ wird eine Zwischensumme der Kreuzkorrelation berechnet, wobei die entsprechenden Werte beider Zeitreihen miteinander multipliziert und anschließend alle Produkte addiert werden. Demnach entsteht für jeden Zeitpunkt der Verschiebung $T$ ein Eintrag in den Ergebnisvektor $xcorr$: \parencite{bashan_network_2012}
 
 \begin{equation}
-xcorr(x_v, y_v)(T) = \sum \limits_{i=1}^L x_v(i)*y_v(T+i).
+xcorr(x_v, y_v)(T) = \sum \limits_{i=1}^L x_v(i) \cdot y_v(T+i).
 	\label{eq:xcorr}
 \end{equation}
 
@@ -92,7 +92,61 @@ Das Verfahren der TDS stellt demnach ein Werkzeug zur Untersuchung der physiolog
 
 gmean, smean, nmean
 
-\section{Statistische Verfahren}
+\section{Lineare Regression}
+
+Das Ziel der linearen Regression ist die Vorhersage einer Zielgröße anhand bekannter Variablen. Diese Vorhersage beruht zum einen auf unabhängigen Werten $x_i$ und zum anderen auf von $x_i$ abhängigen Werten $y_i$. $x$ und $y$ stellen demnach Messreihen dar, wobei $y$ von $x$ abhängt. Ein einfaches Beispiel stellt die Schuhgröße in Abhängigkeit zur Körpergröße dar. Die Wertpaare lassen sich als Punktwolke grafisch darstellen. Die lineare Regression stellt hierbei ein statistisches Werkzeug zur Bestimmung einer idealen Regressionslinie durch die Punktwolke gemäß
+
+\begin{equation}
+y = a + b \cdot x + \epsilon
+	\label{eq:linreg}
+\end{equation}
+
+dar mit $y$ als abhängige Zielgröße, der unabhängigen Variablen $x$, der Konstanten $a$ als Schnittpunkt mit der y-Achse, dem Regressionskoeffizienten $b$ sowie einem Fehlerwert $\epsilon$. Der Regressionskoeffizient wird anhand der einzelnen Werte in den Messreihen sowie deren Mittelwerte gemäß
+
+\begin{equation}
+b = \frac{\sum \limits_{i=1}^n(x_i-\overline{x}) \cdot (y_i-\overline{y})}{\sum \limits_{i=1}^n(x_i-\overline{x})^2} 
+	\label{eq:regcoef}
+\end{equation}
+
+berechnet, wobei $\overline{x}$ und $\overline{y}$ die jeweiligen Mittelwerte der Messreihen darstellen. Die Konstante $a$ wird anschließend anhand von 
+
+\begin{equation}
+a = \overline{y} - b \cdot \overline{x}
+	\label{eq:konstante}
+\end{equation}
+
+berechnet. Mit Hilfe von $a$ und $b$ kann demnach für jedes $x$ eine Vorhersage für den Zielwert $y$ getroffen werden. Da der Zielwert meist Schwankungen unterliegt, definiert $\epsilon$ den Fehlerwert. \parencite{frank_einfach_2006}\\
+
+In einem linearen Modell wird zunächst eine Null-Hypothese aufgestellt 
+
+\begin{equation}
+H_0: b = 0.
+	\label{eq:null-hypo}
+\end{equation}
+
+In dem Beispiel der Körper- und Schuhgröße würde dies bedeuten, dass die Körpergröße keinen Einfluss auf die Schuhgröße hat. Der p-Wert gibt darüber hinaus die Signifikanz der Korrelation an. Je näher der p-Wert dem Wert 0 ist, desto höher ist die Signifikanz. Ein p-Wert, der größer als 0,05 ist beschreibt keine signifikante Korrelation der Variablen.  
+
+\section{Korrelationsverfahren}
+
+Korrelationsverfahren dienen zur Messung des Zusammenhangs zweier Variablen. Mit Hilfe des Korrelationskoeffizienten nach Pearson wird der lineare Zusammenhang zweier Messreihen $x$ und $y$ ermittelt durch
+
+\begin{equation}
+r =  \frac{\sum \limits_{i=1}^n (x_i-\overline{x}) \cdot (y_i-\overline{y})}{\sqrt{\sum \limits_{i=1}^n (x_i-\overline{x})^2} \cdot \sqrt{\sum \limits_{i=1}^n (y_i-\overline{y})^2}}.
+	\label{eq:pearson}
+\end{equation}
+
+Der Korrelationskoeffizient nach Spearman, auch Rangkorrelation genannt, wird nicht anhand der Messwerte, sondern anhand ihrer Ränge berechnet. Hierzu wird für jeden Wert beider Messreihen ein Rang vergeben in der Form, dass beispielsweise die höchste Körpergröße den Rang 1 erhält und die geringste den letzten Rang innerhalb der Messreihe. Für die Messreihe der Schuhgröße erfolgt die Rangvergabe nach identischem Muster, so dass die größte Schuhgröße den Rang 1 und die kleinste den letzten Rang der Messreihe erhält. Bei der grafischen Darstellung dieser Ränge geht der Zusammenhang der vorherigen Messwertpaare demnach verloren. Berechnet wird die Rangkorrelation in gleicher Weise wie der Korrelationskoeffizient nach Pearson, jedoch werden die Messwerte $x_i$ und $y_i$ durch ihre Ränge ersetzt, so dass 
+
+\begin{equation}
+r_{Sp} =  \frac{\sum \limits_{i=1}^n (Rang(x_i)-\overline{Rang(x)}) \cdot (Rang(y_i)-\overline{Rang(y)})}{\sqrt{\sum \limits_{i=1}^n (Rang(x_i)-\overline{Rang(x)})^2} \cdot \sqrt{\sum \limits_{i=1}^n (Rang(y_i)-\overline{Rang(y)})^2}}
+	\label{eq:spearman}
+\end{equation}
+
+gilt. Demnach wird mit Hilfe des Korrelationskoeffizienten nach Spearman nicht der lineare, sondern der monotone Zusammenhang zwischen zwei Variablen ermittelt. \parencite{frank_einfach_2006}\\
+
+Für beide Verfahren gilt, dass der Korrelationskoeffizient $r$ bzw. $r_{Sp}$ stets zwischen -1 und 1 liegt. Bei einem Korrelationskoeffizienten $\approx$ 0 besteht keine Korrelation. Sind $r$ bzw. $r_{Sp}$ kleiner als der Wert 0, existiert eine negative Korrelation, so dass steigende $x$-Werte abfallende $y$-Werte bewirken. Bei einem Korrelationskoeffizienten, der größer als der Wert 0 ist, besteht hingegen eine positive Korrelation, so dass steigende $x$-Werte wachsende $y$-Werte hervorrufen. In einem linearen Modell wird wiederum ein p-Wert erstellt, welcher die Signifikanz der Korrelation zwischen den Variablen repräsentiert. Ein p-Wert, der kleiner als der Wert 0,05 ist, gilt als signifikante Korrelation. \parencite{frank_einfach_2006}\\
+
+Voraussetzung für die Anwendung des Korrelationsverfahrens nach Pearson ist eine Normalverteilung der Messreihen. Um diese Voraussetzung zu prüfen, wird der Shapiro-Wilk-Test verwendet.
 
 \section{Matlab}
 
