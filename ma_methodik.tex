@@ -90,7 +90,30 @@ Das Verfahren der TDS stellt demnach ein Werkzeug zur Untersuchung der physiolog
 
 \section{Mittelwertberechnung}
 
-gmean, smean, nmean
+In dieser Arbeit werden verschiedene Methoden der Mittelwertberechnung verwendet. Zur Mittelung der Verbindungsstärken innerhalb der Ergebnis-Matrizen aller Patienten, werden die Ergebnis-Matrizen der Patienten für jedes Schlafstadium übereinandergelegt, addiert und anschließend durch die Summe der Patienten dividiert gemäß
+
+\begin{equation}
+smean(x,y,s) = \frac{\sum \limits_{i=1}^N l_{tds}(x,y,s)_i}{N},
+	\label{eq:smean}
+\end{equation}
+
+wobei $l_{tds}$ die prozentualen Verbindungsstärken beschreibt, $x$ und $y$ die Zeitreihen, $s$ das jeweilige Schlafstadium und $N$ die Anzahl der Patienten. Das Ergebnis \textit{smean} stellt demnach wiederum eine Matrix mit den gleichen Dimensionen wie die einzelnen Ergebnis-Matrizen der Patienten dar. Bashan et al. definieren die Mittelwertberechnung über die Ergebnis-Matrizen der Patienten durch Aneinanderreihung der Zeitreihen und Division durch die Anzahhl der Epochen des entsprechenden Schlafstadiums als 
+
+\begin{equation}
+gmean(x,y,s) = \frac{\sum \limits_{i=1}^N tds_{x,y}(v(s))_i}{\sum \limits_{i=1}^N v_{si}}
+	\label{eq:gmean}
+\end{equation}
+
+mit den Zeitreihen $x$ bzw. $y$, der Anzahl der Patienten $N$, der Anzahl der Epochen pro Schlafstadium $v_s$ sowie den Schlafstadien $s$. Ein Vergleich beider Verfahren von Krefting et al. zeigt keine signifikanten Unterschiede in den Ergebnissen beider Verfahren, so dass in dieser Arbeit lediglich die Mittelwertberechnung von \textit{smean} verwendet wird. \parencite{bashan_network_2012, krefting_age_2017}\\
+
+Darüber hinaus wird zur Berechnung des globalen Mittelwerts die mittlere Verbindungsstärke über eine Ergebnis-Matrix berechnet gemäß
+
+\begin{equation}
+nmean(i,s) = \frac{\sum \limits_{x=1}^N tds_{x,y}(v(s))_i}{\sum \limits_{i=1}^N v_{si}}
+	\label{eq:nmean}
+\end{equation}
+
+mit den Zeilen $x$ und Spalten $y$ der Ergebnis-Matrix, der jeweiligen prozentualen Verbindungsstärker zweier Systeme $l_{tds}$ sowie $N_n$ als Anzahl der Netzwerkknoten bzw. Systeme. \textit{nmean} beschreibt demnach die Gesamtverbindungsstärke eines Patienten pro Schlafstadium, wobei diese über das obere rechte Dreieck und ohne die Autokorrelation der Systeme berechnet wird. \parencite{krefting_age_2017}
 
 \section{Lineare Regression}
 
@@ -146,7 +169,31 @@ gilt. Demnach wird mit Hilfe des Korrelationskoeffizienten nach Spearman nicht d
 
 Für beide Verfahren gilt, dass der Korrelationskoeffizient $r$ bzw. $r_{Sp}$ stets zwischen -1 und 1 liegt. Bei einem Korrelationskoeffizienten $\approx$ 0 besteht keine Korrelation. Sind $r$ bzw. $r_{Sp}$ kleiner als der Wert 0, existiert eine negative Korrelation, so dass steigende $x$-Werte abfallende $y$-Werte bewirken. Bei einem Korrelationskoeffizienten, der größer als der Wert 0 ist, besteht hingegen eine positive Korrelation, so dass steigende $x$-Werte wachsende $y$-Werte hervorrufen. In einem linearen Modell wird wiederum ein p-Wert erstellt, welcher die Signifikanz der Korrelation zwischen den Variablen repräsentiert. Ein p-Wert, der kleiner als der Wert 0,05 ist, gilt als signifikante Korrelation. \parencite{frank_einfach_2006}\\
 
-Voraussetzung für die Anwendung des Korrelationsverfahrens nach Pearson ist eine Normalverteilung der Messreihen. Um diese Voraussetzung zu prüfen, wird der Shapiro-Wilk-Test verwendet.
+Voraussetzung für die Anwendung des Korrelationsverfahrens nach Pearson ist eine Normalverteilung der Messreihen. Um diese Voraussetzung zu prüfen, wird der Shapiro-Wilk-Test verwendet. Hierbei wird die Null-Hypothese aufgestellt, dass eine Stichprobe~$x$ normalverteilt ist. Insbeosndere bei kleinen Stichproben mit weniger als 50 Messwerten zeichnet sich der Shapiro-Wilk-Test durch eine hohe Teststärke aus. Auf Grundlage geschätzter Varianzen dieser Stichprobe wird mit dem Shapiro-Wilk-Test die Teststatistik
+
+\begin{equation}
+W =  \frac{b^2}{(n - 1)s^2}
+	\label{eq:shapiro}
+\end{equation}
+
+berechnet. Die Teststatistik $W$ stellt dabei eine Kennzahl dar, welche das Verhältnis zwischen geschätzter ($b^2$) und tatsächlicher Varianz ($s^2$) der Stichprobe angibt. Zunächst werden die Stichprobenwerte aufsteigend sortiert, so dass $x_1 < x_2 < ... < x_n$ gilt. Anschließend wird die geschätzte Varianz berechnet durch
+
+\begin{equation}
+b =  \sum \limits_{i=1}^k a_{n-i+1} \cdot (x_{n-i+1} - x_i), \text{ mit} \begin{cases}
+     k = \frac{n}{2} & \text{für gerades n}\\
+     k = \frac{n-1}{2} & \text{für ungerades n}
+   \end{cases}
+	\label{eq:var1}
+\end{equation}
+
+und die tatsächliche Stichprobenvarianz durch 
+
+\begin{equation}
+s^2 = \frac{\sum \limits_{i=1}^n (x_i - \overline{x})^2}{n - 1}.
+	\label{eq:var1}
+\end{equation}
+
+Hierbei entspricht $n$ der Menge der Stichprobenwerte und $a$ einem Signifikanzniveau (meistens 5~\%). Die Teststatistik $W$ wird anschließend mit einem kritischen Wert $W_{kritisch}$ verglichen, welcher der Shapiro-Wilk-Tabelle entnommen werden kann. Ist $W > W_{kritisch}$, wird die Null-Hypothese bestätigt und eine Normalverteilung der Grundgesamtheit wird angenommen. Darüber hinaus gibt der p-Wert die Wahrscheinlichkeit an, dass die Stichprobe aus einer normalverteilten Grundgesamtheit stammt. Ist der p-Wert größer als das Signifikanzniveau $a$, so kann die Null-Hypothese ebenfalls bestätigt werden. \parencite{frank_einfach_2006, shapiro_analysis_1965}
 
 \section{Matlab}
 
@@ -154,7 +201,7 @@ Matlab ist eine in den 1970er Jahren in Fortran entwickelte und von The Mathwork
 
 Matlab ähnelt in seiner Syntax zwar der Programmiersprache C, stellt jedoch eine proprietäre Programmier- bzw. Skriptsprache dar. Anwendungen können entweder in Skripten geschrieben oder als atomare Funktionen entwickelt werden, was eine Erstellung der in Matlab charakteristischen Toolboxes unterstützt. Matlab ist darüber hinaus eine Sprache mit dynamischer Typisierung. Dies erhöht die Lesbarkeit des Codes und die Produktivität des Entwicklers. Funktionen sind hierdurch einerseits flexibler, da sie oft weniger Code enthalten als in einer stark typisierten Sprache. Andererseits müssen Funktionen nicht überladen werden, um für unterschiedliche Datentypen zu gelten. Variablen müssen darüber hinaus nicht mit expliziten Datentypen initialisiert werden. Als interpretierte Programmiersprache (oder Skriptsprache) bietet Matlab ferner den Vorteil, dass Code schnell getestet und angewendet werden kann - ohne den zeitaufwendigen Zwischenschritt der Kompilierung. Dies ermöglicht das Testen von Skripten oder Skriptausschnitten mit beliebigen Startpunkten der Ausführung sowie das Testen atomarer Funktionen, ohne eine Main-Klasse ausführen zu müssen, wie z. B. in Java. Eine Erstellung eigenständig lauffähiger Programme ist jedoch durch Erweiterung der Grundfunktionen von Matlab ebenfalls möglich. \parencite{stein_programmieren_2012}\\
 
-Nachteil von Matlab ist zum einen die Speicherverwaltung, da der Standarddatentyp für numerische Variablen double mit einem Speicherplatz von 64 bit ist. Eine starke Typisierung könnte hingegen das Speichermanagement optimieren. Zum anderen stellt Matlab keine kompilierte Sprache dar, so dass in der Grundfunktionalität die Erzeugung lauffähiger Anwendungsprogramme nicht möglich ist. Darüber hinaus dient die statische Codeanalyse lediglich der Überprüfung des Datenflusses, es entfällt jedoch die Überprüfung des Programmcodes zur Übersetzungszeit, so dass Fehler erst bei Ausführung der Funktion erkannt werden.\\
+Nachteil von Matlab ist zum einen die Speicherverwaltung, da der Standarddatentyp für numerische Variablen \texttt{double} mit einem Speicherplatz von 64 bit ist. Eine starke Typisierung könnte hingegen das Speichermanagement optimieren. Zum anderen stellt Matlab keine kompilierte Sprache dar, so dass in der Grundfunktionalität die Erzeugung lauffähiger Anwendungsprogramme nicht möglich ist. Darüber hinaus dient die statische Codeanalyse lediglich der Überprüfung des Datenflusses, es entfällt jedoch die Überprüfung des Programmcodes zur Übersetzungszeit, so dass Fehler erst bei Ausführung der Funktion erkannt werden.\\
 
 In dieser Arbeit soll für die Anwendung der \acs{TDS}-Analyse Matlab verwendet werden, da die verwendeten Analyseverfahren mathematisch basiert sind und Matlab einerseits als funktionale Sprache für numerische Berechnungen besonders geeignet ist und andererseits Berechnungen einfacher als in kompilierten Sprachen zu implementieren sind. Da im Rahmen dieser Arbeit kein eigenständiges System entwickelt wird, sondern Analyseverfahren angewendet werden sollen, ist Matlab als interpretierte Sprache mit dynamischer Typisierung optimal geeignet, um schnell Zwischenergebnisse zur erzeugen und diese zu verifizieren, auszuwerten und grafisch darzustellen. Aufgrund der Aufgabenstellung sowie des relativ kleinen Untersuchungsdatensatzes (Kapitel \ref{analyse}) kann auch der Nachteil einer weniger effizienten Speicherverwaltung vernachlässigt werden. Da Matlab darüber hinaus unter anderem für die Signalverarbeitung ausgelegt ist, soll die Anwendung des \acs{TDS}-Verfahrens in Matlab umgesetzt werden. Hierfür wird  Matlab in der Version 2015b verwendet.
 
@@ -166,33 +213,20 @@ In dieser Arbeit soll für die Anwendung der \acs{TDS}-Analyse Matlab verwendet 
 
 \section{R}
 
-Open Source, Teil des GNU Projekts
-1992 in C und Fortran und später in R selbst entwickelt
-seit 1995 unter der GNU General Public License
-Pakete
-Compiler
-interpretierte Sprache
-Multiparadigmensprache, objektorientiert und funktional
-(dynamisch)
-basiert auf Vektoren
-Index beginnt bei 1 (wie Matlab)
-R requires you to load data sets into memory before processing.
-CRAN
-All R programs are composed of a series of expressions. These expressions often take
-the form of function calls. The R interpreter begins by parsing each expression,
-translating syntactic sugar into functional form. Next, R substitutes objects for symbols
-(where appropriate). Finally, R evaluates each expression, returning an object.
-objektorientert: jedes Objekt in R hat einen Datentypen und jedes Objekt gehört einer Klasse an; eine Funktion in R ist demnach ein Objekt der Klasse \texttt{function}; Symbole und Expressions sind auch Objekte
-By default, numbers in R expressions are interpreted as double-precision floatingpoint
-numbers (double), even when you enter simple integers.
-You can define your own binary operators.
-über Editor können Variablen sehr leicht verändert werden durch Aufruf des Inhalts in einem Editor, z. Tabelle) top.5.salaries <- edit(top.5.salaries)
-mit R Studio
+R ist als Teil des GNU Projekts eine Open-Source-Programmierumgebung zur Anwendung statistischer Verfahren sowie zur grafischen Darstellung von Daten und steht seit dem Jahr 1995 unter der GNU General Public License. Die Sprache R wurde im Jahr 1992 von Robert Gentleman und Ross Ihaka in C und Fortran sowie später in R selbst in Anlehnung an die Programmiersprache S entwickelt und stellt eine interpretierte Multiparadigmensprache mit dynamischer Typisierung dar. Dies bezieht sich darauf, dass R zum einen objektorientiert und zum anderen funktional ist. Sämtliche Daten (z. B. Variablen, Funktionen, Ausdrücke etc.) in R stellen Objekte dar, wohingegen sämtliche Aktionen Funktionsaufrufe repräsentieren. Eine R-Distribution enthält einige Standard-Pakete, welche Basisfunktionen für statistische Berechnungen und grafische Darstellungen realisieren, und kann simpel über das \acl{CRAN} (\acs{CRAN}) erweitert werden.\footnote{https://www.r-project.org/about.html (Stand: 18.03.2017)} Das Paket \texttt{R.matlab} beispielsweise ermöglicht das Lesen und Schreiben von Matlab-Code (.m-Dateien) und gespeicherten Variablen (.mat-Dateien) sowie das Starten von Matlab und die Ausführung von Matlab-Code im Hintergrund aus R heraus. Im \acs{CRAN} können Nutzer darüber hinaus selbst entwickelte Pakete zur Verfügung stellen. \parencite{adler_r_2012}\\
 
+Jedes Objekt in R besitzt einen bestimmten Datentypen und gehört einer Klasse an. Funktionen sind beispielsweise Objekte der Klasse \texttt{function}. R basiert auf Vektoren. Die grundlegenden Objekte in R stellen demnach Zeichen- und numerische Vektoren und darüber hinaus Matrizen, Arrays und Data Frames dar. Vektoren sind hierbei eindimensional, Matrizen zwei- und Arrays mehrdimensional. Data Frames können hingegen als Tabellen verstanden werden. Der Standard-Datentyp in R ist wie in Matlab \texttt{double}. Es können ebenso Funktionen und Skripte erstellt werden. Darüber hinaus kann in R das Paket \texttt{R.compiler} zur Erstellung lauffähiger Programme geladen werden.\\
 
-\parencite{adler_r_2012}
+Als interpretierte Sprache mit dynamischer Typisierung bietet R die gleichen Vorteile wie Matlab. Ein Nachteil liegt darin, dass R die Daten vor der Weiterverarbeitung zunächst in den RAM lädt. Dies kann bei besonders großen Datensätzen zu Laufzeitproblemen führen. Gegenüber Matlab bietet R jedoch den Vorteil, dass es speziell für statistische Berechnungen ausgelegt ist mit einer besonderen Stärke in der grafischen Darstellung von Daten. In Matlab hingegen sind in der Grundausführung lediglich statistische Standardfunktionen implementiert, welche durch eine Statistik-Toolbox erweitert werden können. R ist vor allem im wissenschaftlichen Umfeld weit verbreitet. Dies zeigt das IEEE-Ranking\footnote{http://spectrum.ieee.org/static/interactive-the-top-programming-languages-2016 (Stand: 19.03.2017)} über die Top-Prgrammiersprachen im Jahr 2016, in dem R mit einem Ranking von 87,9 (von 100) Platz 5 belegt, während Matlab mit einem Ranking von 68,5 lediglich Platz 10 erreicht. Aus diesen Gründen wird für die statistische Analyse der \acs{TDS}-Ergebnisse R verwendet. Darüber hinaus wird R Studio als Open-Source-IDE für R genutzt, da es zum einen eine umfangreichere grafische Oberfläche von R implementiert mit R-Konsole, Workspace, Editor und History, während R selbst lediglich die Konsole umfasst. Zum anderen bietet R Studio u. a. Syntax-Highlighting, Ausführung aus dem Editor heraus sowie Debugging-Funktionen.\footnote{https://www.rstudio.com/products/RStudio/ (Stand: 18.03.2017)} In dieser Arbeit wird R in der Version 3.3.2 und R Studio in der Version 1.0.136 verwendet.
 
 \section{Vorgehen}
 
+Um das \acs{TDS}-Verfahren auf die hiesigen Daten der Insomniepatienten anwenden zu können, muss im ersten Schritt eine Datenanalyse erfolgen. Insbesondere die Heterogenität der Voraussetzungen der Patienten durch verschiedene Begleiterkrankungen und ggf. unterschiedliche Arten der Insomnie mit differenter Ausprägung der Schlafstadien macht Überlegungen notwendig, inwiefern eine Vergleichbarkeit der Daten untereinander sowie mit den Ergebnissen von Krefting et al. \parencite{krefting_age_2017} herbeigeführt werden kann. Aus diesem Grund werden Kriterien definiert, anhand derer ggf. Gruppen mit ähnlichen Merkmalen gebildet und Daten bei Nichterfüllung dieser Kriterien von den weiteren Untersuchungen ausgeschlossen werden. Im nächsten Schritt werden die Matlab-Funktionen des \acs{TDS}-Pakets um Codeblöcke zur Anwendung auf den hiesigen Datensatz der Charit\'{e} Berlin erweitert. Dies ist notwendig, da sich der hiesige Datensatz in Anzahl und Sortierung der Signale sowie in den Hypnogrammen von dem von Krefting et al. untersuchten Datensatz unterscheidet. Anschließend wird das \acs{TDS}-Verfahren auf Daten der jeweiligen Gruppen ausgeführt. Um Gruppenergebnisse zusammenzufassen und auszuwerten, werden die Mittelwerte \textit{smean} mit Matlab berechnet und die Ergebnisse gegenübergestellt sowie mit den gemittelten \acs{TDS}-Matrizen der SIESTA-Daten verglichen.\\
+
+Im nächsten Schritt werden mit Hilfe von R statistische Verfahren angewendet, um die Ergebnisse mit denen von Krefting et al. bei gesunden Probanden zu vergleichen. Zu diesem Zweck werden die Subnetzwerke gemäß Krefting et al. untersucht und für diese die globalen Verbindungsstärken \textit{nmean} und die Anzahl der Verbindungen gegenübergestellt. Darüber hinaus sollen die Mittelwerte \textit{smean} der weiblichen sowie der männlichen Insomniepatienten durch Subtraktion der \acs{TDS}-Matrizen miteinander verglichen werden (+Signifikanzlevel). Ferner erfolgt ein Vergleich der jüngsten und ältesten Patienten des Datensatzes sowie eine Gegenüberstellung der globalen Verbindungsstärke \textit{nmean} und dem Alter jedes Patienten. Eine lineare Regression sowie die Anwendung der Korrelationsverfahren (+Signifikanzlevel) soll Aufschluss über den Zusammenhang beider Parameter geben.\\
+
+Anhand dieser Untersuchungen sollen \acs{TDS}-Merkmale für Insomniepatienten abgeleitet werden. Darüber hinaus soll ein Leitfaden für die Vorauswahl der Daten sowie für die Anwendung des \acs{TDS}-Verfahrens auf Datensätze der Charit\'{e} Berlin entwickelt werden. Ferner werden Alters- und Geschlechtsabhängigkeiten des \acs{TDS}-Verfahrens bei Insomniepatienten beschrieben. Die Ergebnisse werden in Hinblick auf die Beschaffenheit der Daten sowie im Vergleich zu den Ergebnissen gesunder Probanden diskutiert. Sämtliche Plots von \acs{TDS}-Matrizen werden mit Matlab erstellt. Die übrigen Plots werden mit Hilfe von R erzeugt.
+
+
 %da lediglich die Anwendung verschiedener Verfahren programmiert werden soll, jedoch kein Programm zur häufigen Anwendung, ist keine Kompilierung notwendig und Matlab vor allem aufgrund des schnellen Testens geeignet, um die hiesige Problemstellung zu lösen. 
-hauptsächlich werden Skripte (in dieser Arbeit zur einmaligen Ausführung) erstellt
+%hauptsächlich werden Skripte (in dieser Arbeit zur einmaligen Ausführung) erstellt
