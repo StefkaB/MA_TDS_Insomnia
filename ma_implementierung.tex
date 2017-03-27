@@ -291,7 +291,7 @@ end
 % ...
 \end{lstlisting}
 
-\section{Gegenüberstellung Alter - Verbindungsstärke}
+\section{Lineare Regression}
 
 Zur Untersuchung des Zusammenhangs zwischen dem Alter und den globalen Verbindungsstärken der Patienten, wird die in Matlab erstellte Matrix \texttt{nmean\_age.mat} verwendet. Hierzu dient das R-Skript linreg\_nmean\_age.R. Zunächst wird das Matlab-Paket importiert, wodurch das Laden von Matlab-Variablen in R mit Hilfe der Funktion \texttt{readMat} ermöglicht wird. Die Variable nmean\_age.mat wird in R als eine Liste mit einer Länge von 512 Elementen angelegt, so dass die Elemente in R aneinandergereiht werden. Um auf die einzelnen Elemente dieser Liste (Verbindungsstärke und Alter jedes Patienten pro Schlafstadium) zugreifen zu können, wird die Liste durch die Funktion \texttt{unlist} in ein dreidimensionales Array vom Typ \texttt{double} und einer Länge von jeweils 64 Elementen umgewandelt. Dies entspricht dem Format, wie die Variable in Matlab erzeugt worden ist. Anschließend können die globalen Verbindungsstärken sowie das Alter der Patienten für jedes Schlafstadium als numerische Vektoren vom Typ \texttt{double} extrahiert werden. Aus diesen Vektoren wird für jedes Schlafstadium ein Data Frame erstellt. Aus diesen werden sodann für jedes Schlafstadium und für die weiblichen, für die männlichen sowie für alle Patienten lineare Modelle erstellt. Hierbei werden die globalen Verbindungsstärken als abhängige Variable und das Alter als unabhängige Variable gesetzt. Anschließend wird ein Streudiagramm mit unterschiedlicher Darstellung der weiblichen und männlichen Patienten erzeugt. Mit Hilfe der R-Funktion \texttt{abline} sowie der linearen Modelle können sodann die Regressionsgeraden eingezeichnet werden.\\
 
@@ -318,5 +318,30 @@ abline(insomdata_m_ls.linm, col="blue",lty=3)
 Mit Hilfe der R-Funktion \texttt{summary} können darüber hinaus die Parameter der linearen Regression berechnet und ausgegeben werden. Die R-Funktion \texttt{shapiro.test} dient der Überprüfung auf Normalität. Zu diesem Zweck wird eine Stichprobe von jeweils 20 Elementen erstellt. Die Funktion liefert die W-Statistik sowie den p-Wert zurück. Die Korrelationsverfahren nach Pearson und nach Spearman werden durch die R-Funktion \texttt{cor.test} mit den Optionen \texttt{method="pearson"} bzw. \texttt{method="spearman"} implementiert. Diese geben die Korrelationkoeffizienten sowie den p-Wert zurück.
 
 %p-Wert nach Pearson entspricht dem p-Wert der linearen Regression
+
+\section{Statistisches Matching}
+
+Zum statistischen Matching dienen zum einen die Structs \texttt{insomdata} und \texttt{insomresults} über die Insomniepatienten und zum anderen die ebenfalls in Structs gespeicherten Informationen über die Teilnehmer der SIESTA-Studie. In dem Struct \texttt{siesta} werden allgemeine Informationen, wie Alter und Geschlecht sowie Status (gesund oder Art der Erkrankung) gehalten. In dem Struct \texttt{bothnights} sind die berechneten \acs{TDS}-Matrizen der gesunden Probanden enthalten. Die Empfängergruppe entspricht bereits einer zufällig sortierten Liste und wird gemäß Smith mit aufsteigendem Index durchlaufen. Die Reihenfolge in der Spendergruppe entspricht den teilnehmenden Schlaflaboren. Anders als bei dem Verfahren von Smith wird die Spendergruppe zuvor nicht zufällig sortiert, um eine durch Neusortierung des Structs \texttt{bothnights} mögliche Fehlerquelle auszuschließen. Stattdessen wird bei jedem gefundenen Zwilling die Spendergruppe für den nächsten Empfängerdatensatz nicht erneut von vorn durchlaufen, sondern ab dem auf den zuletzt gefunden Zwilling folgenden Index. Auf diese Weise wird garantiert, dass nicht zuerst sämtliche Spenderdatensätze des ersten Schlaflabors, anschließend des zweiten etc. überprüft werden, sondern die Spendergruppe fortlaufend überprüft wird. Ist die Spendergruppe vollständig durchlaufen, so wird der Suchindex zurück auf 1 gesetzt und die Suche wiederholt sich in gleicher Weise. Da in dem Struct \texttt{bothnights} für die meisten Probanden \acs{PSG}s von zwei Nächten enthalten sind, werden durch Abgleich der Probanden-ID alle zu dem Probanden gehörigen \acs{PSG}s aus der Spendergruppe gestrichen, so dass jeder gesunde Proband maximal einmal gematcht wird (Listing \ref{lst:matching}). Für vier Insomniepatienten konnten auf diese Weise keine statistischen Zwillinge gefunden werden. Für diese wurden vier gesunde Probanden mit gleichen Merkmalen ausgewählt, welche bereits für vier andere Insomniepatienten einen statistischen Zwilling darstellen.\\
+
+\lstset{language=Matlab}
+\begin{lstlisting}[caption={Statistisches Matching in Skript ma\_statistical\_matching.m}, label={lst:matching}]
+% ...
+% check for match of gender and age +-1
+if controls(j) ~= 0 && age_siesta>age_insom-2 && ...
+    age_siesta<age_insom+2 && strcmp(gender_siesta,gender_insom)
+    % check if controls is still available and no match yet
+    if controls(j) == 1 && matches(i) == 0
+        matches(i) = j;
+        % delete bothnights index of match from controls
+        controls(j) = 0;
+        % check for other psg of this control patient
+        for l = 1:leng_bothnights
+            pat2delete = bothnights(l).edffilename;
+            % delete all psgs from this control patient
+            if strcmp(pat2delete(1:end-6), patid_siesta_bothnights(1:end-6))
+                controls(l) = 0;
+%...
+\end{lstlisting}
+
 
 
