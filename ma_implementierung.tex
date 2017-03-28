@@ -1,10 +1,12 @@
 \chapter{Implementierung}\label{Implementierung}
 
+In diesem Kapitel werden die Algorithmen näher beschrieben und teilweise anhand von Codeblöcken erläutert. Im Folgenden werden jedoch lediglich besonders wichtige oder interessante Algorithmen behandelt. Dieses Kapitel ist daher nicht als vollständige Beschreibung der gesamten Implementierung zu betrachten.
+
 \section{Datenvorauswahl}\label{Datenvorauswahl}
 
 Die in Kapitel \ref{datenanalyse} beschriebenen Kriterien zur Auswahl und Klassifizierung der Daten werden mithilfe von Skripten und Funktionen in Matlab umgesetzt. Im Folgenden wird auf die Umsetzung der einzelnen Kriterien eingegangen. Das Kriterium D6 bleibt dabei unberücksichtigt, da es sich lediglich auf das Weglassen einer Artefaktbereinigung bezieht.
 
-\paragraph{Kriterium D1} Für die Erstellung der Hypnogramme (Skript restructure\_hypnogram.m) müssen zunächst die Startzeitpunkte aus der \acs{EDF}- sowie Ereignis-Datei jedes Patienten extrahiert werden. Nach dem Einlesen der EDF-Datei lässt sich der Startzeitpunkt der Aufnahme als String aus dem Header auslesen. Um den Startzeitpunkt der Ereignis-Datei zu ermitteln, wird die Ereignis-Datei eingelesen. Da in dieser Datei verschiedene Informationen gespeichert sind und die Spaltenanzahl daher erst ab der tabellarischen Auflistung der Schlafstadien, Zeitpunkte und Ereignisse gleich bleibt, wird mit einem String-Vergleich die Startzeile dieser Tabelle gesucht. Hierbei können die Ereignis-Dateien abweichende Spaltenzahlen aufweisen, da manche Dateien zusätzlich die Körperlage dokumentieren. Die Körperlage kann jedoch als ein zusammenhängendes Wort ("`POSITION-LEFT"' oder als mehrere Wörter ("`Körperlage unbekannt"') angegeben sein, so dass die Spaltenanzahl der Tabellenüberschriften sowie des Tabellenkörpers differieren können und ein ausschließlicher Abgleich der Tabellenüberschriften demnach nicht zweckdienlich ist (Abb. \ref{fig:spalten}). Aus diesem Grund erfolgt die Ermittlung des Spaltenindexes durch \texttt{ismember}-Vergleich zwischen der Spaltenüberschrift "`Schlafstadium"' und einem Doppelpunkt, welcher ausschließlich in den Strings der Zeitpunkte enthalten ist (Listing \ref{lst:D1}). Der Spaltenindex der Ereignisse (\texttt{ind\_ev)} entspricht sodann dem auf den Spaltenindex des Zeitpunkts folgenden Index.\\
+\paragraph{Kriterium D1} Für die Erstellung der Hypnogramme (Skript ma\_restructure\_hypnogram.m) müssen zunächst die Startzeitpunkte aus der \acs{EDF}- sowie Ereignis-Datei jedes Patienten extrahiert werden. Nach dem Einlesen der EDF-Datei lässt sich der Startzeitpunkt der Aufnahme als String aus dem Header auslesen. Um den Startzeitpunkt der Ereignis-Datei zu ermitteln, wird die Ereignis-Datei eingelesen. Da in dieser Datei verschiedene Informationen gespeichert sind und die Spaltenanzahl daher erst ab der tabellarischen Auflistung der Schlafstadien, Zeitpunkte und Ereignisse gleich bleibt, wird mit einem String-Vergleich die Startzeile dieser Tabelle gesucht. Hierbei können die Ereignis-Dateien abweichende Spaltenzahlen aufweisen, da manche Dateien zusätzlich die Körperlage dokumentieren. Die Körperlage kann jedoch als ein zusammenhängendes Wort ("`POSITION-LEFT"' oder als mehrere Wörter ("`Körperlage unbekannt"') angegeben sein, so dass die Spaltenanzahl der Tabellenüberschriften sowie des Tabellenkörpers differieren können und ein ausschließlicher Abgleich der Tabellenüberschriften demnach nicht zweckdienlich ist (Abb. \ref{fig:spalten}). Aus diesem Grund erfolgt die Ermittlung des Spaltenindexes durch einen \texttt{ismember}-Vergleich zwischen der Spaltenüberschrift "`Schlafstadium"' und einem Doppelpunkt, welcher ausschließlich in den Strings der Zeitpunkte enthalten ist (Listing \ref{lst:D1}). Der Spaltenindex der Ereignisse (\texttt{ind\_ev)} entspricht sodann dem auf den Spaltenindex des Zeitpunkts folgenden Index.\\
 
 \begin{figure}[H]
 	\centering
@@ -13,7 +15,7 @@ Die in Kapitel \ref{datenanalyse} beschriebenen Kriterien zur Auswahl und Klassi
 	\label{fig:spalten}
 \end{figure}
 
-\begin{lstlisting}[caption={Implementierung Kriterium D1 in Skript restructure\_hypnogram.m}, label={lst:D1}]
+\begin{lstlisting}[caption={Implementierung Kriterium D1 im Matlab-Skript ma\_restructure\_hypnogram.m}, label={lst:D1}]
 T = readtable(hypno_file);
 % ...
 for j = 1:row
@@ -46,7 +48,7 @@ end
 % ...
 \end{lstlisting}
 
-Anschließend kann der Startzeitpunkt extrahiert und mit dem Startzeitpunkt aus dem \acs{EDF}-Header verglichen werden. Zu diesem Zweck wird in der Funktion subtract\_timestrings.m die Differenz zwischen den beiden Zeitpunkten berechnet und als Anzahl von Sekunden zurückgegeben. Die Zeitdifferenz entspricht jedoch keiner ganzzahligen Anzahl an Epochen. Da Hypnogramme die Schlafstadien lediglich epochenweise, also in 30-Sekunden-Schritten, abbilden, würde ein Auffüllen der Hypnogramme um die fehlende Anzahl an Epochen nicht dazu führen, dass sich beide exakt übereinanderlegen ließen, so dass die Zuordnung der Schlafstadien nicht korrekt wäre. Aus diesem Grund müssen die zu untersuchenden Signale innerhalb der \acs{PSG} auf den Zeitraum der Hypnogramme begrenzt werden. Zu diesem Zweck wird eine Hypnogramm-Datei im TXT-Format angelegt (Hypnogram\_filename.txt) und in die erste Zeile die Zeitdifferenz in Sekunden geschrieben, um daraus bei der späteren \acs{TDS}-Analyse die Begrenzung der Signale zu berechnen. Anschließend werden aus der Ereignis-Datei die Schlafstadien ausgelesen. Hierbei muss ein Abgleich zwischen den Spalten "`Schlafstadium"' und "`Ereignis"' erfolgen (Abb. \ref{fig:zeitpunkte}), um lediglich die klassifizierten Schlafstadien zu erhalten, nicht jedoch dazwischen auftretende Ereignisse. Die ursprünglichen Bezeichnungen der Schlafstadien werden in numerische Werte geändert und ebenfalls in die Hypnogramm-Datei geschrieben (Tab \ref{tab:schlafstadien}). Dieser Vorgang erfolgt in einer Schleife für sämtliche Patienten des Untersuchungsdatensatzes. Mit dem Skript (extract\_num\_epochs.m) kann darüber hinaus für jeden Patienten die Anzahl der Epochen aus dem \acs{EDF}-Header sowie aus der Ereignis-Datei berechnet und in eine Ergebnis-Datei (Epoch\_length.txt) geschrieben werden. Auf diese Weise kann ermittelt werden, ob Unterschiede existieren und wie groß die Abweichungen sind.
+Anschließend kann der Startzeitpunkt extrahiert und mit dem Startzeitpunkt aus dem \acs{EDF}-Header verglichen werden. Zu diesem Zweck wird in der Funktion ma\_subtract\_timestrings.m die Differenz zwischen den beiden Zeitpunkten berechnet und als Anzahl von Sekunden zurückgegeben. Die Zeitdifferenz entspricht jedoch keiner ganzzahligen Anzahl an Epochen. Da Hypnogramme die Schlafstadien lediglich epochenweise, also in 30-Sekunden-Schritten, abbilden, würde ein Auffüllen der Hypnogramme um die fehlende Anzahl an Epochen nicht dazu führen, dass sich \acs{PSG} und Hypnogramm exakt übereinanderlegen ließen, so dass die Zuordnung der Schlafstadien nicht korrekt wäre. Aus diesem Grund müssen die zu untersuchenden Signale innerhalb der \acs{PSG} auf den Zeitraum der Hypnogramme begrenzt werden. Zu diesem Zweck wird eine Hypnogramm-Datei im TXT-Format angelegt (Hypnogram\_filename.txt) und in die erste Zeile die Zeitdifferenz in Sekunden geschrieben, um daraus bei der späteren \acs{TDS}-Analyse die Begrenzung der Signale zu berechnen. Anschließend werden aus der Ereignis-Datei die Schlafstadien ausgelesen. Hierbei muss ein Abgleich zwischen den Spalten "`Schlafstadium"' und "`Ereignis"' erfolgen (Abb. \ref{fig:zeitpunkte}), um lediglich die klassifizierten Schlafstadien zu erhalten, nicht jedoch dazwischen auftretende Ereignisse. Die ursprünglichen Bezeichnungen der Schlafstadien werden in numerische Werte geändert und ebenfalls in die Hypnogramm-Datei geschrieben (Tab \ref{tab:schlafstadien}). Dieser Vorgang erfolgt in einer Schleife für sämtliche Patienten des Untersuchungsdatensatzes. Mit dem Skript (ma\_extract\_num\_epochs.m) kann darüber hinaus für jeden Patienten die Anzahl der Epochen aus dem \acs{EDF}-Header sowie aus der Ereignis-Datei berechnet und in eine Ergebnis-Datei (Epoch\_length.txt) geschrieben werden. Auf diese Weise kann ermittelt werden, ob Unterschiede existieren und wie groß die Abweichungen sind.
 
 \begin{table}[H] 
 \centering
@@ -66,13 +68,13 @@ REM, SLEEP-REM & 5\\
 \label{tab:schlafstadien}
 \end{table}
  
-\paragraph{Kriterium D2} Um zu überprüfen, ob alle Patienten sämtliche für die \acs{TDS}-Analyse relevanten Schlafstadien durchlaufen haben, werden mit Hilfe des Skripts check\_sleep\_ stages.m die zuvor erzeugten Hypnogramm-Dateien untersucht. Hierzu werden die Daten aus den Hypnogramm-Dateien ausgelesen und mit einem \texttt{ismember}-Abgleich nach den entsprechenden Schlafstadien gesucht. Sofern nach dieser Überprüfung ein Schlafstadium bei einem Patienten nicht gefunden werden kann, wird der Dateiname (PatientenID) sowie eine Fehlermeldung (z. B. "`missing sleep stage: S4"') in eine Ergebnis-Datei (sleep\_stages.txt) geschrieben. Diese Ergebnis-Datei bildet die Grundlage für den Ausschluss von Daten aus dem Untersuchungsdatensatz.
+\paragraph{Kriterium D2} Um zu überprüfen, ob alle Patienten sämtliche für die \acs{TDS}-Analyse relevanten Schlafstadien durchlaufen haben, werden mit Hilfe des Skripts ma\_check\_sleep\_ stages.m die zuvor erzeugten Hypnogramm-Dateien untersucht. Hierzu werden die Daten aus den Hypnogramm-Dateien ausgelesen und mit einem \texttt{ismember}-Abgleich nach den entsprechenden Schlafstadien gesucht. Sofern nach dieser Überprüfung ein Schlafstadium bei einem Patienten nicht gefunden werden kann, wird der Dateiname (PatientenID) sowie eine Fehlermeldung (z. B. "`missing sleep stage: S4"') in eine Ergebnis-Datei (sleep\_stages.txt) geschrieben. Diese Ergebnis-Datei bildet die Grundlage für den Ausschluss von Daten aus dem Untersuchungsdatensatz.
 
-\paragraph{Kriterium D3} Für die Suche nach zusammenhängenden Epochen innerhalb eines Schlafstadiums wird ebenfalls das Skript check\_sleep\_stages.m verwendet. Innerhalb einer for-Schleife wird ein Zähler hochgesetzt, solange ein Schlafstadium gleich bleibt. Existiert nach Ausführung der for-Schleife ein Schlafstadium, dessen Zähler nicht mindestens einmal den Wert 5 erreicht hat, so wird die untersuchte Datei (Patienten-ID) sowie das fehlende Schlafstadium in eine Ergebnis-Datei geschrieben (consecutive\_stages.txt). Auf Grundlage dieser Ergebnis-Datei können wiederum Daten von den weiteren Untersuchungen ausgeschlossen werden.
+\paragraph{Kriterium D3} Für die Suche nach zusammenhängenden Epochen innerhalb eines Schlafstadiums wird ebenfalls das Skript ma\_check\_sleep\_stages.m verwendet. Innerhalb einer for-Schleife wird ein Zähler hochgesetzt, solange ein Schlafstadium gleich bleibt. Existiert nach Ausführung der for-Schleife ein Schlafstadium, dessen Zähler nicht mindestens einmal den Wert 5 erreicht hat, so wird die untersuchte Datei (Patienten-ID) sowie das fehlende Schlafstadium in eine Ergebnis-Datei geschrieben (consecutive\_stages.txt). Auf Grundlage dieser Ergebnis-Datei können wiederum Daten von den weiteren Untersuchungen ausgeschlossen werden.
 
-\paragraph{Kriterium D4} Zur Erkennung von Apnoe-Ereignissen wird das Skript count\_apnea.m verwendet. Dieses liest die Ereignis-Dateien aller Patienten ein und ermittelt durch einen \texttt{ismember}-Vergleich, ob eine Ereignis-Datei ein Apnoe-Ereignis aufweist. In diesem Fall wird ein Zähler hochgesetzt. Der Vergleich erfolgt auf Basis definierter Cell Strings, welche die Bezeichnungen der Schlafstadien sowie der Apnoe-Ereignisse enthalten (Listing \ref{lst:D4}). Anschließend wird eine Ergebnis-Datei (Apneas.txt) erstellt und der Dateiname (Patienten-ID) sowie die Anzahl der gefundenen Apnoe-Ereignisse darin gespeichert. Diese Ergebnis-Datei dokumentiert demnach die Anzahl aller gefundenen Apoe-Ereignisse für jeden Patienten.\\
+\paragraph{Kriterium D4} Zur Erkennung von Apnoe-Ereignissen wird das Skript ma\_count\_apnea.m verwendet. Dieses liest die Ereignis-Dateien aller Patienten ein und ermittelt durch einen \texttt{ismember}-Vergleich, ob eine Ereignis-Datei ein Apnoe-Ereignis aufweist. In diesem Fall wird ein Zähler hochgesetzt. Der Vergleich erfolgt auf Basis definierter Cell Strings, welche die Bezeichnungen der Schlafstadien sowie der Apnoe-Ereignisse enthalten (Listing \ref{lst:D4}). Anschließend wird eine Ergebnis-Datei (Apneas.txt) erstellt und der Dateiname (Patienten-ID) sowie die Anzahl der gefundenen Apnoe-Ereignisse darin gespeichert. Diese Ergebnis-Datei dokumentiert demnach die Anzahl aller gefundenen Apoe-Ereignisse für jeden Patienten.\\
 
-\begin{lstlisting}[caption={Implementierung Kriterium D4 in Skript count\_apneas.m}, label={lst:D4}]
+\begin{lstlisting}[caption={Implementierung Kriterium D4 in Skript ma\_count\_apneas.m}, label={lst:D4}]
 apnea = {'APNEA', 'HYPOPNEA', 'APNEA-CENTRAL', 'APNEA-MIXED', 'APNEA-OBSTRUCTIVE'};
 sleep_stages = {'Wach', 'SLEEP-S0', 'S1', 'SLEEP-S1', 'S2', 'SLEEP-S2', 'S3', 'SLEEP-S3', 'S4', 'SLEEP-S4', 'REM', 'SLEEP-REM'};
 % ...
@@ -82,20 +84,16 @@ end
 % ...
 \end{lstlisting}
 
-Um zu bestimmen, wie viele Apnoe-Ereignisse pro Stunde auftreten, müssen wiederum die Ereignis-Dateien untersucht werden. Zu diesem Zweck liest das Skript check\_apneas5.m die Ereignis-Dateien ein und ermittelt den Beginn der Tabelle sowie die Spaltenindizes der Schlafstadien und Ereignisse. In einer for-Schleife wird mit Hilfe von \texttt{ismember}-Vergleichen zeilenweise ein Apnoe-Ereignis gesucht, dessen Zeitpunkt als Cell String aus der Tabelle ausgelesen und der Schleifenindex zwischengespeichert (\texttt{apnearow}). In einer weiteren for-Schleife wird in identischer Weise nach einem weiteren Apnoe-Ereignis gesucht und der Zeitpunkt ebenfalls als Cell String gespeichert. Da Matlab Cell Strings jedoch nicht als Zeitpunkte erkennt, ermöglicht die Funktion subtract\_timestrings.m eine Umwandlung dieser Cell Strings in numerische Werte und berechnet die zeitliche Differenz in Sekunden (Listing \ref{lst:D4time}). Hierbei werden die Zeitpunkte mit Hilfe der Matlab-eigenen Funktion \texttt{duration} in vergangene Sekunden seit dem Zeitpunkt "`00:00:00"' umgerechnet. Darüber hinaus wird abgefragt, welcher Wert größer ist, so dass auch bei Tagänderung (nach 24:00 Uhr) die zeitliche Differenz korrekt errechnet wird. Anschließend wird geprüft, ob diese zeitliche Differenz größer als eine Stunde ist, und ein Flag zurückgegeben.\\
+Um zu bestimmen, wie viele Apnoe-Ereignisse pro Stunde auftreten, müssen wiederum die Ereignis-Dateien untersucht werden. Zu diesem Zweck liest das Skript ma\_check\_apneas5.m die Ereignis-Dateien ein und ermittelt den Beginn der Tabelle sowie die Spaltenindizes der Schlafstadien und Ereignisse. In einer for-Schleife wird mit Hilfe von \texttt{ismember}-Vergleichen zeilenweise ein Apnoe-Ereignis gesucht, dessen Zeitpunkt als Cell String aus der Tabelle ausgelesen und der Schleifenindex zwischengespeichert (\texttt{apnearow}). In einer weiteren for-Schleife wird in identischer Weise nach einem weiteren Apnoe-Ereignis gesucht und der Zeitpunkt ebenfalls als Cell String gespeichert. Da Matlab Cell Strings jedoch nicht als Zeitpunkte erkennt, ermöglicht die Funktion ma\_subtract\_timestrings.m eine Umwandlung dieser Cell Strings in numerische Werte und berechnet die zeitliche Differenz in Sekunden (Listing \ref{lst:D4time}). Hierbei werden die Zeitpunkte mit Hilfe der Matlab-eigenen Funktion \texttt{duration} in vergangene Sekunden seit dem Zeitpunkt "`00:00:00"' umgerechnet. Darüber hinaus wird abgefragt, welcher Wert größer ist, so dass auch bei Tagänderung (nach 24:00 Uhr) die zeitliche Differenz korrekt errechnet wird. Anschließend wird geprüft, ob diese zeitliche Differenz größer als eine Stunde ist, und ein Flag zurückgegeben.\\
 
-\begin{lstlisting}[caption={Implementierung Kriterium D4 in Funktion subtract\_timestrings.m}, label={lst:D4time}]
-time = cell2mat(time);
-hh_time = str2double(time(1:2));
-mm_time = str2double(time(4:5));
-ss_time = str2double(time(7:8));
+\begin{lstlisting}[caption={Implementierung Kriterium D4 in Funktion ma\_subtract\_timestrings.m}, label={lst:D4time}]
 % ...
 % convert time and time2 into duration class variables with format seconds, so that D_time and D_time2 represent the amount of elapsed seconds from 00:00:00 until time and time2
 D_time = duration(hh_time, mm_time, ss_time, 'Format', 's');
 D_time2 = duration(hh_time2, mm_time2, ss_time2, 'Format', 's');
 % amount of seconds of one day
 daysecs = 86400;
-% time2 ist bigger than time (= time2 is the same day)
+% time2 is bigger than time (= time2 is the same day)
 if D_time <= D_time2
 % convert D_time and D_time2 into double and calculate elapsed seconds
 	durationsecs = seconds(D_time2-D_time);
@@ -121,7 +119,7 @@ end
 
 Ist die zeitliche Differenz nicht größer als eine Stunde, wird ein Apnoe-Zähler hochgesetzt. Dies bedeutet demnach, dass das erste sowie das zweite erkannte Apnoe-Ereignis innerhalb einer Stunde liegen. Sobald dieser Zähler größer als der Wert 5 ist, erhöht sich ein Signifikanz-Zähler und der Index der äußeren Schleife (\texttt{apnearow}) wird um den Wert 1 erhöht. Anschließend wird die innere Schleife abgebrochen und erneut in die äußere gesprungen, so dass die Überprüfung, ob Apnoe-Ereignisse innerhalb einer Stunde liegen, erneut eine Zeile nach dem ersten erkannten Apnoe-Ereignis startet (Listing \ref{lst:D4apnea5}). Auf diese Weise wird sichergestellt, dass von jedem Zeitpunkt eines Apnoe-Ereignisses aus der relevante Zeitraum von einer Stunde auf weitere Apnoe-Ereignisse untersucht wird. Ist der Signifikanz-Zähler nach Ausführung der Schleifen größer als Null, wurden demnach Apnoe-Ereignisse mit einer Häufigkeit von mehr als fünf pro Stunde erkannt. Anschließend werden solche Dateinamen (Patienten-ID), bei denen Apnoe-Ereignisse mit einer Häufigkeit von mehr als fünf pro Stunde erkannt worden sind, gemeinsam mit dem Wert des Signifikanz-Zählers in eine Ergebnis-Datei (Apnea5perhour.txt) geschrieben.\\
 
-\begin{lstlisting}[caption={Implementierung Kriterium D4 in Skript check\_apneas5.m}, label={lst:D4apnea5}]
+\begin{lstlisting}[caption={Implementierung Kriterium D4 in Skript ma\_check\_apneas5.m}, label={lst:D4apnea5}]
 % ...
 if (any(ismember(Mrow(ind_ss),sleep_stages)) && any(ismember(Mrow(ind_ev),apnea)))
     time2 = Mrow(ind_ev-1);
@@ -145,7 +143,7 @@ end
 % ...
 \end{lstlisting}
 
-\paragraph{Kriterium D5} Zum Zwecke der Klassifizierung der Daten in die Gruppen "`alle"', "`Herz"', "`Atmung"', "`Schlafmittel"' sowie "`Insomnie"' erfolgt eine visuelle Auswertung der Excel-Datei, welche die Patienteninformationen beinhaltet, sowie der Ergebnis-Dateien sleep\_stages.txt, consecutive\_stages.txt und Apnea5perhour.txt. Den ersten beiden Ergebnis-Dateien können die Patienten-IDs entnommen werden, welche die einzelnen Schlafstadien nicht alle oder nicht in ausreichender Länge durchlaufen haben. Aus der Ergebnis-Datei über die Apnoen ergeben sich die Patienten-IDs, deren Hypnogramme mehr als fünf Apnoe-Ereignisse pro Stunde aufweisen. Nach Recherche der medizinischen Fachbegriffe, welche in den Begleiterkrankungen und -medikationen in der Excel-Datei dokumentiert worden sind, lassen sich in einer zusätzlichen Spalte die klassifizierten Gruppen nach dem Kriterium D5 eintragen. Anschließend erstellt das Skript create\_insomdata\_struct.m ein Struct (\texttt{insomdata}) mit insgesamt 13 Key-Value-Paaren. Die Keys stellen Fields dar, welche sich auf die Inhalte der Excel-Datei sowie einige Zusatzinformationen beziehen. Die dazugehörigen Values werden anschließend für jeden Patienten aus der Excel-Datei ausgelesen und in das Struct geschrieben. Dieses Struct wird zur weiteren Verwendung in Matlab als .mat-Datei (insomdata.mat) gespeichert. Daraus können sodann zu jedem Patienten die Namen der \acs{EDF}-, Ereignis- und Hypnogramm-Dateien, das Geschlecht, Alter und Geburtstdatum, die Größe, das Gewicht, der \acs{BMI}, das Datum der \acs{PSG}-Aufzeichnung, Begleiterkrankungen- und medikationen sowie die klassifizierte Gruppe entnommen werden (Abb. \ref{fig:struct}). 
+\paragraph{Kriterium D5} Zum Zwecke der Klassifizierung der Daten in die Gruppen "`alle"', "`Herz"', "`Atmung"', "`Schlafmittel"' sowie "`Insomnie"' erfolgt eine visuelle Auswertung der Excel-Datei, welche die Patienteninformationen beinhaltet, sowie der Ergebnis-Dateien sleep\_stages.txt, consecutive\_stages.txt und Apnea5perhour.txt. Den ersten beiden Ergebnis-Dateien können die Patienten-IDs entnommen werden, welche die einzelnen Schlafstadien nicht alle oder nicht in ausreichender Länge durchlaufen haben. Aus der Ergebnis-Datei über die Apnoen ergeben sich die Patienten-IDs, deren Hypnogramme mehr als fünf Apnoe-Ereignisse pro Stunde aufweisen. Nach Recherche der medizinischen Fachbegriffe, welche in den Begleiterkrankungen und -medikationen in der Excel-Datei dokumentiert worden sind, lassen sich in einer zusätzlichen Spalte die klassifizierten Gruppen nach dem Kriterium D5 eintragen. Anschließend erstellt das Skript ma\_create\_insomdata\_struct.m ein Struct (\texttt{insomdata}) mit insgesamt 13 Key-Value-Paaren. Die Keys stellen Fields dar, welche sich auf die Inhalte der Excel-Datei sowie einige Zusatzinformationen beziehen. Die dazugehörigen Values werden anschließend für jeden Patienten aus der Excel-Datei ausgelesen und in das Struct geschrieben. Dieses Struct wird zur weiteren Verwendung in Matlab als .mat-Datei (insomdata.mat) gespeichert. Zu jedem Patienten können dem Struct sodann die Namen der \acs{EDF}-, Ereignis- und Hypnogramm-Dateien, das Geschlecht, Alter und Geburtstdatum, die Größe, das Gewicht, der \acs{BMI}, das Datum der \acs{PSG}-Aufzeichnung, Begleiterkrankungen- und medikationen sowie die klassifizierte Gruppe entnommen werden (Abb. \ref{fig:struct}). 
 
 \begin{figure}[H]
 	\centering
@@ -154,9 +152,9 @@ end
 	\label{fig:struct}
 \end{figure}
 
-Ein weiteres Skript (extract\_goup\_information.m) ermöglicht das Laden des Structs und das Extrahieren gruppenspezifischer Informationen. Durch Verwendung der Funktion \texttt{arrayfun} in Matlab kann eine darin aufgerufene Funktion auf das gesamte Struct angewendet werden, ohne zeitaufwendige Schleifen zu durchlaufen. Dies ermöglicht beispielsweise den Vergleich aller Elemente (Values) eines Fields mit einem String (z. B. 'heart', um die Indizes der Gruppe Herz zu erhalten) und die Rückgabe der entsprechenden Indizes. Anhand dieser Indizes können sodann weitere Gruppeninformationen, wie Alter oder Geschlecht, aus dem Struct extrahiert und Minima, Maxima und Mittelwerte berechnet werden (Listing \ref{lst:D5}).\\
+Ein weiteres Skript (ma\_extract\_goup\_information.m) ermöglicht das Laden des Structs und das Extrahieren gruppenspezifischer Informationen. Durch Verwendung der Funktion \texttt{arrayfun} in Matlab kann eine darin aufgerufene Funktion auf das gesamte Struct angewendet werden, ohne zeitaufwendige Schleifen zu durchlaufen. Dies ermöglicht beispielsweise den Vergleich aller Elemente (Values) eines Fields mit einem String (z. B. 'heart', um die Indizes der Gruppe Herz zu erhalten) und die Rückgabe der entsprechenden Indizes. Anhand dieser Indizes können sodann weitere Gruppeninformationen, wie Alter oder Geschlecht, aus dem Struct extrahiert und Minima, Maxima und Mittelwerte berechnet werden (Listing \ref{lst:D5}).\\
 
-\begin{lstlisting}[caption={Implementierung Kriterium D5 in Skript extract\_goup\_information.m}, label={lst:D5}]
+\begin{lstlisting}[caption={Implementierung Kriterium D5 in Skript ma\_extract\_goup\_information.m}, label={lst:D5}]
 % ...
 load(fullfile(insomstructpath,'insomdata.mat'));
 % find indices of group heart
@@ -175,7 +173,7 @@ Für das Verfahren der TDS (Kapitel \ref{TDS}) liegt bereits ein von Prof. Dr. D
 
 Im Wesentlichen müssen für die Ausführung der \acs{TDS}-Analyse drei Funktionen des Paketes ausgeführt werden, welche der Berechnung der \acs{TDS} sowie zur Erzeugung der Ergebnismatrizen für jedes Schlafstadium dienen (im Folgenden Hauptfunktionen genannt). Darüber hinaus besteht das Paket aus diversen weiteren Funktionen, welche intern innerhalb der Hauptfunktionen zur Ausführung von Zwischenschritten aufgerufen werden.\\
 
-\paragraph{Ermittlung von Stabilitäten} Die erste der drei Hauptfunktionen (sn\_TDS.m) dient der Berechnung der Kreuzkorrelationskoeffizienten und Verschiebungen (Time Delays) sowie der Ermittlung von Stabilitäten. Zu diesem Zweck werden zu einer übergebenen \acs{PSG} im \acs{EDF}-Format gemäß Kapitel \ref{datenvorverarbeitung} die Zeitreihen der relevanten Signale extrahiert. Dies ist bislang zum einen möglich für \acs{PSG}s, welche die gleiche Standardsortierung der Signale aufweisen, wie die Daten aus der SIESTA-Studie. Hierbei werden die 14 in Kapitel \ref{TDS} beschriebenen und von Krefting et al. verwendeten Signale genutzt. Zum anderen ist die Funktion gültig für \acs{PSG}s, welche den Standardbezeichnungen von Signalen im Alice6-Format folgen, wobei insgesamt 17 Signale (zusätzlich Atem- und \acs{EMG}-Signale) verwendet werden. Anschließend werden sämtliche extrahierte Zeitreihen in der Matrix \texttt{biosignals\_tds} zusammengefasst. Die Zeilen dieser Matrix entsprechen dem zeitlichen Verlauf der Signale in Sekundenschritten. Die Spalten bilden die einzelnen Zeitreihen ab. Anhand dieser Matrix wird sodann die Kreuzkorrelation mit einer Fensterlänge von 60 Sekunden sowie einer Verschiebung von 30 Sekunden durchgeführt, wobei die Zeitreihen auf einen Mittelwert von 0 und eine Standardabweichung von 1 normalisiert werden. Die zurückgegebene Matrizen der Kreuzkorrelationskoeffizienten sowie der Verschiebungen entsprechen jeweils in der Zeilenanzahl dem zeitlichen Verlauf der Signale in Sekunden und in der Spaltenanzahl dem Produkt aus dem Vergleich sämtlicher Zeitreihen miteinander, so dass 
+\paragraph{Ermittlung von Stabilitäten} Die erste der drei Hauptfunktionen (sn\_TDS.m) dient der Berechnung der Kreuzkorrelationskoeffizienten und Verschiebungen (Time Delays) sowie der Ermittlung von Stabilitäten. Zu diesem Zweck werden zu einer übergebenen \acs{PSG} im \acs{EDF}-Format gemäß Kapitel \ref{datenvorverarbeitung} die Zeitreihen der relevanten Signale extrahiert. Dies ist bislang zum einen möglich für \acs{PSG}s, welche die gleiche Standardsortierung der Signale aufweisen, wie die Daten aus der SIESTA-Studie. Hierbei werden die 14 in Kapitel \ref{TDS} beschriebenen und von Krefting et al. verwendeten Signale genutzt. Zum anderen ist die Funktion gültig für \acs{PSG}s, welche den Standardbezeichnungen von Signalen im Alice6-Format folgen, wobei insgesamt 17 Signale (zusätzlich Atem- und \acs{EMG}-Signale) verwendet werden. Anschließend werden sämtliche extrahierte Zeitreihen in der Matrix \texttt{biosignals\_tds} zusammengefasst. Die Zeilen dieser Matrix entsprechen dem zeitlichen Verlauf der Signale in Sekundenschritten. Die Spalten bilden die einzelnen Zeitreihen ab. Anhand dieser Matrix wird sodann die Kreuzkorrelation mit einer Fensterlänge von 60 Sekunden sowie einer Verschiebung von 30 Sekunden durchgeführt, wobei die Zeitreihen auf einen Mittelwert von 0 und eine Standardabweichung von 1 normalisiert werden. Die zurückgegebenen Matrizen der Kreuzkorrelationskoeffizienten sowie der Verschiebungen entsprechen jeweils in der Zeilenanzahl dem zeitlichen Verlauf der Signale in Sekunden und in der Spaltenanzahl dem Produkt aus dem Vergleich sämtlicher Zeitreihen miteinander, so dass 
 
 \begin{equation}
 columns = (Anzahl~der~Signale)^2
@@ -184,10 +182,9 @@ columns = (Anzahl~der~Signale)^2
 
 gilt. Die Kreuzkorrelationsmatrix \texttt{xcc} enthält sämtliche Kreuzkorrelationskoeffizienten. Die Matrix \texttt{xcl} enthält sämtliche Werte der Verschiebungen (Time Delays). Zur Berechnung der Stabilitäten werden anschließend in Fenstern mit einer Länge von fünf Sekunden bei einer Verschiebung von einer Sekunde Minimum und Maximum der Verschiebungen aus der Matrix \texttt{xcl} innerhalb des Fensters berechnet. Überschreitet die Differenz dieser beiden Werte nicht den Wert 2, so gelten diese Verschiebungen als stabil. Sämtliche stabilen Verbindungen werden in einer Matrix \texttt{tds} mit dem Wert 1 gespeichert, sämtliche nicht stabilen Verbindungen mit dem Wert 0. Im Ergebnis weist die Matrix \texttt{tds} die gleichen Dimensionen wie die beiden vorherigen Matrizen auf und enthält demnach binäre Werte als Merkmal der Stabilität.
 
-\paragraph{Aufteilung in Schlafstadien} Die zweite Hauptfunktion (sn\_getStagesTDS.m) ermittelt auf Grundlage des Hypnogramms die Verteilung auf die einzelnen Schlafstadien. Hierzu werden zunächst die Schlafstadien \acs{NREM}3 und \acs{NREM}4 gemäß Bashan et al. zusammengefasst, indem sämtliche Schlafstadien mit dem Wert 4 im Hypnogramm auf den Wert 3 gesetzt werden. Das Schlafstadium \acs{NREM}1 wird nicht berücksichtigt. Die Variable \texttt{nsis} enthält die Anzahl der Epochen für jedes Schlafstadium. Anhand der identifizierten Schlafstadien wird anschließend eine dreidimensionale Ergebnis-Matrix \texttt{result} erzeugt, welche die prozentualen Anteile der stabilen Verbindungen pro Schlafstadium enthalten. Diese Matrix entspricht in erster und zweiter Dimension den untersuchten Signalen. Die dritte Dimension steht für die vier Schlafstadien Tiefschlaf, Leichtschlaf, \acs{REM}-Schlaf und Wachzustand. 
+\paragraph{Aufteilung in Schlafstadien} Die zweite Hauptfunktion (sn\_getStagesTDS.m) ermittelt auf Grundlage des Hypnogramms die Verteilung auf die einzelnen Schlafstadien. Hierzu werden zunächst die Schlafstadien \acs{NREM}3 und \acs{NREM}4 gemäß Bashan et al. zusammengefasst, indem sämtliche Schlafstadien mit dem Wert 4 im Hypnogramm auf den Wert 3 gesetzt werden. Das Schlafstadium \acs{NREM}1 wird gemäß Kapitel \ref{TDS} nicht berücksichtigt. Die Variable \texttt{nsis} enthält die Anzahl der Epochen für jedes Schlafstadium. Anhand der identifizierten Schlafstadien wird anschließend eine dreidimensionale Ergebnis-Matrix \texttt{result} erzeugt, welche die prozentualen Anteile der stabilen Verbindungen pro Schlafstadium enthalten. Diese Matrix entspricht in erster und zweiter Dimension den untersuchten Signalen. Die dritte Dimension steht für die vier Schlafstadien Tiefschlaf, Leichtschlaf, \acs{REM}-Schlaf und Wachzustand. 
 
-\paragraph{Anzeigen der Ergebnisse} Mit Hilfe der dritten Hauptfunktion des \acs{TDS}-Paketes (sn\_plotTDSMatrixSiestaAll.m) lassen sich die Ergebnisse der \acs{TDS}-Analyse plotten. Hierzu wird für jedes der vier Schalfstadien durch die Matlab-Funktion \texttt{imagesc} ein Plot erzeugt. Die prozentualen Anteile werden farbig abgebildet. Dabei wird eine standardisierte Colormap verwendet, so dass die Ergebnis-Grafiken miteinander vergleichbar sind. Dunkelblaue Bereiche stellen eine sehr schwache und sehr helle Bereiche eine besonders starke Verbindungsstärke der Systeme dar. Diese Funktion bezieht sich auf den von Krefting et al. untersuchten SIESTA-Datensatz und muss für den hiesigen Untersuchungsdatensatz angepasst werden.
-
+\paragraph{Anzeigen der Ergebnisse} Mit Hilfe der dritten Hauptfunktion des \acs{TDS}-Paketes (sn\_plotTDSMatrixSiestaAll.m) lassen sich die Ergebnisse der \acs{TDS}-Analyse plotten. Hierzu wird für jedes der vier Schlafstadien durch die Matlab-Funktion \texttt{imagesc} ein Plot erzeugt. Die prozentualen Anteile werden farbig abgebildet. Dabei wird eine standardisierte Colormap verwendet, so dass die Ergebnis-Grafiken miteinander vergleichbar sind. Dunkelblaue Bereiche stellen eine sehr schwache und sehr helle Bereiche eine besonders starke Verbindungsstärke der Systeme dar. Diese Funktion bezieht sich auf den von Krefting et al. untersuchten SIESTA-Datensatz und muss für den hiesigen Untersuchungsdatensatz angepasst werden.
 
 \section{Erweiterungen am TDS-Paket}\label{erweiterungTDS}
 
@@ -205,23 +202,23 @@ elseif(strcmp(ch_all,'charite'))
     if hypno_flag
         % read hypnogram
         T = dlmread(hypno_filename);
-        %starttime difference in seconds
+        % starttime difference in seconds
         durationseconds = T(1); 
-        %starttime difference in samples for each signal
+        % starttime difference in samples for each signal
         durationsamples = [signalheader(:).samples_in_record]/...
             header.data_record_duration * durationseconds;
-        %hypnogram duration in samples for each signal
+        % hypnogram duration in samples for each signal
         hypnogramduration = length(T(2:end))*30*sfch; 
-        %lengths of all signals
+        % lengths of all signals
         signallengths = cellfun('length',signalcells);
-        %boolean array - 1 if hypnogram+starttime difference is smaller
-        %than signal length 
+        % boolean array - 1 if hypnogram+starttime difference is smaller
+        % than signal length 
         lengthflag = (durationsamples(:)+1+hypnogramduration(:) <= signallengths(:));
     else
         disp('Hypnogram file is missing, please select hypnogram text file.')
     % ...
     end
-    %channelnumbers of EEG signals
+    % channelnumbers of EEG signals
     ch_eeg = 2; %EEG C4-A1
     ch_eeg2 = 3; %EEG O2-A1
     ch_eeg3 = 5; %EEG C3-A2
@@ -229,7 +226,7 @@ elseif(strcmp(ch_all,'charite'))
 % ...
 \end{lstlisting}
 
-Da im hiesigen Untersuchungsdatensatz keine frontalen EEG-Signale enthalten sind und demnach weniger Signale als im SIESTA-Datensatz existieren, muss die Funktion zur Ermittlung von Stabilitäten für die hier verwendeten Daten angepasst werden. Ist die Option "`Charit\'{e}"' gesetzt, so werden die Kanäle gemäß Tab. \ref{tab:labels} den Signalen zugeordnet (Listing \ref{lst:snTDS}). Das zusätzliche \acs{EMG} des rechten Beins wird hierbei außer Acht gelassen, um die Vergleichbarkeit mit den Ergebnissen von Krefting et al. zu gewährleisten. Zur Erstellung der Zeitreihen wird sodann vor jeder Verwendung eines Signals anhand des \texttt{lengthflag}  die Bedingung geprüft, ob ab dem Startzeitpunkt des Hypnogramms das Hypnogramm kürzer ist als das Signal (Listing \ref{lst:zeitreihen}). Ist die Bedingung erfüllt, bedeutet dies, dass die \acs{PSG}-Aufzeichnung zu einem späteren Zeitpunkt endet als das Hypnogramm, so dass die zu verwendenden Ausschnitte der Signale in dem Bereich des Hypnogramms (Hypnogrammstart bis Hypnogrammende) liegen müssen. Die Signale werden in diesem Fall für die Berechnung der Zeitreihen demnach am Anfang um die Länge der zeitlichen Differenz und am Ende um die Zeitspanne, die die Signale die Länge des Hypnogramms überschreiten, gekürzt. In diesem Fall enthält \texttt{lengthflag} für das überprüfte Signal den Wert 1. Ist die Bedingung nicht erfüllt, bedeutet dies, dass der Endzeitpunkt des Hypnogramms zeitlich hinter dem der \acs{PSG} liegt, so dass das Signal in dem Bereich ab dem Startzeitpunkt des Hypnogramms bis zum Signalende verwendet wird.\\
+Da im hiesigen Untersuchungsdatensatz keine frontalen EEG-Signale enthalten sind und demnach weniger Signale als im SIESTA-Datensatz existieren, muss die Funktion zur Ermittlung von Stabilitäten für die hier verwendeten Daten angepasst werden. Ist die Option "`Charit\'{e}"' gesetzt, so werden die Kanäle gemäß Tab. \ref{tab:labels} den Signalen zugeordnet (Listing \ref{lst:snTDS}). Das zusätzliche \acs{EMG} des rechten Beins wird hierbei außer Acht gelassen, um die Vergleichbarkeit mit den Ergebnissen von Krefting et al. zu gewährleisten. Zur Erstellung der Zeitreihen wird sodann vor jeder Verwendung eines Signals anhand der \texttt{lengthflag} die Bedingung geprüft, ob ab dem Startzeitpunkt des Hypnogramms das Hypnogramm kürzer ist als das Signal (Listing \ref{lst:zeitreihen}). Ist die Bedingung erfüllt, bedeutet dies, dass die \acs{PSG}-Aufzeichnung zu einem späteren Zeitpunkt endet als das Hypnogramm, so dass die zu verwendenden Ausschnitte der Signale in dem Bereich des Hypnogramms (Hypnogrammstart bis Hypnogrammende) liegen müssen. Die Signale werden in diesem Fall für die Berechnung der Zeitreihen demnach am Anfang um die Länge der zeitlichen Differenz und am Ende um die Zeitspanne, die die Signale die Länge des Hypnogramms überschreiten, gekürzt. In diesem Fall enthält \texttt{lengthflag} für das überprüfte Signal den Wert 1. Ist die Bedingung nicht erfüllt, bedeutet dies, dass der Endzeitpunkt des Hypnogramms zeitlich hinter dem der \acs{PSG} liegt, so dass das Signal in dem Bereich ab dem Startzeitpunkt des Hypnogramms bis zum Signalende verwendet wird.\\
 
 \begin{lstlisting}[caption={Berechnung der Zeitreihen für den Charit\'{e}-Datensatz in der Funktion sn\_TDS.m}, label={lst:zeitreihen}]
 % ...
@@ -253,9 +250,9 @@ Um nach Aufteilung der ermittelten Stabilitäten auf die einzelnen Schlafstadien
 
 \section{Anwendung auf den Charit\'{e}-Datensatz}
 
-Zur Anwendung des \acs{TDS}-Paketes wird ein Skript (apply\_TDS.m) erstellt, welches die Ausführung der Funktionen auf den gesamten Untersuchungsdatensatz erlaubt. Zu diesem Zweck werden zunächst sämtliche \acs{EDF}-Dateien und Hypnogramme gelistet und anschließend in einer for-Schleife an die \acs{TDS}-Funktionen übergeben. Bei dem Aufruf der Funktion sn\_TDS.m müssen sodann die \acs{EDF}-Datei sowie die Hypnogramm-Datei übergeben werden. Zusätzlich wird die Option "`Charit\'{e} gesetzt. Die Ergebnis-Matrizen \texttt{tds}, \texttt{xcc}, \texttt{xcl} sowie \texttt{biosignals\_tds} werden in einem Ergebnispfad gespeichert. Anschließend wird die Hypnogramm-Datei ausgelesen und als Array gemeinsam mit der Matrix \texttt{tds} an die Funktion sn\_getStagesTDS.m übergeben. Die Ergebnisse werden ebenfalls im Ergebnispfad als Matrizen gespeichert. Für die Aufteilung der Ergebnisse in die einzelnen Schlafstadien könnten in dieser Funktion Artefakte aus den Berechnungen ausgeschlossen werden. Um das Kriterium D6 der Datenanalyse (Kapitel \ref{datenanalyse}) zu erfüllen, kommt diese Option hier ausdrücklich nicht zum Einsatz. Zuletzt erfolgt das Plotten der \acs{TDS}-Ergebnisse.\\
+Zur Anwendung des \acs{TDS}-Paketes wird ein Skript (ma\_apply\_TDS.m) erstellt, welches die Ausführung der Funktionen auf den gesamten Untersuchungsdatensatz erlaubt. Zu diesem Zweck werden zunächst sämtliche \acs{EDF}-Dateien und Hypnogramme gelistet und anschließend in einer for-Schleife an die \acs{TDS}-Funktionen übergeben. Bei dem Aufruf der Funktion sn\_TDS.m müssen sodann die \acs{EDF}-Datei sowie die Hypnogramm-Datei übergeben werden. Zusätzlich wird die Option "`Charit\'{e} gesetzt. Die Ergebnis-Matrizen \texttt{tds}, \texttt{xcc}, \texttt{xcl} sowie \texttt{biosignals\_tds} werden in einem Ergebnispfad gespeichert. Anschließend wird die Hypnogramm-Datei ausgelesen und als Array gemeinsam mit der Matrix \texttt{tds} an die Funktion sn\_getStagesTDS.m übergeben. Die Ergebnisse werden ebenfalls im Ergebnispfad als Matrizen gespeichert. Für die Aufteilung der Ergebnisse in die einzelnen Schlafstadien könnten in dieser Funktion Artefakte aus den Berechnungen ausgeschlossen werden. Um das Kriterium D6 der Datenanalyse (Kapitel \ref{datenanalyse}) zu erfüllen, kommt diese Option hier ausdrücklich nicht zum Einsatz. Zuletzt erfolgt das Plotten der \acs{TDS}-Ergebnisse.\\
 
-Um die Ergebnisdaten strukturiert zusammenzufassen und eine Ergebnisanalyse für andere Nutzer zu ermöglichen, wird mit Hilfe des Skripts create\_insomresults\_struct.m ein Struct (\texttt{insomresults}) erzeugt, welches zu jedem Patientendatensatz die \acs{TDS}-Ergebnisse enthält. Dieses Struct enthält demnach für jeden Patienten die Felder Patienten-ID ("`name"'), Hypnogramm ("`hypnogram"'), Zeitreihen ("`biosignals"'), Time Delays ("`xcl"'), Kreuzkorrelationskoeffizienten ("`xcc"'), stabile Verbindungen ("`tds"'), Anzahl der Epochen pro Schlafstadium ("`nsis"') sowie die prozentualen Verbindungsstärken in jedem Schlafstadium ("`result"') (Abb. \ref{fig:resultstruct}).
+Um die Ergebnisdaten strukturiert zusammenzufassen und eine Ergebnisanalyse für andere Nutzer zu ermöglichen, wird mit Hilfe des Skripts ma\_create\_insomresults\_struct.m ein Struct (\texttt{insomresults}) erzeugt, welches zu jedem Patientendatensatz die \acs{TDS}-Ergebnisse enthält. Dieses Struct enthält demnach für jeden Patienten die Felder Patienten-ID ("`name"'), Hypnogramm ("`hypnogram"'), Zeitreihen ("`biosignals"'), Time Delays ("`xcl"'), Kreuzkorrelationskoeffizienten ("`xcc"'), stabile Verbindungen ("`tds"'), Anzahl der Epochen pro Schlafstadium ("`nsis"') sowie die prozentualen Verbindungsstärken in jedem Schlafstadium ("`result"') (Abb. \ref{fig:resultstruct}).
 
 \begin{figure}[H]
 	\centering
@@ -264,39 +261,39 @@ Um die Ergebnisdaten strukturiert zusammenzufassen und eine Ergebnisanalyse für
 	\label{fig:resultstruct}
 \end{figure}
 
-Zum Plotten der Ergebnis-Matrizen der einzelnen Gruppen werden gemäß Kapitel \ref{mean} mit Hilfe der Funktion calculate\_mean.m die Mittelwerte berechnet und die gemittelten Ergebnis-Matrizen für jedes Schalfstadium visualisiert.
+Zum Plotten der Ergebnis-Matrizen der einzelnen Gruppen werden gemäß Kapitel \ref{mean} mit Hilfe der Funktion ma\_calculate\_mean.m die Mittelwerte berechnet und die gemittelten Ergebnis-Matrizen für jedes Schlafstadium visualisiert.
 
-\section{Berechnung der Mittelwerte}\label{mean}
-
-Zur Berechnung der Mittelwerte \texttt{smean} der \acs{TDS}-Matrizen verschiedener Gruppen dient die Funktion calculate\_mean.m. Dieser Funktion muss lediglich die entsprechende Gruppenbezeichnung übergeben werden. Anschließend wird das Struct \texttt{insomdata} geladen und es werden die Indizes der entsprechenden Gruppe berechnet. Dies ist möglich für die Gruppen gemäß der Klassifizierung innerhalb der Datenanalyse sowie für junge (jünger als 34 Jahre), ältere (älter als 60 Jahre), weibliche und männliche Insomniepatienten. Anschließend werden aus dem Struct \texttt{insomresults} die Anzahl der Epochen pro Schlafstadium \texttt{nsis} sowie die Ergebnis-Matrizen \texttt{result} jedes Patienten der gewählten Gruppe extrahiert. Die Berechnung der Mittelwerte erfolgt mit Hilfe der Matlab-Funktion \texttt{mean}. Für den Fall, dass bei der \acs{TDS}-Analyse NaN-Elemente (Not a Number) auftreten, wird bei der Matlab-Funktion \texttt{mean} zur Berechnung des Mittelwerts die Option "`omitnan"' gesetzt, so dass NaN-Elemente nicht berücksichtigt werden. Im Ergebnis wird ein Vektor, welcher die gemittelte Anzahl der Epochen pro Schlafstadium enthält, sowie eine dreidimensionale Matrix der gemittelten Verbindungsstärken pro Schlafstadium zurückgegeben. Zuletzt werden die gemittelten Verbindungsstärken der vier Schlafstadien geplottet.\\
-
-Zur Berechnung des globalen Mittelwertes \texttt{nmean} dient die Funktion calculate\_nmean\_ age.m. Zum Zwecke der späteren Gegenüberstellung der globalen Verbindungsstärke \texttt{nmean} und des Alters der Insomniepatienten wird in dieser Funktion darüber hinaus das Alter der Patienten extrahiert. Zunächst werden die Structs \texttt{insomdata} und \texttt{insomresults} geladen und die Indizes der entsprechenden Gruppe mit Hilfe der Matlab-Funktion \texttt{arrayfun} und durch Abgleich mit dem Struct \texttt{insomdata} ermittelt. Anschließend wird die Rückgabe-Matrix \texttt{nmean\_age} alloziert, welche später für sämtliche Patienten der Gruppe die globalen Mittelwerte der Verbindungsstärken \texttt{nmean} sowie das Alter enthält. In einer for-Schleife über die gesamte Gruppe werden zunächst die Patienten-ID sowie die Ergebnis-Matrix jedes Patienten aus dem Struct \texttt{insomresults} extrahiert. Durch Abgleich der Patienten-ID aus dem Struct \texttt{insomdata} wird darüber hinaus das jeweilige Alter extrahiert. Für jedes Schlafstadium werden anschließend in zwei for-Schleifen die Zeilen und Spalten der Ergebnis-Matrix in der Form durchlaufen, dass lediglich das untere Dreieck der Matrix und ohne die Diagonale betrachtet wird. Für diese Positionen werden die Verbindungsstärken addiert und gemäß Kapitel \ref{calcmean} durch die Anzahl der addierten Indizes abzüglich 14 dividiert (Listing \ref{lst:nmean}). Dieses Ergebnis sowie das Alter werden für jeden Patienten und für jedes Schlafstadium in die Rückgabe-Matrix \texttt{nmean\_age} geschrieben und diese als .mat-Datei gespeichert.\\
-
-\begin{lstlisting}[caption={Berechnung des globalen Mittelwertes in der Funktion calculate\_nmean\_age.m}, label={lst:nmean}]
-% ...
-for s = 1:4
-    tdssum = 0;
-    % loop over result matrix in x and y direction
-    for k = 1:length(tdsmat)
-        for l = k+1:length(tdsmat)
-            % sum link strengths for each sleep stage
-            tdssum = tdssum+tdsmat(k, l, s);
-        end
-    end
-    % calculate global mean link strength and age for each
-    % patient and sleep stage
-    nmean_age(i, 1, s) = tdssum/((length(tdsmat)^2)/2 - length(tdsmat));
-    nmean_age(i, 2, s) = patage;
-end
-% ...
-\end{lstlisting}
+%\section{Berechnung der Mittelwerte}\label{mean}
+%
+%Zur Berechnung der Mittelwerte \texttt{smean} der \acs{TDS}-Matrizen verschiedener Gruppen dient die Funktion ma\_calculate\_mean.m. Dieser Funktion muss lediglich die entsprechende Gruppenbezeichnung übergeben werden. Anschließend wird das Struct \texttt{insomdata} geladen und es werden die Indizes der entsprechenden Gruppe berechnet. Dies ist möglich für die Gruppen gemäß der Klassifizierung innerhalb der Datenanalyse sowie für junge (jünger als 49 Jahre), ältere (älter als 58 Jahre), weibliche und männliche Insomniepatienten. Anschließend werden aus dem Struct \texttt{insomresults} die Anzahl der Epochen pro Schlafstadium \texttt{nsis} sowie die Ergebnis-Matrizen \texttt{result} jedes Patienten der gewählten Gruppe extrahiert. Die Berechnung der Mittelwerte erfolgt mit Hilfe der Matlab-Funktion \texttt{mean}. Für den Fall, dass bei der \acs{TDS}-Analyse NaN-Elemente (Not a Number) auftreten, wird bei der Matlab-Funktion \texttt{mean} zur Berechnung des Mittelwerts die Option "`omitnan"' gesetzt, so dass NaN-Elemente nicht berücksichtigt werden. Im Ergebnis wird ein Vektor, welcher die gemittelte Anzahl der Epochen pro Schlafstadium enthält, sowie eine dreidimensionale Matrix der gemittelten Verbindungsstärken pro Schlafstadium zurückgegeben. Zuletzt werden die gemittelten Verbindungsstärken der vier Schlafstadien geplottet.\\
+%
+%Zur Berechnung des globalen Mittelwertes \texttt{nmean} dient die Funktion ma\_calculate\_nmean\_ age.m. Zum Zwecke der späteren Gegenüberstellung der globalen Verbindungsstärke \texttt{nmean} und des Alters der Insomniepatienten wird in dieser Funktion darüber hinaus das Alter der Patienten extrahiert. Zunächst werden die Structs \texttt{insomdata} und \texttt{insomresults} geladen und die Indizes der entsprechenden Gruppe mit Hilfe der Matlab-Funktion \texttt{arrayfun} und durch Abgleich mit dem Struct \texttt{insomdata} ermittelt. Anschließend wird die Rückgabe-Matrix \texttt{nmean\_age} alloziert, welche später für sämtliche Patienten der Gruppe die globalen Mittelwerte der Verbindungsstärken \texttt{nmean} sowie das Alter enthält. In einer for-Schleife über die gesamte Gruppe werden zunächst die Patienten-ID sowie die Ergebnis-Matrix jedes Patienten aus dem Struct \texttt{insomresults} extrahiert. Durch Abgleich der Patienten-ID aus dem Struct \texttt{insomdata} wird darüber hinaus das jeweilige Alter extrahiert. Für jedes Schlafstadium werden anschließend in zwei for-Schleifen die Zeilen und Spalten der Ergebnis-Matrix in der Form durchlaufen, dass lediglich das untere Dreieck der Matrix und ohne die Diagonale betrachtet wird. Für diese Positionen werden die Verbindungsstärken addiert und gemäß Kapitel \ref{calcmean} durch die Anzahl der addierten Indizes abzüglich 14 dividiert (Listing \ref{lst:nmean}). Dieses Ergebnis sowie das Alter werden für jeden Patienten und für jedes Schlafstadium in die Rückgabe-Matrix \texttt{nmean\_age} geschrieben und diese als .mat-Datei gespeichert.\\
+%
+%\begin{lstlisting}[caption={Berechnung des globalen Mittelwertes in der Funktion ma\_calculate\_nmean\_age.m}, label={lst:nmean}]
+%% ...
+%for s = 1:4
+%    tdssum = 0;
+%    % loop over result matrix in x and y direction
+%    for k = 1:length(tdsmat)
+%        for l = k+1:length(tdsmat)
+%            % sum link strengths for each sleep stage
+%            tdssum = tdssum+tdsmat(k, l, s);
+%        end
+%    end
+%    % calculate global mean link strength and age for each
+%    % patient and sleep stage
+%    nmean_age(i, 1, s) = tdssum/((length(tdsmat)^2)/2 - length(tdsmat));
+%    nmean_age(i, 2, s) = patage;
+%end
+%% ...
+%\end{lstlisting}
 
 \section{Lineare Regression}
 
-Zur Untersuchung des Zusammenhangs zwischen dem Alter und den globalen Verbindungsstärken der Patienten, wird die in Matlab erstellte Matrix \texttt{nmean\_age.mat} verwendet. Hierzu dient das R-Skript linreg\_nmean\_age.R. Zunächst wird das Matlab-Paket importiert, wodurch das Laden von Matlab-Variablen in R mit Hilfe der Funktion \texttt{readMat} ermöglicht wird. Die Variable nmean\_age.mat wird in R als eine Liste mit einer Länge von 512 Elementen angelegt, so dass die Elemente in R aneinandergereiht werden. Um auf die einzelnen Elemente dieser Liste (Verbindungsstärke und Alter jedes Patienten pro Schlafstadium) zugreifen zu können, wird die Liste durch die Funktion \texttt{unlist} in ein dreidimensionales Array vom Typ \texttt{double} und einer Länge von jeweils 64 Elementen umgewandelt. Dies entspricht dem Format, wie die Variable in Matlab erzeugt worden ist. Anschließend können die globalen Verbindungsstärken sowie das Alter der Patienten für jedes Schlafstadium als numerische Vektoren vom Typ \texttt{double} extrahiert werden. Aus diesen Vektoren wird für jedes Schlafstadium ein Data Frame erstellt. Aus diesen werden sodann für jedes Schlafstadium und für die weiblichen, für die männlichen sowie für alle Patienten lineare Modelle erstellt. Hierbei werden die globalen Verbindungsstärken als abhängige Variable und das Alter als unabhängige Variable gesetzt. Anschließend wird ein Streudiagramm mit unterschiedlicher Darstellung der weiblichen und männlichen Patienten erzeugt. Mit Hilfe der R-Funktion \texttt{abline} sowie der linearen Modelle können sodann die Regressionsgeraden eingezeichnet werden.\\
+Zur Untersuchung des Zusammenhangs zwischen dem Alter und den globalen Verbindungsstärken der Patienten, wird in Matlab eine Matrix \texttt{nmean\_age.mat} erstellt, welche für jeden Patienten die globale Verbindungsstärke sowie das Alter enthält. In dem R-Skript ma\_linreg\_nmean\_age.R. wird zunächst das Matlab-Paket importiert, wodurch das Laden von Matlab-Variablen in R mit Hilfe der Funktion \texttt{readMat} ermöglicht wird. Die Variable nmean\_age.mat wird in R als eine Liste mit einer Länge von 512 Elementen angelegt, so dass die Elemente in R aneinandergereiht werden. Um auf die einzelnen Elemente dieser Liste (Verbindungsstärke und Alter jedes Patienten pro Schlafstadium) zugreifen zu können, wird die Liste durch die Funktion \texttt{unlist} in ein dreidimensionales Array vom Typ \texttt{double} und einer Länge von jeweils 64 Elementen umgewandelt. Dies entspricht dem Format, wie die Variable in Matlab erzeugt worden ist. Anschließend können die globalen Verbindungsstärken sowie das Alter der Patienten für jedes Schlafstadium als numerische Vektoren vom Typ \texttt{double} extrahiert werden. Aus diesen Vektoren wird für jedes Schlafstadium ein Data Frame erstellt. Aus diesen werden sodann für jedes Schlafstadium und für die weiblichen, für die männlichen sowie für alle Patienten lineare Modelle erstellt. Hierbei werden die globalen Verbindungsstärken als abhängige Variable und das Alter als unabhängige Variable gesetzt. Anschließend wird ein Streudiagramm mit unterschiedlicher Darstellung der weiblichen und männlichen Patienten erzeugt. Mit Hilfe der R-Funktion \texttt{abline} sowie der linearen Modelle können sodann die Regressionsgeraden eingezeichnet werden.\\
 
 \lstset{language=R, otherkeywords={}, keywords={data,frame,lm,points,abline,pch,col,lty}}
-\begin{lstlisting}[caption={Erstellung eines Streudiagramms und Einzeichnung der Regressionslinien in dem Skript linreg\_nmean\_age.R}, label={lst:nmean_age}]
+\begin{lstlisting}[caption={Erstellung eines Streudiagramms und Einzeichnung der Regressionslinien in dem Skript ma\_linreg\_nmean\_age.R}, label={lst:nmean_age}]
 # ...
 # create data frames
 insomdata_all_ds <- data.frame(age_all, nmean_all_ds)
@@ -315,9 +312,9 @@ abline(insomdata_m_ls.linm, col="blue",lty=3)
 # ...
 \end{lstlisting}
 
-Mit Hilfe der R-Funktion \texttt{summary} können darüber hinaus die Parameter der linearen Regression berechnet und ausgegeben werden. Die R-Funktion \texttt{shapiro.test} dient der Überprüfung auf Normalität. Zu diesem Zweck wird eine Stichprobe von jeweils 20 Elementen erstellt. Die Funktion liefert die W-Statistik sowie den p-Wert zurück. Die Korrelationsverfahren nach Pearson und nach Spearman werden durch die R-Funktion \texttt{cor.test} mit den Optionen \texttt{method="pearson"} bzw. \texttt{method="spearman"} implementiert. Diese geben die Korrelationkoeffizienten sowie den p-Wert zurück.
+Mit Hilfe der R-Funktion \texttt{summary} können darüber hinaus die Parameter der linearen Regression berechnet werden. Die R-Funktion \texttt{shapiro.test} dient der Überprüfung auf Normalität. Die Funktion liefert die W-Statistik sowie den p-Wert zurück. Die Korrelationsverfahren nach Pearson und nach Spearman werden durch die R-Funktion \texttt{cor.test} mit den Optionen \texttt{method="pearson"} bzw. \texttt{method="spearman"} implementiert. Diese geben die Korrelationkoeffizienten sowie den p-Wert zurück. Der p-Wert des Pearson-Korrelationskoeffizienten entspricht dem der linearen Regression aus der R-Funktion \texttt{summary}.\\
 
-%p-Wert nach Pearson entspricht dem p-Wert der linearen Regression
+Mit dem Skript \texttt{ma\_linreg\_groups.R} werden darüber hinaus die lineare Regression sowie die jeweiligen p-Werte für sämtliche Verbindungen über den gesamten Datensatz berechnet. Anhand der R-Funktion \texttt{p.adjust} erfolgt die Bonferroni-Korrektur der p-Werte. Diese sowie die berechneten Werte für den Anstieg bzw. Abfall der Regressionsgeraden werden anschließend als .mat-Datei gespeichert, um sie in Matlab zu plotten.
 
 \section{Statistisches Matching}
 
@@ -343,5 +340,35 @@ if controls(j) ~= 0 && age_siesta>age_insom-2 && ...
 %...
 \end{lstlisting}
 
+\section{Vergleich von Populationen}
+Um die Populationen des statistischen Matchings (Insomniepatienten und deren statistische Zwillinge gesunder Probanden) miteinander vergleichen zu können, werden in Matlab mit Hilfe der Funktion ma\_calculate\_links\_insom\_siesta.m zunächst die \acs{TDS}-Ergebnismatrizen aus den Structs \texttt{insomresults} sowie \texttt{bothnights} extrahiert. Die Ergebnismatrizen der Matches müssen sodann zunächst um die frontopolaren \acs{EEG}s reduziert werden. Hierzu werden die entsprechenden Zeilen und Spalten aus der Matrix entfernt. Um die Verbindungsstärken beider Populationen vergleichen zu können, werden die verschiedenen statistischen Verfahren in dem R-Skript ma\_link\_populations\_tests.R implementiert. Zunächst werden die entsprechenden Daten aus Matlab importiert. Anschließend wird mit Hilfe des Shapiro-Wilk-Tests und der R-Funktion \texttt{shapiro.test} getestet, ob die beiden Stichproben normalverteilt sind. Wird diese Bedingung anhand einer Überprüfung der p-Werte für eine Stichprobe nicht erfüllt, so werden die Stichproben mit Hilfe des U-Tests auf Ähnlichkeit untersucht. Als Nullhypothese gilt per default, dass beide Populationen aus der gleichen Grundgesamtheit stammen.\footnote{U-Test: https://stat.ethz.ch/R-manual/R-devel/library/stats/html/wilcox.test.html (Stand 28.03.2017) \label{ftn:utest}} Sind die Populationen normalverteilt, erfolgt anhand der R-Funktion \texttt{var.test} eine Überprüfung auf Homogenität der Varianzen. Wird dies durch Abfrage des p-Wertes bestätigt, so wird der T-Test mit Hilfe der R-Funktion \texttt{t.test} mit den Optionen \texttt{var.equal=TRUE} sowie \texttt{alternative="two.sided"} für zweiseitige Tests durchgeführt. Bei heterogenen Varianzen wird dieselbe R-Funktion verwendet, jedoch mit den Optionen \texttt{var.equal=FALSE} sowie ebenfalls \texttt{alternative="two.sided"}, wodurch der Welch-Test ausgeführt wird. Die Nullhypothese ist per default als \texttt{mu=0} gesetzt.\footnote{T-Test: https://stat.ethz.ch/R-manual/R-devel/library/stats/html/t.test.html (Stand: 28.03.2017) \label{ftn:ttest}} Als Nullhypothese gilt demnach, dass die Mittelwerte beider Populationen gleich sind. Als Signifikanzniveau ist bei den R-Funktionen des T-,U- und Varianztests 0,05 gesetzt, so dass weitere Optionen bei Funktionsaufruf nicht übergeben werden müssen.\footref{ftn:utest}\footref{ftn:ttest}\footnote{Varianztest: https://stat.ethz.ch/R-manual/R-devel/library/stats/html/var.test.html} Im Anschluss wird über sämtliche berechneten p-Werte für jede mögliche Verbindung der physiologischen Systeme die Bonferroni-Korrektur mit der R-Funktion \texttt{p.adjust} sowie der Option \texttt{method="bonferroni"} durchgeführt. Die korrigierten p-Werte werden zuletzt in Matlab zurückgeliefert, um von dort heraus geplottet zu werden.\\
 
-
+\lstset{language=R, otherkeywords={}, keywords={method, shapiro, test, var, t, wilcox, alternative, equal, TRUE, FALSE, p, value, if, else, adjust, paired}}
+\begin{lstlisting}[caption={Vergleich der Populationen für den Tiefschlaf in Skript ma\_link\_population\_tests.R}, label={lst:populationtests}]
+# ...
+# check for normality, apply shapiro wilk
+insom_norm <- shapiro.test(insom_ds)$p.value
+match_norm <- shapiro.test(match_ds)$p.value
+if (insom_norm>=0.05 && match_norm>=0.05) {
+    # if normal distribution in both data sets apply variance test
+    pvariance <- var.test(insom_ds,match_ds)$p.value
+    if (pvariance>=0.05) {
+        # apply student's t-test with silimar variances
+        pvalue <- t.test(insom_ds,match_ds,var.equal=TRUE,paired=FALSE,alternative="two.sided")$p.value
+    }
+    else {
+        # apply welch test with differing variances
+        pvalue <- t.test(insom_ds,match_ds,var.equal=FALSE,paired=FALSE,alternative="two.sided")$p.value
+    }
+  }
+  else {
+      # if at least one data set is not normal distributed apply wilcoxon rank sum test
+      pvalue <- wilcox.test(insom_ds,match_ds,alternative="two.sided")$p.value
+    }
+  # write p-value into result vector
+  population_ds[i] <- pvalue
+  }
+}
+population_ds_corrected <- p.adjust(population_ds,method="bonferroni")
+# ...
+\end{lstlisting}
