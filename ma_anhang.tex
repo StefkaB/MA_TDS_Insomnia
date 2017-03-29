@@ -335,9 +335,18 @@ w  & m  & A    &    & wA   & wminA & wmaxA &    & mA   & mminA & mmaxA\\
 
 
 % --------------------------------------------------
-% gemittelte Gruppen-TDS gemäß Kriterien
+% gemittelte Gruppen-TDS gemäß Kriterien der Datenanalyse
 % --------------------------------------------------
 \textbf{gemittelte Gruppen-TDS gemäß Kriterien}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/meanTDSall_oldcolorbar.png}
+	\caption[Verbindungsstärken für die Gruppe Alle]{Gemittelte Verbindungsstärken für die Gruppe Alle (n=64);\\Verbindungsstärken gemäß Colorbar mit 1 = 100\%;\\links: unteres linkes Dreieck = \acs{REM}-Schlaf, oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand, oberes rechtes Dreieck = Leichtschlaf}
+	\label{fig:meanTDSall}
+\end{figure}
+
+
 
 \begin{figure}[H]
 	\centering
@@ -366,6 +375,27 @@ w  & m  & A    &    & wA   & wminA & wmaxA &    & mA   & mminA & mmaxA\\
 	\caption[Verbindungsstärken für die Gruppe Insomnie]{Gemittelte Verbindungsstärken für die Gruppe Insomnie (n=28);\\Verbindungsstärken gemäß Colorbar mit 1 = 100\%;\\links: unteres linkes Dreieck = \acs{REM}-Schlaf, oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand, oberes rechtes Dreieck = Leichtschlaf}
 	\label{fig:meanTDSinsom}
 \end{figure}
+
+
+
+% --------------------------------------------------
+% Gegenüberstellung von SIESTA und Gruppe Alle
+% --------------------------------------------------
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/dsls_all_siesta.png}
+	\caption[Verbindungsstärken für die Gruppe Alle und den SIESTA-Datensatz im Tief- und Leichtschlaf]{Gegenüberstellung der gemittelten Verbindungsstärken für die Gruppe Alle sowie die gesunden Probanden aus dem SIESTA-Datensatz im Tief- und Leichtschlaf;\\unteres linkes Dreieck = gesunde Probanden, oberes rechtes Dreieck = Insomniepatienten}
+	\label{fig:dsls_all_siesta}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = \textwidth]{img/rw_all_siesta.png}
+	\caption[Verbindungsstärken für die Gruppe Alle und den SIESTA-Datensatz im \acs{REM}-Schlaf und Wachzustand]{Gegenüberstellung der gemittelten Verbindungsstärken für die Gruppe Alle sowie die gesunden Probanden aus dem SIESTA-Datensatz im \acs{REM}-Schlaf und Wachzustand;\\unteres linkes Dreieck = gesunde Probanden, oberes rechtes Dreieck = Insomniepatienten}
+	\label{fig:rw_all_siesta}
+\end{figure}
+
 
 
 
@@ -408,12 +438,7 @@ Abb. \ref{fig:diffTDS_f_m}
 	\label{fig:rw_m_f}
 \end{figure}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width = \textwidth]{img/diffTDS_f_m.png}
-	\caption[Differenz-Matrix der Verbindungsstärken der weiblichen und männlichen Insomniepatienten]{Differenz-Matrix der Verbindungsstärken der weiblichen (n=41) und männlichen (n=23) Insomniepatienten;\\links: unteres linkes Dreieck = REM-Schlaf; oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand; oberes rechtes Dreieck = Leichtschlaf;\\Differenzen der Verbindungsstärken gemäß Colorbar mit 1 = 100\%;\\positive Werte = höhere Verbindungsstärken bei den weiblichen Insomniepatienten; negative Werte = höhere Verbindungsstärken bei männlichen Insomniepatienten}
-	\label{fig:diffTDS_f_m}
-\end{figure}
+
 
 
 
@@ -443,12 +468,7 @@ Differenz-Matrix der jungen und älteren Insomiepatienten, Anhang Abb. \ref{fig:
 	\label{fig:rw_allyoung_allold}
 \end{figure}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width = \textwidth]{img/diffTDSallyoung_allold.png}
-	\caption[Differenz-Matrix der Verbindungsstärken der jungen und älteren Insomniepatienten]{Differenz-Matrix der Verbindungsstärken der jüngsten (23 bis 48 Jahre, n=22) und ältesten (59 bis 65 Jahre, n=22) Insomniepatienten;\\links: unteres linkes Dreieck = REM-Schlaf; oberes rechtes Dreieck = Tiefschlaf;\\rechts: unteres linkes Dreieck = Wachzustand; oberes rechtes Dreieck = Leichtschlaf;\\Differenzen der Verbindungsstärken gemäß Colorbar mit 1 = 100\%;\\positive Werte = höhere Verbindungsstärken bei jungen Insomniepatienten; negative Werte = höhere Verbindungsstärken bei älteren Insomniepatienten}
-	\label{fig:diffTDSallyoung_allold}
-\end{figure}
+
 
 
 
@@ -457,11 +477,7 @@ Differenz-Matrix der jungen und älteren Insomiepatienten, Anhang Abb. \ref{fig:
 % --------------------------------------------------
 \textbf{junge weibliche gegen junge männliche Patienten}
 
-Abb. \ref{fig:dsls_youngf_youngm}
 
-Abb. \ref{fig:rw_youngf_youngm}
-
-Abb. \ref{fig:diffTDSyoungf_youngm}
 
 \begin{figure}[H]
 	\centering
@@ -491,11 +507,7 @@ Abb. \ref{fig:diffTDSyoungf_youngm}
 % --------------------------------------------------
 \textbf{alte weibliche gegen alte männliche Patienten}
 
-Abb. \ref{fig:dsls_oldf_oldm}
 
-Abb. \ref{fig:rw_oldf_oldm}
-
-Abb. \ref{fig:diffTDSoldf_oldm}
 
 \begin{figure}[H]
 	\centering
@@ -526,11 +538,9 @@ Abb. \ref{fig:diffTDSoldf_oldm}
 % --------------------------------------------------
 \textbf{junge weibliche gegen alte weibliche Patienten}
 
-Abb. \ref{fig:dsls_youngf_oldf}
 
-Abb. \ref{fig:rw_youngf_oldf}
 
-Abb. \ref{fig:diffTDSyoungf_oldf}
+
 
 \begin{figure}[H]
 	\centering
@@ -560,11 +570,7 @@ Abb. \ref{fig:diffTDSyoungf_oldf}
 % --------------------------------------------------
 \textbf{junge männliche gegen alte männliche Patienten}
 
-Abb. \ref{fig:dsls_youngm_oldm}
 
-Abb. \ref{fig:rw_youngm_oldm}
-
-Abb. \ref{fig:diffTDSyoungm_oldm}
 
 \begin{figure}[H]
 	\centering
@@ -594,19 +600,12 @@ Abb. \ref{fig:diffTDSyoungm_oldm}
 % --------------------------------------------------
 \textbf{Netzwerk mit globaler Verbindungsstärke und Anzahl der Verbindungen}
 
-Abb. \ref{fig:NetworkComposed}
 
 Abb. \ref{fig:SiestaNetworkComposed}
 
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width = \textwidth]{img/NetworkComposed.png}
-	\caption[Globale Verbindungsstärke und Anzahl der Verbindungen des physiologischen Netzwerks bei Insomniepatienten]{Globale Verbindungsstärke und Anzahl der Verbindungen des physiologischen Netzwerks bei Insomniepatienten (Gruppe Alle) im vollverknüpten Netzwerk (voll) sowie in den Subnetzen Gehirn-Gehirn (G-G) und Peripherie-Peripherie bzw. Peripherie-Gehirn (P-P/P-G) in den unterschiedlichen Schlafstadien (TS = Tiefschlaf, LS = Leichtschlaf, R = \acs{REM}-Schlaf, W = Wachzustand) für
-alle Insomniepatienten (n=64, grüne, durchgezogene Linie), alle Frauen (n=41, rote, durchgezogene Linie), alle Männer (n=23, blaue, durchgezogene Linie), die jüngsten Patienten (n=22, grüne, gepunktete Linie), die ältesten Patienten (n=22, grüne, gestrichelte Linie), die jüngsten Frauen (n=11, rote, gepunktete Linie), die ältesten Frauen (n=14, rote, gestrichelte Linie), die jüngsten Männer (n=11, blaue gepunktete Linie), die ältesten Männer (n=8, blaue gestrichelte Linie)}
-	\label{fig:NetworkComposed}
-\end{figure}
+
 
 
 
@@ -756,5 +755,25 @@ Abb. \ref{fig:MatchMComposedNew}
 	\caption[Ergebnisse des statistischen Matchings der Insomniepatienten mit den gesunden Probanden]{Ergebnisse des statistischen Matchings der männlichen Insomniepatienten (Gruppe Alle) mit den männlichen, gesunden Probanden aus der SIESTA-Studie (n=23);\\unteres linkes Dreieck: Differenz zwischen den gemittelten Verbindungsstärken der männlichen Insomniepatienten und der männlichen Matches; positive Werte = höhere Verbindungsstärken bei männlichen Insomniepatienten; negative Werte = höhere Verbindungsstärken bei männlichen Matches;\\oberes rechtes Dreieck: Signifikanzlevel $p$ der zweiseitigen T-, Welch- bzw. U-Tests;\\blaue Signifikanzlevel = einfaches Testen; grüne bis gelbe Signifikanzlevel = nach Bonferroni-Korrektur}
 	\label{fig:MatchMComposedNew}
 \end{figure}
+
+
+
+
+\begin{table}[H] 
+\centering
+\begin{tabularx}{0.96\textwidth}{cccccccccc}
+\toprule
+& & \multicolumn{2}{c}{\textbf{Alle}} & & \multicolumn{2}{c}{\textbf{Frauen}} & & \multicolumn{2}{c}{\textbf{Männer}}\\  
+\midrule
+Stadium & & Insomnie & Match & & Insomnie & Match & & Insomnie & Match\\
+TS & & 14,76 \% & 13,89 \% & & 15,46 \% & 15,14 \% & & 13,51 \% & 11,69 \%\\
+LS & & 36,75 \% & 46,43 \% & & 37,37 \% & 44,71 \% & & 35,64 \% & 49,45 \%\\
+R & & 11,81 \% & 17,04 \% & & 11,88 \% & 17,09 \% & & 11,68 \% & 16,95 \%\\
+W & & 36,68 \% & 22,64 \% & & 35,29 \% & 23,06 \% & & 39,17 \% & 21,91 \%\\
+\bottomrule
+\end{tabularx}
+\caption[Prozentuale Verteilung der Schlafstadien]{Prozentuale Verteilung der Anzahl der Epochen pro Schlafstadium für alle Insomniepatienten und deren Matches sowie für die Frauen und Männer beider Populationen;\\TS = Tiefschlaf, LS = Leichtschlaf, R = \acs{REM}-Schlaf, W = Wachzustand}
+\label{tab:nsis_insom_match}
+\end{table}
 
 \restoregeometry

@@ -1,9 +1,12 @@
 % script to check if each hypnogramm contains all sleep stages and every
 % sleep stage at least for 2.5 minutes (5 epochs)
 %
-% author: Stefanie Breuer
-% date: 26.02.2017
-% -------------------------------------------------------------------------
+%% Metadata
+% Stefanie Breuer, 26.02.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
+
+%% Start
 
 % folder containing all reconstructed hypnograms (with function
 % restructure_hypnogram.m)
@@ -26,6 +29,8 @@ fprintf(fileIDconsec, '%s \r\n', 'Files with insufficient amount of consecutive 
 
 % loop over all hypnogram files
 for i = 3:length(hypno_listing)
+    
+    % extract name and build path of hypnogramfile
     hypnogram = hypno_listing(i).name;
     hypnogramfile = [hypno_path, hypnogram];
     
@@ -33,6 +38,7 @@ for i = 3:length(hypno_listing)
     T = dlmread(hypnogramfile);
     Tarr = T(2:end);
     
+    % set all amounts of sleep stages to zero
     s0 = 0;
     s1 = 0;
     s2 = 0;
@@ -140,7 +146,7 @@ for i = 3:length(hypno_listing)
         s4 = countarr(5, 2:end) == 5;
         r = countarr(6, 2:end) == 5;
         
-        % if at least one sleep stage has no consecutive fice epochs wirte
+        % if at least one sleep stage has no consecutive fife epochs wirte
         % name of dataset into result file
         if (max(s0) == 0 || max(s1) == 0 || max(s2) == 0 || max(s3) == 0 ||...
                 max(s4) == 0 || max(r) == 0)

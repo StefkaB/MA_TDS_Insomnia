@@ -1,9 +1,12 @@
 % script to create a struct containing all relevant information about each
 % patient of the insomnia charite dataset
 %
-% author: Stefanie Breuer
-% date: 26.02.2017
-% -------------------------------------------------------------------------
+%% Metadata
+% Stefanie Breuer, 09.03.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
+
+%% Start
 
 % excel file containing relevant data of all patients from the dataset
 xlsfile = 'C:\Users\Stefka\Desktop\Masterarbeit\Insomnie_Eignung_Struct.xlsx';
@@ -124,5 +127,6 @@ insomdata = struct(field1, value1, field2, value2, field3, value3, ...
     field8, value8, field9, value9, field10, value10, field11, value11, ...
     field12, value12, field13, value13);
 
+% save struct
 save('insomdata.mat', 'insomdata');
 

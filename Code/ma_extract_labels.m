@@ -1,8 +1,11 @@
 % script to extract all labels from each edf file
 %
-% author: Stefanie Breuer
-% date: 22.02.2017
-% -------------------------------------------------------------------------
+%% Metadata
+% Stefanie Breuer, 22.02.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
+
+%% Start
 
 % define folder containing edf files
 edf_path = 'C:\Users\Stefka\Desktop\Masterarbeit\INSOMNIA\';

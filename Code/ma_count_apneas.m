@@ -1,8 +1,11 @@
 % script to count occuring apnea events in hypnogram files
 %
-% author: Stefanie Breuer
-% date: 22.02.2017
-% -------------------------------------------------------------------------
+%% Metadata
+% Stefanie Breuer, 22.02.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
+
+%% Start
 
 % folder to save result file
 apnea_path = 'C:\Users\Stefka\Desktop\Masterarbeit\';
@@ -18,10 +21,13 @@ apnea = {'APNEA', 'HYPOPNEA', 'APNEA-CENTRAL', 'APNEA-MIXED', 'APNEA-OBSTRUCTIVE
 sleep_stages = {'Wach', 'SLEEP-S0', 'S1', 'SLEEP-S1', 'S2', 'SLEEP-S2', ...
     'S3', 'SLEEP-S3', 'S4', 'SLEEP-S4', 'REM', 'SLEEP-REM'};
 
+% loop over all hypnograms
 for i = 3:length(hypno_listing)
     
+    % set counter
     count_apnea = 0;
     
+    % extract name and build path of hypnogramfile
     hypno_file = hypno_listing(i).name;
     hypno_file = [pathstr, '\', name, '\', hypno_file];
     
@@ -32,8 +38,10 @@ for i = 3:length(hypno_listing)
     fileID = fopen(apneafile, 'a');
     
     [row, col] = size(T);
+    % loop over hypnogramfile
     for j = 1:row
         
+        % convert data
         C = table2cell(T(j, col));
         M = cell2mat(C);
         newrow = strsplit(M);
@@ -49,8 +57,10 @@ for i = 3:length(hypno_listing)
         end
     end
     
+    % loop over table in hypnogramfile
     for k = hypnostart:row
         
+        % convert data
         C = table2cell(T(k, col));
         M = cell2mat(C);
         newrow = strsplit(M);

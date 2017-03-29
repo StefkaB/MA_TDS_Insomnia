@@ -8,9 +8,12 @@
 % s4 = 4
 % rem = 5
 %
-% author: Stefanie Breuer
-% date: 22.02.2017
-% -------------------------------------------------------------------------
+%% Metadata
+% Stefanie Breuer, 22.02.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
+
+%% Start
 
 % path of folder containing scoring data
 hypno_path = 'C:\Users\Stefka\Desktop\Masterarbeit\Scoring';
@@ -123,6 +126,7 @@ for i = 3:length(hypno_listing)
         end
     end
     
+    % write seconds into hypnogramfile
     fprintf(fileIDhypnogram, '%d \r\n', durationsecs);
     
     hypnogram_scoring = [0];
@@ -166,8 +170,6 @@ for i = 3:length(hypno_listing)
             fprintf(fileIDhypnogram, '%u \r\n', sleepstage);
         end
     end
-    
-    
 end
 
 fclose('all');

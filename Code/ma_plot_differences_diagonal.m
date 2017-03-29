@@ -12,14 +12,19 @@ function plot_differences_diagonal(tds_stages,varargin)
 % tds_stages    matrix of intersignal stability, dims: (28x28x4)
 %
 %OPTIONAL INPUT:
-% group
-% colormap
+% group         set group as title of figure, can be 'all-none', 'all-heart',
+%               'all-breath', 'all-sleep', 'siesta-all', 'siesta-insom', 
+%               'heart', 'breath', 'sleep', 'insom', 'all', 'siesta',
+%               'young-old', 'male female'
+% colormap      colormap to be used
 %
-%%defaults
+
+%% Defaults
 subject = '';
 cmap = '';
 
-rlabels = {'REM-Schlaf/Tiefschlaf';'Wachzustand/Leichtschlaf'};
+%rlabels = {'REM-Schlaf/Tiefschlaf';'Wachzustand/Leichtschlaf'};
+rlabels = {'REM-Schlaf';'Wachzustand'};
 %rlabels = {'Tiefschlaf';'Leichtschlaf'};
 tdslabels = {'HR';'BR_{air}';'BR_c';'BR_a';'Chin';'Leg';...
     'Eye_1';'Eye_2';...
@@ -33,19 +38,14 @@ ticks = [0.5,4.5,8.5,13.5,18.5,23.5,28.5];
 borders = [0,39];
 
 %positionvectors [left, bottom, width, height]
-
-% w = 0.45;
-% ll = 0.01;
-% lr = 0.4;
-% bt = 0.52;
 w = 0.6;
 ll = 0.01;
 lr = 0.4;
 bt = 0.2;
-pvector =  [ll bt w w; lr bt w w];
+pvector =  [ll bt w w; 
+            lr bt w w];
 
 %colorbarposition in multiplot
-%cbpos = [0.8 0.07 0.02 0.86];
 cbpos = [0.9 0.2 0.02 0.6];
 
 %% Check for input vars
@@ -69,7 +69,6 @@ end
 
 %get maximal and minimal values for all images, to get clim (consistent
 %color coding
-
 cmax = max(max(max(tds_stages)));
 cmin = min(min(min(tds_stages)));
 
@@ -131,13 +130,13 @@ for stage = 1:2
         set(t_lb,'Fontsize',5)
         
     end
+    % set figure property
     iha = gca;
     set(iha,'XColor','r', 'YColor','r')
     set(iha,'ytick',[0.5,4.5,8.5,13.5,18.5,23.5,28.5]);
     set(iha,'yticklabel','    ');
     set(iha,'xtick',[0.5,4.5,8.5,13.5,18.5,23.5,28.5]);
     set(iha,'xticklabel','');
-    %set(gca,'ytick',[1:length(C)],'yticklabel',labelvector);
     set(iha,'GridLineStyle','-');
     grid(iha,'on');
     
@@ -153,8 +152,6 @@ for stage = 1:2
         colormap(cmap)
     end
     cbh = colorbar('Position',cbpos);
-    %Set its ylabel property
-    %ylabel(cbh,cblabel);
 end
    
 if strcmp(group, 'all-none')
@@ -183,12 +180,9 @@ elseif strcmp(group, 'siesta')
     group_name = 'Gruppe SIESTA';
 elseif strcmp(group, 'young-old')
     group_name = 'Gruppe jung - Gruppe alt';
+elseif strcmp(group, 'male female')
+    group_name = 'Gruppe Alle m/w';
 end
 set(gcf, 'name', group_name)
     
-    
-    
-    
-    
-    
-    
+end

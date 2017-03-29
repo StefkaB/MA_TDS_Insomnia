@@ -3,7 +3,8 @@ function [t, durationsecs] = subtract_timestrings(time, time2)
 % the elapsed time is less or equal one hour and 0 if the elapsed time is
 % more than one hour
 %% Metadata-----------------------------------------------------------
-% Stefanie Breuer, 28.2.2017, stefanie.breuer@student.htw-berlin.de
+% Stefanie Breuer, 28.2.2017
+% stefanie.breuer@student.htw-berlin.de
 % Version: 1.0
 %-----------------------------------------------------------
 %

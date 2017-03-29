@@ -1,9 +1,13 @@
 % script to check if apneas occur more than five times per hour;
 % in that case write the hypnogram file into the result text file
 %
-% author: Stefanie Breuer
-% date: 28.02.2017
-% -------------------------------------------------------------------------
+%% Metadata
+% Stefanie Breuer, 28.02.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
+
+%% Start
+
 % folder to save result file
 apnea_path = 'C:\Users\Stefka\Desktop\Masterarbeit\';
 % folder of scoring files

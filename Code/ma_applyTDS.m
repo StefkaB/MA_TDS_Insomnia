@@ -1,4 +1,11 @@
 % script to apply sn_TDS.m on the charite data set
+%% Metadata
+% Stefanie Breuer, 23.02.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
+
+%% Start
+% data paths
 edf_path = 'C:\Users\Stefka\Desktop\Masterarbeit\INSOMNIA\';
 edf_listing = dir(edf_path); %including . and ..
 hypno_path = 'C:\Users\Stefka\Desktop\Masterarbeit\Hypnograms\';
@@ -6,22 +13,29 @@ hypno_listing = dir(hypno_path); %including . and ..
 result_path = 'C:\Users\Stefka\Desktop\Masterarbeit\TDS-Results\';
 result_listing = dir(result_path);
 
+% loop over all edf files
 for i = 3:length(edf_listing)
+    
+    % extract name and build path
     edffile = edf_listing(i).name;
     edfname = edffile(1:end-20);
     edf = [edf_path, edffile];
     
+    % loop over all hypnogram files
     for j = 3:length(hypno_listing)
+        
+        % extract name and build path
         hypnofile = hypno_listing(j).name;
         hypnoname = hypnofile(11:end-4);
         hypno = [hypno_path, hypnofile];
         
+        % compare names
         if strcmp(edfname, hypnoname)
             % apply TDS stability analysis
             [tds,xcc,xcl,biosignals_tds,fpb,sbmat,header,signalheader,signalcells] ...
-                = sn_TDS_Charite(edf,'ch_all', 'charite', 'hypno_flag', 1, ...
+                = sn_TDS(edf,'ch_all', 'charite', 'hypno_flag', 1, ...
                 'hypno_filename', hypno, 'debug', 0);
-            % save results tds, xcc, xcl and biosignals_tds
+            % save results tds, xcc, xcl and biosignals_tds to result path
             save([result_path, edfname, '_', 'tds.mat'], 'tds')
             save([result_path, edfname, '_', 'xcc.mat'], 'xcc')
             save([result_path, edfname, '_', 'xcl.mat'], 'xcl')
@@ -31,10 +45,13 @@ for i = 3:length(edf_listing)
             % apply extracting of sleep stages
             %tds = [result_path, edfname, '_tds.mat'];
             %load(tds)
+            
             % read hypnogram
             T = dlmread(hypno);
+            
             % create hypnogram array
             hypnogram = T(2:end);
+            
             % apply TDS Analysis
             [result,nsis,hypnogram] = sn_getStagesTDS('data', tds, 'hypnogram', hypnogram);
             % save results result, nsis and hypnogram

@@ -1,9 +1,36 @@
-function plot_differences(tds_stages,varargin)
-
+function ma_plot_differences(tds_stages,varargin)
+% Function to plot all sleep stages of 3-dim tds matrix
+%% Metadata
+% Stefanie Breuer, 12.03.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
 %
+% USAGE: ma_plot_differences(tds_stages, 'colorbartext', 'p-values');
+%
+% INPUT
+% tds_stages    3-dim matrix containing link strengths of all sleep stages
+%
+% OPTIONAL INPUT
+% colorbartext  sort of plot, choose 'p-values' for colorbar with text on
+%               the right side containing specified significance levels,
+%               choose 'linreg' for linear regression slopes and colorbar 
+%               with text on the left side, choose 'population' for
+%               differences between insomnia and matches, leave empty for
+%               no colorbar text
+% group         set group to define figure title 
+%               'none': insomnia group (without other diseases)
+%               'breath': patients with sleep apneas, asthma...
+%               'heart': patients with heart diseases
+%               'sleep': patients who consume sleep drugs
+%               'siesta-all': differences of siesta group and whole
+%               insomnia dataset
+%               'siesta-insom': differences of siesta group and insomnia
+%               group (without other diseases)
+%               
 %------------------------------------------------------------
-%%defaults
+%% Defaults
 subject = '';
+cbtext = '';
 
 rlabels = {'Tiefschlaf';'Leichtschlaf';'REM-Schlaf';'Wachzustand'};
 tdslabels = {'HR';'BR_{air}';'BR_c';'BR_a';'Chin';'Leg';...
@@ -17,31 +44,25 @@ eeglabels = {'C3';'O1';'C4';'O2'};
 ticks = [0.5,4.5,8.5,13.5,18.5,23.5,28.5];
 borders = [0,39];
 
-
-
-
 %positionvectors [left, bottom, width, height]
-
 w = 0.45;
 ll = 0.01;
 lr = 0.4;
 bt = 0.52;
 bb = 0.03;
 pvector =  [ll bt w w;...
-    lr bt w w;...
-    ll bb w w;...
-    lr bb w w];
+            lr bt w w;...
+            ll bb w w;...
+            lr bb w w];
 
 %colorbarposition in multiplot
-cbpos = [0.8 0.07 0.02 0.86];
+cbpos = [0.86 0.07 0.02 0.86];
 
-
-
-%% Check for input vars
-%size of varargin
+%% Check for input variables
+% size of varargin
 m = size(varargin,2);
 
-%if varargin present, check for keywords and get parameter
+% if varargin present, check for keywords and get parameter
 if m > 0
     %disp(varargin);
     for i = 1:2:m-1
@@ -50,6 +71,8 @@ if m > 0
             subject = varargin{i+1};
         elseif strcmp(varargin{i}, 'group')
             group = varargin{i+1};
+        elseif strcmp(varargin{i}, 'colorbartext')
+            cbtext = varargin{i+1};
         end
     end
 end
@@ -67,7 +90,7 @@ clims = [cmin,cmax];
 %% Loop over stages
 %create multiplot figure
 
-fh = figure(20)
+fh = figure(21)
 clf(fh)
 fh.Units = 'normalized';
 %Position [left bottom width height]
@@ -78,7 +101,7 @@ fh.Position = [0.1 0.1 0.7 0.8];
 for stage = 1:4
     
     % Create axes of upper left graph
-    axes_1 = axes('Position',pvector(stage,:),'Parent',20,...
+    axes_1 = axes('Position',pvector(stage,:),'Parent',21,...
         'xticklabel','','yticklabel','','box','on');
     
     ih = imagesc(tds_stages(:,:,stage),clims);
@@ -116,10 +139,30 @@ for stage = 1:4
         
     end
     hold off
-    %colorbar('Position',cbpos);
-    cbh = colorbar('Position',cbpos);
-    %Set its ylabel property
-    %ylabel(cbh,cblabel);
+    if ~isempty(cbtext)
+        if strcmp(cbtext, 'p-values')
+            % set property for plot of p-values
+            colormap('default'); 
+            colormap(flipud(colormap)); 
+            cbh = colorbar('Position',cbpos); 
+            ylabel(cbh,'oben: Signifikanzlevel');
+            set(cbh, 'Direction', 'reverse', ...
+                'TickLabels', {'\leq0.001\_{b}','\leq0.01\_{b}','\leq0.05\_{b}','\leq0.001','\leq0.01','\leq0.05','>0.05'});
+        elseif strcmp(cbtext, 'linreg')
+            % set property for plot of linear regression slopes
+            cbh = colorbar('Position',cbpos);
+            ylabel(cbh, 'unten: Anstieg der Regressionsgeraden m')
+            set(cbh, 'AxisLocation', 'in' );
+        elseif strcmp(cbtext, 'population')
+            % set property for plot of differences in mean tds
+            cbh = colorbar('Position',cbpos);
+            ylabel(cbh,'unten: Verbindungsstärken Insomnie - Matches');
+            set(cbh, 'AxisLocation', 'in' );
+        end
+    else
+        colorbar('Position',cbpos);
+    end
+    
 end
    
 if strcmp(group, 'none')

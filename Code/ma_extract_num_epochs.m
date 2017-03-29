@@ -1,9 +1,12 @@
 % script compares amount of epochs extracted from header and extracted from
 % hypnogram file for each psg and writes results into result file
 %
-% author: Stefanie Breuer
-% date: 01.03.2017
-% -------------------------------------------------------------------------
+%% Metadata
+% Stefanie Breuer, 01.03.2017
+% stefanie.breuer@student.htw-berlin.de
+% version 1.0
+
+%% Start
 
 % path of folder containing edf files
 edf_path = 'C:\Users\Stefka\Desktop\Masterarbeit\INSOMNIA\';

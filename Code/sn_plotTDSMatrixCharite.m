@@ -3,19 +3,19 @@ function sn_plotTDSMatrixSiestaAll(tds_stages,varargin)
 %based on sn_plotTDSMatrixSiestaAll.m and revised to make it valid for charite
 %data
 %% Metadata-----------------------------------------------------------
-% Stefanie Breuer, 08.03.2017, stefanie.breuer@student.htw-berlin.de
+% Stefanie Breuer, 08.03.2017
+% stefanie.breuer@student.htw-berlin.de
 % Version: 1.0
 %-----------------------------------------------------------
 %
-%USAGE: sn_plotTDSMatrixSiestaAll(TDS-matrix,varargin)
+%USAGE: sn_plotTDSMatrixCharite(TDS-matrix,varargin)
 % INPUT:
-% tds    matrix of intersignal stability, dims: (38x38x4)
+% tds         matrix of intersignal stability, dims: (38x38x4)
 %
 %OPTIONAL INPUT:
-% slabels    vector containing the labels of the signals
-% fth        fraction threshold for significant stability, default: 0.07
+% fth         fraction threshold for significant stability, default: 0.07
 % outfilebase filebase for print, default:no printing)
-% colormap  colormap to be used
+% colormap    colormap to be used
 %OUTPUT:
 % none
 
@@ -40,11 +40,11 @@ borders = [0,39];
 
 %outfilebase
 outfilebase = '';
+%colormap
 cmap = 'default';
 % flag for thresholding
 binflag = 0;
 
-whos labels
 %% Check for input vars
 %size of varargin
 m = size(varargin,2);
@@ -72,8 +72,10 @@ end
 for stage = 4:-1:1
     figure(stage)
     if binflag
+        %binary image with threshold fth
         imagesc(tds_stages(:,:,stage) >= fth)
     else
+        %take all values
         imagesc(tds_stages(:,:,stage))
     end
     title([subject ' ' rlabels{stage}])
@@ -81,12 +83,15 @@ for stage = 4:-1:1
     colormap(cmap)
     colorbar
     
+    %add tds labels at y axis
     for k = 1:length(tdslabels)
         text(-4,k,tdslabels{k})
     end
+    %add eeg labels at x axis
     for m = 1:length(eeglabels)
         text(ticks(m+2)+2,30,eeglabels{m})
     end
+    %set axis property
     set(gca,'XColor','r', 'YColor','r')
     set(gca,'ytick',[0.5,4.5,8.5,13.5,18.5,23.5,28.5]);
     set(gca,'yticklabel','    ');
@@ -98,13 +103,13 @@ for stage = 4:-1:1
     
     hold on
     for i = 2:length(ticks)
+        %plot borders in red and ticks
         plot(borders,[ticks(i),ticks(i)],'r')
         plot([ticks(i),ticks(i)],borders,'r')
-        
     end
     hold off
     
-    %%print
+    %print
     if ~isempty(outfilebase)
         imagepng = [outfilebase '_' rlabels{stage} '_tds_matrix_val.png'];
         print('-dpng',[ imagepng])

@@ -35,6 +35,10 @@ function [tds,xcc,xcl,biosignals_tds,fpb,sbmat,header,signalheader,signalcells] 
 %   "Alice6" all channels are processed regarding the Alice6 channel-labels.
 %   Furthermore, the EDF-data is read with a specific routine to account
 %   for
+% hypno_flag: set true for charite data, default 0
+% hypno_filename: path of numeric hypnogram file in .txt format with first
+% row=amount of difference between startimes of edf and scoring in seconds
+% and following rows=hypnogram numbers
 % wl_xcc windowlength of crosscorrelation in seconds, default 60;
 % ws_xcc windowshift of crosscorrelation in seconds, default 30;
 % wl_tds windowlength of stability analysis in seconds, default 5;
@@ -65,6 +69,8 @@ function [tds,xcc,xcl,biosignals_tds,fpb,sbmat,header,signalheader,signalcells] 
 % 20150408 V 1.0.4 (dk)
 % - options for external chest and abdomen files added
 % - renamed resp_file/resp_flag to airflow_file/airflow_flag
+% 20170306 V 1.0.5 (sb)
+% - whole function extended to make it valid for charite data
 %% defaults Test
 
 
@@ -106,6 +112,10 @@ chest_flag = 0;
 abdomen_flag = 0;
 
 ch_all = '';
+
+%hypnogram file if function is used for charite data
+hypno_flag = 0;
+hypno_filename = '';
 
 %% Defaults crosscorrelation
 
@@ -210,6 +220,12 @@ else
     [header,signalheader,signalcells]= sn_edfScan2matScan('data',filename);
 end
 
+%% get headerinfos
+%data_record_duration in seconds
+drd = header.data_record_duration;
+%sampling frequencies of channels
+sfch = [signalheader(:).samples_in_record]/drd;
+
 %if ch_all is set, define channel order, overwrites possible channel
 %settings, but not external files
 if(strcmp(ch_all,'siesta'))
@@ -287,17 +303,54 @@ elseif(strcmp(ch_all,'alice6'))
                 ch_abdomen = l;
             otherwise disp(['This signal will not be processed: ', signalheader(l).signal_labels])
         end
-    end        
+    end 
+elseif(strcmp(ch_all,'charite'))
+    disp('all channels following Charite standard are processed')
+    % hypnogram file exists
+    if hypno_flag
+        % read hypnogram
+        T = dlmread(hypno_filename);
+        %starttime difference in seconds
+        durationseconds = T(1); 
+        %starttime difference in samples for each signal
+        durationsamples = [signalheader(:).samples_in_record]/...
+            header.data_record_duration * durationseconds;
+        %hypnogram duration in samples for each signal
+        hypnogramduration = length(T(2:end))*30*sfch; 
+        %lengths of all signals
+        signallengths = cellfun('length',signalcells);
+        %boolean array - 1 if hypnogram+starttime difference is smaller
+        %than or equal to signal length 
+        lengthflag = (durationsamples(:)+1+hypnogramduration(:) <= signallengths(:));
+    else
+        disp('Hypnogram file is missing, please select hypnogram text file.')
+        return;
+    end
+    %channelnumbers of EEG signals
+    ch_eeg = 2; %EEG C4-A1
+    ch_eeg2 = 3; %EEG O2-A1
+    ch_eeg3 = 5; %EEG C3-A2
+    ch_eeg4 = 6; %EEG O1-A2
+    
+    %channelnumber of EOG signal(POS8-M1 = eog1)
+    ch_eog = 7;
+    ch_eog2 = 8;
+    
+    %channelnumbers of EMG signals
+    ch_emgchin = 9;
+    ch_emgleg = 10;
+    
+    %channelnumber of ECG signal
+    ch_ecg = 12;
+    
+    %channelnumbers of airflow
+    ch_airflow = 13;
+    ch_chest = 14;
+    ch_abdomen = 15;
 end
 
 
 
-
-%% get headerinfos
-%data_record_duration in seconds
-drd = header.data_record_duration;
-%sampling frequencies of channels
-sfch = [signalheader(:).samples_in_record]/drd;
 
 %% get RR
 
@@ -320,14 +373,42 @@ else
     if debug
         ch_ecg
     end
-    rrdata = sn_CQRS(signalcells{ch_ecg},sfch(ch_ecg));
+    if strcmp(ch_all, 'charite')
+        if lengthflag(ch_ecg)
+            %apply qrs function with signal part which is contained in
+            %hypnogram
+            rrdata = sn_CQRS(signalcells{ch_ecg}(durationsamples(ch_ecg)...
+                +1:durationsamples(ch_ecg)+hypnogramduration(ch_ecg)), sfch(ch_ecg));
+        else
+            %if hypnogram exceeds signal length
+            rrdata = sn_CQRS(signalcells{ch_ecg}(durationsamples(ch_ecg)...
+                +1:end), sfch(ch_ecg));
+        end
+    else
+        rrdata = sn_CQRS(signalcells{ch_ecg},sfch(ch_ecg));
+    end
 end
 
 if debug
-    disp(['heartrate = sn_getEventRate(rrdata,''sf'',' num2str(sfch(ch_ecg)) ',''ersf'',' num2str(ws_sfe) ',''sl'',' num2str(length(signalcells{ch_ecg})) ');'])
+    disp(['heartrate = sn_getEventRate(rrdata,''sf'',' num2str(sfch(ch_ecg))...
+        ',''ersf'',' num2str(ws_sfe) ',''sl'',' num2str(length(signalcells{ch_ecg})) ');'])
 end
 
-heartrate = sn_getEventRate(rrdata,'sf',sfch(ch_ecg),'ersf',ws_sfe,'sl',length(signalcells{ch_ecg}));
+if strcmp(ch_all, 'charite')
+    if lengthflag(ch_ecg)
+        %apply heartrate function with signal part which is contained in
+        %hypnogram
+        heartrate = sn_getEventRate(rrdata,'sf',sfch(ch_ecg),'ersf',ws_sfe,'sl',...
+            length(signalcells{ch_ecg}(durationsamples(ch_ecg)+1:durationsamples(ch_ecg)+hypnogramduration(ch_ecg))));
+        disp('first condition')
+    else
+        %if hypnogram exceeds signal length
+        heartrate = sn_getEventRate(rrdata,'sf',sfch(ch_ecg),'ersf',ws_sfe,'sl',...
+            length(signalcells{ch_ecg}(durationsamples(ch_ecg)+1:end)));
+    end
+else
+    heartrate = sn_getEventRate(rrdata,'sf',sfch(ch_ecg),'ersf',ws_sfe,'sl',length(signalcells{ch_ecg}));
+end
 %apply moving median to get rid of spikes
 heartrate = nld_movingMedian(heartrate,5);
 
@@ -353,7 +434,20 @@ else %use channel to calculate breathingrate
     if debug
         disp(['breathingrate = sn_getBreathingRate(signalcells{' num2str(ch_airflow) '},''sf'',' num2str(sfch(ch_airflow)) ',''brsf'',' num2str(ws_sfe) ');'])
     end
-    breathingrate = sn_getBreathingRate(signalcells{ch_airflow},'sf',sfch(ch_airflow),'brsf',ws_sfe);
+    if strcmp(ch_all, 'charite')
+        if lengthflag(ch_airflow)
+            %apply breathing rate function with signal part which is
+            %contained in hypnogram
+            breathingrate = sn_getBreathingRate(signalcells{ch_airflow}(durationsamples(ch_airflow)...
+                +1:durationsamples(ch_airflow)+hypnogramduration(ch_airflow)),'sf',sfch(ch_airflow),'brsf',ws_sfe);
+        else
+            %if hypnogram exceeds signal length
+            breathingrate = sn_getBreathingRate(signalcells{ch_airflow}(durationsamples(ch_airflow)...
+                +1:end),'sf',sfch(ch_airflow),'brsf',ws_sfe);
+        end
+    else
+        breathingrate = sn_getBreathingRate(signalcells{ch_airflow},'sf',sfch(ch_airflow),'brsf',ws_sfe);
+    end
     %transpose
     breathingrate = breathingrate';
 end
@@ -363,8 +457,8 @@ if debug
     whos breathingrate
 end
 
-if (strcmp(ch_all,'siesta'))
-    disp('SIESTA: getting breathing rate from chest and abdomen')
+if (strcmp(ch_all,'siesta') | strcmp(ch_all, 'charite'))
+    disp('SIESTA or Charite: getting breathing rate from chest and abdomen')
     
     %extend breathingrate to three cols
     breathingrate = [breathingrate,zeros(length(breathingrate),2)];
@@ -382,7 +476,20 @@ if (strcmp(ch_all,'siesta'))
         if debug
             disp(['breathingrate(:,2) = sn_getBreathingRate(signalcells{' num2str(ch_chest) '},''sf'',' num2str(sfch(ch_chest)) ',''brsf'',' num2str(ws_sfe) ');'])
         end
-        breathingrate(:,2) = sn_getBreathingRate(signalcells{ch_chest},'sf',sfch(ch_chest),'brsf',ws_sfe);
+        if strcmp(ch_all, 'charite')
+            if lengthflag(ch_chest)
+                %take signal part from ch_chest which is contained in
+                %hypnogram
+                breathingrate(:,2) = sn_getBreathingRate(signalcells{ch_chest}(durationsamples(ch_chest)...
+                    +1:durationsamples(ch_chest)+hypnogramduration(ch_chest)),'sf',sfch(ch_chest),'brsf',ws_sfe);
+            else
+                %if hypnogram exceeds signal length
+                breathingrate(:,2) = sn_getBreathingRate(signalcells{ch_chest}(durationsamples(ch_chest)...
+                    +1:end),'sf',sfch(ch_chest),'brsf',ws_sfe);
+            end
+        else
+            breathingrate(:,2) = sn_getBreathingRate(signalcells{ch_chest},'sf',sfch(ch_chest),'brsf',ws_sfe);
+        end
     end
     %abdomen
     if (abdomen_flag && ~isempty(abdomen_filename))
@@ -397,7 +504,20 @@ if (strcmp(ch_all,'siesta'))
         if debug
             disp(['breathingrate(:,3) = sn_getBreathingRate(signalcells{' num2str(ch_abdomen) '},''sf'',' num2str(sfch(ch_abdomen)) ',''brsf'',' num2str(ws_sfe) ');'])
         end
-        breathingrate(:,3) = sn_getBreathingRate(signalcells{ch_abdomen},'sf',sfch(ch_abdomen),'brsf',ws_sfe);
+        if strcmp(ch_all, 'charite')
+            if lengthflag(ch_abdomen)
+                %take signal part from ch_abdomen which is contained in
+                %hypnogram
+                breathingrate(:,3) = sn_getBreathingRate(signalcells{ch_abdomen}(durationsamples(ch_abdomen)...
+                +1:durationsamples(ch_abdomen)+hypnogramduration(ch_abdomen)),'sf',sfch(ch_abdomen),'brsf',ws_sfe);    
+            else
+                %if hypnogram exceeds signal length
+                breathingrate(:,3) = sn_getBreathingRate(signalcells{ch_abdomen}(durationsamples(ch_abdomen)...
+                    +1:end),'sf',sfch(ch_abdomen),'brsf',ws_sfe);
+            end
+        else
+            breathingrate(:,3) = sn_getBreathingRate(signalcells{ch_abdomen},'sf',sfch(ch_abdomen),'brsf',ws_sfe);
+        end
     end
 elseif (strcmp(ch_all,'alice6'))
     disp('Alice6: getting breathing rate from chest and abdomen')
@@ -439,23 +559,69 @@ if debug
     disp(['var_eog = sn_getVariance(signalcells{' num2str(ch_eog) '},''wl'',' num2str(wl_sfe) ',''ws'',' num2str(ws_sfe) ',''sf'',' num2str(sfch(ch_eog)) ');'])
 end
 
-var_emgchin = sn_getVariance(signalcells{ch_emgchin},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_emgchin));
-var_emgleg = sn_getVariance(signalcells{ch_emgleg},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_emgleg));
-var_eog = sn_getVariance(signalcells{ch_eog},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eog));
+if strcmp(ch_all, 'charite')
+    if lengthflag(ch_emgchin)
+        %apply extraction of variances on signal part of ch_emgchin which 
+        %is contained in hypnogram
+        var_emgchin = sn_getVariance(signalcells{ch_emgchin}(durationsamples(ch_emgchin)+1:durationsamples(ch_emgchin)...
+            +hypnogramduration(ch_emgchin)), 'wl', wl_sfe, 'ws', ws_sfe,...
+            'sf',sfch(ch_emgchin));
+    else
+        %if hypnogram exceeds signal length
+        var_emgchin = sn_getVariance(signalcells{ch_emgchin}(durationsamples(ch_emgchin)...
+            +1:end),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_emgchin));
+    end
+    if lengthflag(ch_emgleg)
+        %apply extraction of variances on signal part of ch_emgleg which 
+        %is contained in hypnogram
+        var_emgleg = sn_getVariance(signalcells{ch_emgleg}(durationsamples(ch_emgleg)...
+            +1:durationsamples(ch_emgleg)+hypnogramduration(ch_emgleg)),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_emgleg));
+    else
+        %if hypnogram exceeds signal length
+        var_emgleg = sn_getVariance(signalcells{ch_emgleg}(durationsamples(ch_emgleg)+1:end)...
+            ,'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_emgleg));
+    end
+    if lengthflag(ch_eog)
+        %apply extraction of variances on signal part of ch_eog which 
+        %is contained in hypnogram
+        var_eog = sn_getVariance(signalcells{ch_eog}(durationsamples(ch_eog)+1:durationsamples...
+            (ch_eog)+hypnogramduration(ch_eog)),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eog));
+    else
+        %if hypnogram exceeds signal length
+        var_eog = sn_getVariance(signalcells{ch_eog}(durationsamples(ch_eog)+1:end),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eog));
+    end
+else
+    var_emgchin = sn_getVariance(signalcells{ch_emgchin}, 'wl', wl_sfe,'ws',ws_sfe,'sf',sfch(ch_emgchin));
+    var_emgleg = sn_getVariance(signalcells{ch_emgleg},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_emgleg));
+    var_eog = sn_getVariance(signalcells{ch_eog},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eog));
+end
 
-if (strcmp(ch_all,'siesta') | strcmp(ch_all,'alice6'))
-    disp('SIESTA and Alice6: getting second EOG at channel 9')
+if (strcmp(ch_all,'siesta') || strcmp(ch_all,'alice6') || strcmp(ch_all,'charite'))
+    disp('SIESTA, Charite and Alice6: getting second EOG at channel 9')
     %extend var_eog for two channels
     var_eog = [ var_eog, zeros(length(var_eog),1)];
     if debug
         disp(['var_eog(:,2) = sn_getVariance(signalcells{' num2str(ch_eog2) '},''wl'',' num2str(wl_sfe) ',''ws'',' num2str(ws_sfe) ',''sf'',' num2str(sfch(ch_eog2)) ');'])
     end
-    var_eog(:,2) = sn_getVariance(signalcells{ch_eog2},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eog2));
+    
+    if strcmp(ch_all, 'charite')
+        if lengthflag(ch_eog2)
+            % take second eog with part which is contained in hypnogram
+            var_eog(:,2) = sn_getVariance(signalcells{ch_eog2}(durationsamples(ch_eog2)...
+                +1:durationsamples(ch_eog2)+hypnogramduration(ch_eog2)),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eog2));
+        else
+            %if hypnogram exceeds signal length
+            var_eog(:,2) = sn_getVariance(signalcells{ch_eog2}(durationsamples(ch_eog2)...
+                +1:end),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eog2));
+        end
+    else
+        var_eog(:,2) = sn_getVariance(signalcells{ch_eog2},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eog2));
+    end
 end
 
 if (strcmp(ch_all,'alice6'))
     disp('Alice6: check for second leg channel')
-    %extend var_eog for two channels
+    %extend var_leg for two channels
     if (exist('ch_emgleg2','var'))
         var_leg = [ var_emgleg, zeros(length(var_emgleg),1)];
         if debug
@@ -465,68 +631,119 @@ if (strcmp(ch_all,'alice6'))
     end
 end
     
-    if debug
-        whos var_eog
-        whos var_emgleg
-        whos var_emgchin
+if debug
+    whos var_eog
+    whos var_emgleg
+    whos var_emgchin
+end
+
+
+%% extract frequency-powerbands
+%get matrix with powerbands
+if debug
+    disp(['fpb = sn_getEEGBandPower(signalcells{' num2str(ch_eeg) '},''wl'',' num2str(wl_sfe) ',''ws'',' num2str(ws_sfe) ',''sf'',' num2str(sfch(ch_eeg)) ');'])
+end
+
+if strcmp(ch_all, 'charite')
+    if lengthflag(ch_eeg)
+        %apply extraction of frequency bands on signal part of first eeg which is
+        %contained in hypnogram
+        [fpb,sbmat] = sn_getEEGBandPower(signalcells{ch_eeg}(durationsamples(ch_eeg)...
+            +1:durationsamples(ch_eeg)+hypnogramduration(ch_eeg)),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg));
+    else
+        %if hypnogram exceeds signal length
+        [fpb,sbmat] = sn_getEEGBandPower(signalcells{ch_eeg}(durationsamples(ch_eeg)...
+            +1:end),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg));
     end
-    
-    
-    %% extract frequency-powerbands
-    %get matrix with powerbands
-    if debug
-        disp(['fpb = sn_getEEGBandPower(signalcells{' num2str(ch_eeg) '},''wl'',' num2str(wl_sfe) ',''ws'',' num2str(ws_sfe) ',''sf'',' num2str(sfch(ch_eeg)) ');'])
-    end
+else
     [fpb,sbmat] = sn_getEEGBandPower(signalcells{ch_eeg},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg));
-    if (strcmp(ch_all,'siesta') | strcmp(ch_all,'alice6'))
-        disp('SIESTA and Alice6: getting all six EEGs')
-        fpb = repmat(fpb,[1 5]);
-        whos fpb
-        %loop over channels, here channelnumber as explicitely used, as they
-        %are anyhow fixed for Siesta
-        for i =2:6
-            if debug
-                disp(['fpb(:,(i-1)*5+1:i*5) = sn_getEEGBandPower(signalcells{' num2str(i) '},''wl'',' num2str(wl_sfe) ',''ws'',' num2str(ws_sfe) ',''sf'',' num2str(sfch(i)) ');'])
-            end
-            fpb(:,(i-1)*5+1:i*5) =  sn_getEEGBandPower(signalcells{i},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(i));
-        end
+end
+
+if (strcmp(ch_all,'siesta') | strcmp(ch_all,'alice6'))
+    disp('SIESTA and Alice6: getting all six EEGs')
+    fpb = repmat(fpb,[1 5]);
+    whos fpb
+    %loop over channels, here channelnumber as explicitely used, as they
+    %are anyhow fixed for Siesta
+    for i =2:6
         if debug
-            whos fpb
+            disp(['fpb(:,(i-1)*5+1:i*5) = sn_getEEGBandPower(signalcells{' num2str(i) '},''wl'',' num2str(wl_sfe) ',''ws'',' num2str(ws_sfe) ',''sf'',' num2str(sfch(i)) ');'])
+        end
+        fpb(:,(i-1)*5+1:i*5) =  sn_getEEGBandPower(signalcells{i},'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(i));
+    end
+    if debug
+        whos fpb
+    end
+elseif(strcmp(ch_all, 'charite'))
+    disp('Charite: getting all four EEGs')
+    fpb = repmat(fpb,[1 4]);
+    whos fpb
+    %loop over channels, here channelnumber as explicitely used at
+    %Charite
+    %extract frequency bands from all other eegs
+    for i =2:4
+        if debug
+            disp(['fpb(:,(i-1)*5+1:i*5) = sn_getEEGBandPower(signalcells{' num2str(i) '},''wl'',' num2str(wl_sfe) ',''ws'',' num2str(ws_sfe) ',''sf'',' num2str(sfch(i)) ');'])
+        end
+        if lengthflag(ch_eeg2)
+            if i == 2
+                fpb(:,(i-1)*5+1:i*5) =  sn_getEEGBandPower(signalcells{ch_eeg2}(durationsamples(ch_eeg2)...
+                    +1:durationsamples(ch_eeg2)+hypnogramduration(ch_eeg2)),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg2));
+            elseif i == 3
+                fpb(:,(i-1)*5+1:i*5) =  sn_getEEGBandPower(signalcells{ch_eeg3}(durationsamples(ch_eeg3)...
+                    +1:durationsamples(ch_eeg3)+hypnogramduration(ch_eeg3)),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg3));
+            elseif i == 4
+                fpb(:,(i-1)*5+1:i*5) =  sn_getEEGBandPower(signalcells{ch_eeg4}(durationsamples(ch_eeg4)...
+                    +1:durationsamples(ch_eeg4)+hypnogramduration(ch_eeg4)),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg4));
+            end
+        else
+            %if hypnogram exceeds signal length
+            if i == 2
+                fpb(:,(i-1)*5+1:i*5) =  sn_getEEGBandPower(signalcells{ch_eeg2}(durationsamples(ch_eeg2)+1:end),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg2));
+            elseif i == 3
+                fpb(:,(i-1)*5+1:i*5) =  sn_getEEGBandPower(signalcells{ch_eeg3}(durationsamples(ch_eeg3)+1:end),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg3));
+            elseif i == 4
+                fpb(:,(i-1)*5+1:i*5) =  sn_getEEGBandPower(signalcells{ch_eeg4}(durationsamples(ch_eeg4)+1:end),'wl',wl_sfe,'ws',ws_sfe,'sf',sfch(ch_eeg4));
+            end
         end
     end
-    % use mean band amplitude rather than power
-    fpb = sqrt(fpb);
-    
-    
-    %% TDS
-    %concat the signals, columns = signal, row = time
     if debug
-        disp('biosignals_tds = [ heartrate breathingrate var_emgchin var_emgleg var_eog fpb ];')
+        whos fpb
     end
-    
-    biosignals_tds = [ heartrate breathingrate var_emgchin var_emgleg var_eog fpb ];
-    if debug
-        whos biosignals_tds
-    end
-    
-    %get crosscorrelation of signals, samplingfrequency equals windowshift of
-    %feature extraction
-    %xcc: maximum correlationcoefficient
-    %xcl: correlation lag of xcc
-    if debug
-        disp(['[xcc,xcl] = sn_getCrossCorrelation(biosignals_tds,''wl'',' num2str(wl_xcc) ',''ws'',' num2str(ws_xcc) ',''sf'',' num2str(ws_sfe) ');'])
-    end
-    [xcc,xcl] = sn_getCrossCorrelation(biosignals_tds,'wl',wl_xcc,'ws',ws_xcc,'sf',ws_sfe);
-    if debug
-        whos xcc
-    end
-    %stability analysis
-    if debug
-        disp(['[tds] = sn_getStability(xcl,''wl'',' num2str(wl_tds) ',''ws'',' num2str(ws_tds) ',''mld'',' num2str(mld_tds) ',''mlf'',' num2str(mlf_tds) ',''sf'',' num2str(ws_sfe) ');'])
-    end
-    [tds] = sn_getStability(xcl,'wl',wl_tds,'ws',ws_tds,'mld',mld_tds,'mlf',mlf_tds,'sf',ws_sfe);
-    if debug
-        whos tds
-    end
+end
+% use mean band amplitude rather than power
+fpb = sqrt(fpb);
+
+
+%% TDS
+%concat the signals, columns = signal, row = time
+if debug
+    disp('biosignals_tds = [ heartrate breathingrate var_emgchin var_emgleg var_eog fpb ];')
+end
+
+biosignals_tds = [ heartrate breathingrate var_emgchin var_emgleg var_eog fpb ];
+if debug
+    whos biosignals_tds
+end
+
+%get crosscorrelation of signals, samplingfrequency equals windowshift of
+%feature extraction
+%xcc: maximum correlationcoefficient
+%xcl: correlation lag of xcc
+if debug
+    disp(['[xcc,xcl] = sn_getCrossCorrelation(biosignals_tds,''wl'',' num2str(wl_xcc) ',''ws'',' num2str(ws_xcc) ',''sf'',' num2str(ws_sfe) ');'])
+end
+[xcc,xcl] = sn_getCrossCorrelation(biosignals_tds,'wl',wl_xcc,'ws',ws_xcc,'sf',ws_sfe);
+if debug
+    whos xcc
+end
+%stability analysis
+if debug
+    disp(['[tds] = sn_getStability(xcl,''wl'',' num2str(wl_tds) ',''ws'',' num2str(ws_tds) ',''mld'',' num2str(mld_tds) ',''mlf'',' num2str(mlf_tds) ',''sf'',' num2str(ws_sfe) ');'])
+end
+[tds] = sn_getStability(xcl,'wl',wl_tds,'ws',ws_tds,'mld',mld_tds,'mlf',mlf_tds,'sf',ws_sfe);
+if debug
+    whos tds
+end
 end
 

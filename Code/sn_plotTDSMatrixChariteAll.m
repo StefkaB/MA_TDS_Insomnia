@@ -77,7 +77,7 @@ pvector =  [ll bt w w;...
     lr bb w w];
 
 %colorbarposition in multiplot
-cbpos = [0.8 0.07 0.02 0.86];
+cbpos = [0.88 0.07 0.02 0.86];
 
 %colorbarposition if second label in single plots
 cbpos1 = [0.9 0.11 0.02 0.815];
